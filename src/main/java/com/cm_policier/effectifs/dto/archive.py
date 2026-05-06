@@ -9,7 +9,7 @@ class Archive(models.Model):
     date_debut = models.DateField(blank=True, null=True)
     date_fin = models.DateField(blank=True, null=True)
     charge_mission = models.ForeignKey(User, on_delete=models.CASCADE)
-    zone = models.CharField(max_length=250, null=True, blank=True)
+    zone = modelsr.CharField(max_length=250, null=True, blank=True)
     numero = models.CharField(max_length=50, blank=True, unique=True)
 
 class ArchiveDetail(models.Model):
