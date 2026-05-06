@@ -14,7 +14,8 @@ public class DataInitializer {
     CommandLineRunner initProfiles(ProfileRepository profileRepository) {
         return args -> {
             createIfNotExists(profileRepository, "ADMIN");
-            createIfNotExists(profileRepository, "USER");
+            createIfNotExists(profileRepository, "SUPERVISEUR");
+            createIfNotExists(profileRepository, "CONTROLEUR");
             createIfNotExists(profileRepository, "MANAGER");
 
         };
