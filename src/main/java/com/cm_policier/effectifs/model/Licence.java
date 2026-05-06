@@ -1,5 +1,4 @@
 package com.cm_policier.effectifs.model;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
