@@ -1,23 +1,12 @@
-package com.cm_policier.effectifs.model;
+package com.cm_policier.effectifs.dto;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Table(name = "person")
-public class Person {
+public class PersonRequest {
 
-    @Id
-    @Column(length = 40)
     private String uuid;
 
     private String name;
@@ -38,11 +27,7 @@ public class Person {
 
     private String status;
 
-    @Column(name = "IdPersonnel")
     private Integer idPersonnel;
 
-    // relation self (remplace_mil)
-    @ManyToOne
-    @JoinColumn(name = "remplace_Mil")
-    private Person remplaceMil;
+    private String remplaceMilUuid;
 }
