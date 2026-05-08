@@ -8,4 +8,5 @@ import com.cm_policier.effectifs.model.Profile;
 
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
     Optional<Profile> findByName(String name);
+    boolean existsByName(String name);
 }
