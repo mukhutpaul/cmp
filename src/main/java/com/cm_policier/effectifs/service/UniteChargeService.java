@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cm_policier.effectifs.config.BusinessException;
 import com.cm_policier.effectifs.dto.ChargerUniteRequest;
+import com.cm_policier.effectifs.dto.ChargerUniteResponse;
 import com.cm_policier.effectifs.model.DetailUnite;
 import com.cm_policier.effectifs.model.Equipe;
 import com.cm_policier.effectifs.model.EquipeUnite;
@@ -36,92 +37,56 @@ public class UniteChargeService {
     private final EquipeRepository equipeRepository;
     private final UserRepository userRepository;
 
-    public void chargerUnite(ChargerUniteRequest req) {
+    public ChargerUniteResponse chargerUnite(ChargerUniteRequest req) {
 
         // ==============================
-        // VALIDATION
+        // VALIDATION PROPRE
         // ==============================
+        if (req.uniteId() == null)
+            return new ChargerUniteResponse("ERROR", "Unité obligatoire");
 
-        if (req.uniteId() == null) {
-            throw new BusinessException("Unité obligatoire");
-        }
+        if (req.missionId() == null)
+            return new ChargerUniteResponse("ERROR", "Mission obligatoire");
 
-        if (req.missionId() == null) {
-            throw new BusinessException("Mission obligatoire");
-        }
+        if (req.equipeId() == null)
+            return new ChargerUniteResponse("ERROR", "Équipe obligatoire");
 
-        if (req.equipeId() == null) {
-            throw new BusinessException("Équipe obligatoire");
-        }
-
-        if (req.userId() == null) {
-            throw new BusinessException("Utilisateur obligatoire");
-        }
+        if (req.userId() == null)
+            return new ChargerUniteResponse("ERROR", "Utilisateur obligatoire");
 
         // ==============================
         // LOAD ENTITIES
         // ==============================
-
         Unite unite = uniteRepository.findById(req.uniteId())
-                .orElseThrow(() ->
-                        new BusinessException("Unité introuvable"));
+                .orElseThrow(() -> new BusinessException("Unité introuvable"));
 
         Mission mission = missionRepository.findById(req.missionId())
-                .orElseThrow(() ->
-                        new BusinessException("Mission introuvable"));
+                .orElseThrow(() -> new BusinessException("Mission introuvable"));
 
         Equipe equipe = equipeRepository.findById(req.equipeId())
-                .orElseThrow(() ->
-                        new BusinessException("Équipe introuvable"));
+                .orElseThrow(() -> new BusinessException("Équipe introuvable"));
 
-        // ⚠️ USER PAR ID
         User user = userRepository.findById(req.userId())
-                .orElseThrow(() ->
-                        new BusinessException("Utilisateur introuvable"));
+                .orElseThrow(() -> new BusinessException("Utilisateur introuvable"));
 
         // ==============================
-        // ANTI DOUBLON
+        // CHECK STATUT UNITE
         // ==============================
+        boolean dejaChargee = detailUniteRepository.existsByUniteId(unite.getId());
+        boolean missionExiste = missionUniteRepository.existsByMissionIdAndUniteId(mission.getId(), unite.getId());
+        boolean equipeExiste = equipeUniteRepository.existsByEquipeIdAndUniteId(equipe.getId(), unite.getId());
 
-        boolean uniteExisteDansDetail =
-                detailUniteRepository.existsByUniteId(unite.getId());
+        if (dejaChargee || missionExiste || equipeExiste) {
 
-        if (uniteExisteDansDetail) {
-            throw new BusinessException(
-                    "Cette unité est déjà chargée"
-            );
-        }
-
-        boolean missionExiste =
-                missionUniteRepository
-                        .existsByMissionIdAndUniteId(
-                                mission.getId(),
-                                unite.getId()
-                        );
-
-        if (missionExiste) {
-            throw new BusinessException(
-                    "Cette unité est déjà liée à cette mission"
-            );
-        }
-
-        boolean equipeExiste =
-                equipeUniteRepository
-                        .existsByEquipeIdAndUniteId(
-                                equipe.getId(),
-                                unite.getId()
-                        );
-
-        if (equipeExiste) {
-            throw new BusinessException(
-                    "Cette unité est déjà liée à cette équipe"
+            return new ChargerUniteResponse(
+                    "DEJA_CHARGEE",
+                    "Cette unité est déjà chargée ou affectée"
             );
         }
 
         // ==============================
-        // SAVE DETAIL UNITE
+        // SAVE DETAIL
         // ==============================
-
         DetailUnite detailUnite = DetailUnite.builder()
                 .unite(unite)
                 .user(user)
@@ -131,9 +96,8 @@ public class UniteChargeService {
         detailUniteRepository.save(detailUnite);
 
         // ==============================
-        // SAVE MISSION UNITE
+        // SAVE MISSION
         // ==============================
-
         MissionUnite missionUnite = MissionUnite.builder()
                 .mission(mission)
                 .unite(unite)
@@ -143,9 +107,8 @@ public class UniteChargeService {
         missionUniteRepository.save(missionUnite);
 
         // ==============================
-        // SAVE EQUIPE UNITE
+        // SAVE EQUIPE
         // ==============================
-
         EquipeUnite equipeUnite = EquipeUnite.builder()
                 .equipe(equipe)
                 .unite(unite)
@@ -153,5 +116,13 @@ public class UniteChargeService {
                 .build();
 
         equipeUniteRepository.save(equipeUnite);
+
+        // ==============================
+        // SUCCESS RESPONSE
+        // ==============================
+        return new ChargerUniteResponse(
+                "CHARGEE",
+                "Unité chargée avec succès"
+        );
     }
 }
