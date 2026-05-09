@@ -1,5 +1,6 @@
 package com.cm_policier.effectifs.controllers;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,11 @@ public class SeanceController {
     private SeanceService seanceService;
 
     @PostMapping
-    public ResponseEntity<Seance> create(@RequestBody Seance seance) {
-        return ResponseEntity.ok(seanceService.create(seance));
+    public ResponseEntity<Seance> create(@RequestBody Seance seance,
+            Principal principal) {
+
+        return ResponseEntity.ok(
+                seanceService.create(seance, principal.getName()));
     }
 
     @GetMapping
@@ -45,12 +49,12 @@ public class SeanceController {
     // BONUS endpoints 👇
 
     @GetMapping("/mission/{missionId}")
-public ResponseEntity<List<Seance>> getByMission(@PathVariable Long missionId) {
-    return ResponseEntity.ok(seanceService.getByMission(missionId));
-}
+    public ResponseEntity<List<Seance>> getByMission(@PathVariable Long missionId) {
+        return ResponseEntity.ok(seanceService.getByMission(missionId));
+    }
 
-@GetMapping("/chef/{chefId}")
-public ResponseEntity<List<Seance>> getByChef(@PathVariable Long chefId) {
-    return ResponseEntity.ok(seanceService.getByChef(chefId));
-}
+    @GetMapping("/chef/{chefId}")
+    public ResponseEntity<List<Seance>> getByChef(@PathVariable Long chefId) {
+        return ResponseEntity.ok(seanceService.getByChef(chefId));
+    }
 }
