@@ -1,5 +1,4 @@
 package com.cm_policier.effectifs.controllers;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +19,7 @@ public class UniteChargeController {
 
     @PostMapping("/charger")
     public ResponseEntity<?> chargerUnite(@RequestBody ChargerUniteRequest request) {
-        return ResponseEntity.ok(uniteChargeService.chargerUnite(request));
+        uniteChargeService.chargerUnite(request);
+        return ResponseEntity.ok("Unité chargée avec succès");
     }
 }
