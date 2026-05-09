@@ -61,9 +61,23 @@ public class SeanceService {
         return seanceRepository.save(existing);
     }
 
-    public void delete(Long id) {
-        seanceRepository.deleteById(id);
+  public void delete(Long id) {
+
+    Seance seance = seanceRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Séance introuvable"));
+
+    // 🚫 BLOQUAGE : séance active
+    if (Boolean.TRUE.equals(seance.getIsActive())) {
+        throw new RuntimeException("Impossible de supprimer une séance active");
     }
+
+    // 🚫 BLOQUAGE : séance clôturée
+    if (seance.getDateFin() != null) {
+        throw new RuntimeException("Impossible de supprimer une séance clôturée");
+    }
+
+    seanceRepository.deleteById(id);
+}
 
     public List<Seance> getByMission(Long missionId) {
         return seanceRepository.findByMissionId(missionId);

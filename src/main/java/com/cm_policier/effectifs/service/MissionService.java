@@ -3,7 +3,9 @@ package com.cm_policier.effectifs.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.cm_policier.effectifs.model.Mission;
 import com.cm_policier.effectifs.repository.MissionRepository;
@@ -17,7 +19,7 @@ public class MissionService {
     private final MissionRepository missionRepository;
 
     public Mission create(Mission mission) {
-        mission.setIsActive(true);
+        mission.setIsActive(false);
         return missionRepository.save(mission);
     }
 
@@ -49,8 +51,19 @@ public class MissionService {
     // }
 
     public void delete(Long id) {
+
         Mission mission = missionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mission introuvable"));
+
+        // 🚨 BLOQUAGE MÉTIER
+        if (Boolean.TRUE.equals(mission.getIsActive())) {
+            throw new RuntimeException("Impossible de supprimer une mission active");
+        }
+
+        if (mission.getDateFin() != null) {
+            throw new RuntimeException(
+                    "Impossible de supprimer une mission déjà terminée");
+        }
 
         missionRepository.delete(mission);
     }
