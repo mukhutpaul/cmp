@@ -73,4 +73,14 @@ public class EquipeUniteService {
         eu.setIsActive(false);
         repository.save(eu);
     }
+
+    public List<Unite> getUnitesByEquipe(Long equipeId) {
+
+    List<EquipeUnite> relations =
+            repository.findByEquipeId(equipeId);
+
+    return relations.stream()
+            .map(EquipeUnite::getUnite)
+            .toList();
+}
 }

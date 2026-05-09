@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cm_policier.effectifs.model.EquipeUnite;
+import com.cm_policier.effectifs.model.Unite;
 import com.cm_policier.effectifs.service.EquipeUniteService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,7 @@ public class EquipeUniteController {
     @PostMapping
     public ResponseEntity<EquipeUnite> create(
             @RequestParam Long equipeId,
-            @RequestParam Long uniteId
-    ) {
+            @RequestParam Long uniteId) {
         return ResponseEntity.ok(service.create(equipeId, uniteId));
     }
 
@@ -37,6 +37,13 @@ public class EquipeUniteController {
     @GetMapping
     public ResponseEntity<List<EquipeUnite>> getAll() {
         return ResponseEntity.ok(service.getAll());
+    }
+
+    @GetMapping("/{id}/unites")
+    public ResponseEntity<List<Unite>> getUnitesByEquipe(
+            @PathVariable Long id) {
+        return ResponseEntity.ok(
+                service.getUnitesByEquipe(id));
     }
 
     // GET ONE
@@ -50,8 +57,7 @@ public class EquipeUniteController {
     public ResponseEntity<EquipeUnite> update(
             @PathVariable Long id,
             @RequestParam Long equipeId,
-            @RequestParam Long uniteId
-    ) {
+            @RequestParam Long uniteId) {
         return ResponseEntity.ok(service.update(id, equipeId, uniteId));
     }
 
