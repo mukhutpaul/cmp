@@ -1,6 +1,7 @@
 package com.cm_policier.effectifs.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,8 +20,8 @@ public class Mission {
     @GeneratedValue
     private Long id;
 
-    private LocalDate dateDebut;
-    private LocalDate dateFin;
+    private LocalDateTime dateDebut;
+    private LocalDateTime dateFin;
 
     @ManyToOne
     private User chargeMission;

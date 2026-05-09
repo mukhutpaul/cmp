@@ -1,5 +1,6 @@
 package com.cm_policier.effectifs.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -8,8 +9,6 @@ import com.cm_policier.effectifs.model.Mission;
 import com.cm_policier.effectifs.repository.MissionRepository;
 
 import lombok.RequiredArgsConstructor;
-
-
 
 @Service
 @RequiredArgsConstructor
@@ -48,4 +47,36 @@ public class MissionService {
         mission.setIsActive(false); // soft delete
         missionRepository.save(mission);
     }
+
+    public Mission startMission(Long id) {
+
+        Mission mission = missionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Mission introuvable"));
+
+        if (mission.getIsActive()) {
+            throw new RuntimeException("Mission déjà active");
+        }
+
+        mission.setIsActive(true);
+        mission.setDateDebut(LocalDateTime.now());
+        mission.setDateFin(null); // reset sécurité
+
+        return missionRepository.save(mission);
+    }
+
+    public Mission closeMission(Long id) {
+
+        Mission mission = missionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Mission introuvable"));
+
+        if (!mission.getIsActive()) {
+            throw new RuntimeException("Mission déjà clôturée");
+        }
+
+        mission.setIsActive(false);
+        mission.setDateFin(LocalDateTime.now());
+
+        return missionRepository.save(mission);
+    }
+
 }

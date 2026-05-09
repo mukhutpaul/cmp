@@ -56,4 +56,13 @@ public class MissionController {
         missionService.delete(id);
         return ResponseEntity.ok().build();
     }
+    @PutMapping("/{id}/start")
+    public ResponseEntity<Mission> start(@PathVariable Long id) {
+        return ResponseEntity.ok(missionService.startMission(id));
+    }
+
+    @PutMapping("/{id}/close")
+    public ResponseEntity<Mission> close(@PathVariable Long id) {
+        return ResponseEntity.ok(missionService.closeMission(id));
+    }
 }

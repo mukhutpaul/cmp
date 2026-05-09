@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.cm_policier.effectifs.dto.UpdateUserRequest;
+import com.cm_policier.effectifs.model.Mission;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.security.JwtUtil;
+import com.cm_policier.effectifs.service.MissionService;
 import com.cm_policier.effectifs.service.UserService;
 
 @RestController
@@ -19,6 +21,7 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -142,4 +145,5 @@ public class AuthController {
                     "error", e.getMessage()));
         }
     }
+
 }
