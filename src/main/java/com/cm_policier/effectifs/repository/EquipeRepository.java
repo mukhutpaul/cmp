@@ -5,4 +5,5 @@ import com.cm_policier.effectifs.model.Equipe;
 
 public interface EquipeRepository extends JpaRepository<Equipe, Long> {
     
+    
 }

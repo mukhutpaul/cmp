@@ -7,4 +7,5 @@ import java.util.List;
 public interface DetailUniteRepository extends JpaRepository<DetailUnite, Long> {
 
     List<DetailUnite> findByIsActiveTrue();
+     boolean existsByUniteId(Long uniteId);
 }

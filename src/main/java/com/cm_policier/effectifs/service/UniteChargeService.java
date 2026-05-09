@@ -1,0 +1,156 @@
+package com.cm_policier.effectifs.service;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.cm_policier.effectifs.dto.ChargerUniteRequest;
+import com.cm_policier.effectifs.model.DetailUnite;
+import com.cm_policier.effectifs.model.Equipe;
+import com.cm_policier.effectifs.model.EquipeUnite;
+import com.cm_policier.effectifs.model.Mission;
+import com.cm_policier.effectifs.model.MissionUnite;
+import com.cm_policier.effectifs.model.Unite;
+import com.cm_policier.effectifs.model.User;
+import com.cm_policier.effectifs.repository.DetailUniteRepository;
+import com.cm_policier.effectifs.repository.EquipeRepository;
+import com.cm_policier.effectifs.repository.EquipeUniteRepository;
+import com.cm_policier.effectifs.repository.MissionRepository;
+import com.cm_policier.effectifs.repository.MissionUniteRepository;
+import com.cm_policier.effectifs.repository.UniteRepository;
+import com.cm_policier.effectifs.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class UniteChargeService {
+
+    private final DetailUniteRepository detailUniteRepository;
+    private final MissionUniteRepository missionUniteRepository;
+    private final EquipeUniteRepository equipeUniteRepository;
+
+    private final UniteRepository uniteRepository;
+    private final MissionRepository missionRepository;
+    private final EquipeRepository equipeRepository;
+    private final UserRepository userRepository;
+
+    public void chargerUnite(ChargerUniteRequest req) {
+
+        // ==============================
+        // VALIDATION
+        // ==============================
+
+        if (req.uniteId() == null) {
+            throw new RuntimeException("Unité obligatoire");
+        }
+
+        if (req.missionId() == null) {
+            throw new RuntimeException("Mission obligatoire");
+        }
+
+        if (req.equipeId() == null) {
+            throw new RuntimeException("Équipe obligatoire");
+        }
+
+        if (req.userId() == null) {
+            throw new RuntimeException("Utilisateur obligatoire");
+        }
+
+        // ==============================
+        // LOAD ENTITIES
+        // ==============================
+
+        Unite unite = uniteRepository.findById(req.uniteId())
+                .orElseThrow(() ->
+                        new RuntimeException("Unité introuvable"));
+
+        Mission mission = missionRepository.findById(req.missionId())
+                .orElseThrow(() ->
+                        new RuntimeException("Mission introuvable"));
+
+        Equipe equipe = equipeRepository.findById(req.equipeId())
+                .orElseThrow(() ->
+                        new RuntimeException("Équipe introuvable"));
+
+        // ⚠️ USER PAR ID
+        User user = userRepository.findById(req.userId())
+                .orElseThrow(() ->
+                        new RuntimeException("Utilisateur introuvable"));
+
+        // ==============================
+        // ANTI DOUBLON
+        // ==============================
+
+        boolean uniteExisteDansDetail =
+                detailUniteRepository.existsByUniteId(unite.getId());
+
+        if (uniteExisteDansDetail) {
+            throw new RuntimeException(
+                    "Cette unité est déjà chargée"
+            );
+        }
+
+        boolean missionExiste =
+                missionUniteRepository
+                        .existsByMissionIdAndUniteId(
+                                mission.getId(),
+                                unite.getId()
+                        );
+
+        if (missionExiste) {
+            throw new RuntimeException(
+                    "Cette unité est déjà liée à cette mission"
+            );
+        }
+
+        boolean equipeExiste =
+                equipeUniteRepository
+                        .existsByEquipeIdAndUniteId(
+                                equipe.getId(),
+                                unite.getId()
+                        );
+
+        if (equipeExiste) {
+            throw new RuntimeException(
+                    "Cette unité est déjà liée à cette équipe"
+            );
+        }
+
+        // ==============================
+        // SAVE DETAIL UNITE
+        // ==============================
+
+        DetailUnite detailUnite = DetailUnite.builder()
+                .unite(unite)
+                .user(user)
+                .isActive(true)
+                .build();
+
+        detailUniteRepository.save(detailUnite);
+
+        // ==============================
+        // SAVE MISSION UNITE
+        // ==============================
+
+        MissionUnite missionUnite = MissionUnite.builder()
+                .mission(mission)
+                .unite(unite)
+                .isActive(true)
+                .build();
+
+        missionUniteRepository.save(missionUnite);
+
+        // ==============================
+        // SAVE EQUIPE UNITE
+        // ==============================
+
+        EquipeUnite equipeUnite = EquipeUnite.builder()
+                .equipe(equipe)
+                .unite(unite)
+                .isActive(true)
+                .build();
+
+        equipeUniteRepository.save(equipeUnite);
+    }
+}
