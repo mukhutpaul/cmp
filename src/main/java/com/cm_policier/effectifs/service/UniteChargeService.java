@@ -3,6 +3,7 @@ package com.cm_policier.effectifs.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cm_policier.effectifs.config.BusinessException;
 import com.cm_policier.effectifs.dto.ChargerUniteRequest;
 import com.cm_policier.effectifs.model.DetailUnite;
 import com.cm_policier.effectifs.model.Equipe;
@@ -42,19 +43,19 @@ public class UniteChargeService {
         // ==============================
 
         if (req.uniteId() == null) {
-            throw new RuntimeException("Unité obligatoire");
+            throw new BusinessException("Unité obligatoire");
         }
 
         if (req.missionId() == null) {
-            throw new RuntimeException("Mission obligatoire");
+            throw new BusinessException("Mission obligatoire");
         }
 
         if (req.equipeId() == null) {
-            throw new RuntimeException("Équipe obligatoire");
+            throw new BusinessException("Équipe obligatoire");
         }
 
         if (req.userId() == null) {
-            throw new RuntimeException("Utilisateur obligatoire");
+            throw new BusinessException("Utilisateur obligatoire");
         }
 
         // ==============================
@@ -63,20 +64,20 @@ public class UniteChargeService {
 
         Unite unite = uniteRepository.findById(req.uniteId())
                 .orElseThrow(() ->
-                        new RuntimeException("Unité introuvable"));
+                        new BusinessException("Unité introuvable"));
 
         Mission mission = missionRepository.findById(req.missionId())
                 .orElseThrow(() ->
-                        new RuntimeException("Mission introuvable"));
+                        new BusinessException("Mission introuvable"));
 
         Equipe equipe = equipeRepository.findById(req.equipeId())
                 .orElseThrow(() ->
-                        new RuntimeException("Équipe introuvable"));
+                        new BusinessException("Équipe introuvable"));
 
         // ⚠️ USER PAR ID
         User user = userRepository.findById(req.userId())
                 .orElseThrow(() ->
-                        new RuntimeException("Utilisateur introuvable"));
+                        new BusinessException("Utilisateur introuvable"));
 
         // ==============================
         // ANTI DOUBLON
@@ -86,7 +87,7 @@ public class UniteChargeService {
                 detailUniteRepository.existsByUniteId(unite.getId());
 
         if (uniteExisteDansDetail) {
-            throw new RuntimeException(
+            throw new BusinessException(
                     "Cette unité est déjà chargée"
             );
         }
@@ -99,7 +100,7 @@ public class UniteChargeService {
                         );
 
         if (missionExiste) {
-            throw new RuntimeException(
+            throw new BusinessException(
                     "Cette unité est déjà liée à cette mission"
             );
         }
@@ -112,7 +113,7 @@ public class UniteChargeService {
                         );
 
         if (equipeExiste) {
-            throw new RuntimeException(
+            throw new BusinessException(
                     "Cette unité est déjà liée à cette équipe"
             );
         }
