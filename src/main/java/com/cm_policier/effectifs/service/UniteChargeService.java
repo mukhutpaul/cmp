@@ -153,5 +153,8 @@ public class UniteChargeService {
                 .build();
 
         equipeUniteRepository.save(equipeUnite);
+        unite.setEquipeaf("Equipe-"+equipeUnite.getEquipe().getUser().getUsername()+" Ctr:"+detailUnite.getUser().getUsername()+" Mission: "+missionUnite.getMission().getZone());
+        uniteRepository.save(unite);
+
     }
 }

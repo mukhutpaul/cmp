@@ -72,6 +72,14 @@ public class UniteController {
         }
     }
 
+    @GetMapping("/exists/{id}")
+    public ResponseEntity<Map<String, Boolean>> checkUnite(@PathVariable Long id) {
+
+        boolean exists = uniteService.verifierUnite(id);
+
+        return ResponseEntity.ok(Map.of("exists", exists));
+    }
+
     // =========================
     // UPDATE
     // =========================

@@ -23,4 +23,7 @@ public class Unite {
 
     @Column(columnDefinition = "TEXT")
     private String signature;
+
+    @Column(nullable = true)
+    private String equipeaf;
 }
