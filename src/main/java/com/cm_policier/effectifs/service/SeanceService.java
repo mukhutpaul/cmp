@@ -1,11 +1,16 @@
 package com.cm_policier.effectifs.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.cm_policier.effectifs.dto.SeanceRequest;
+import com.cm_policier.effectifs.model.Mission;
 import com.cm_policier.effectifs.model.Seance;
 import com.cm_policier.effectifs.model.User;
+import com.cm_policier.effectifs.repository.MissionRepository;
 import com.cm_policier.effectifs.repository.SeanceRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
 
@@ -17,19 +22,26 @@ public class SeanceService {
     @Autowired
     private UserRepository userRepository;
 
-    public Seance create(Seance seance, String username) {
+    @Autowired
+    private MissionRepository missionRepository;
 
-        User user = userRepository.findByUsername(username).
-        orElseThrow(() -> new RuntimeException("User introuvable"));;
+    public Seance create(SeanceRequest request) {
 
-        seance.setChefEquipe(user);
-        seance.setDateSeance(LocalDate.now());
+        User user = userRepository.findById(request.getChefEquipeId())
+                .orElseThrow(() -> new RuntimeException("User introuvable"));
 
-        return seanceRepository.save(seance);
-    }
+        Mission mission = missionRepository.findById(request.getMissionId())
+                .orElseThrow(() -> new RuntimeException("Mission introuvable"));
 
-    public List<Seance> getAll() {
-        return seanceRepository.findAll();
+        Seance s = new Seance();
+
+        s.setChefEquipe(user);
+        s.setMission(mission);
+        s.setDateSeance(LocalDateTime.now());
+        s.setDateFin(null);
+        s.setIsActive(false);
+
+        return seanceRepository.save(s);
     }
 
     public Seance getById(Long id) {
@@ -41,8 +53,7 @@ public class SeanceService {
         Seance existing = getById(id);
 
         existing.setDateSeance(seance.getDateSeance());
-        existing.setHeureDebut(seance.getHeureDebut());
-        existing.setHeureFin(seance.getHeureFin());
+        existing.setDateFin(seance.getDateFin());
         existing.setChefEquipe(seance.getChefEquipe());
         existing.setMission(seance.getMission());
         existing.setIsActive(seance.getIsActive());
@@ -60,6 +71,40 @@ public class SeanceService {
 
     public List<Seance> getByChef(Long chefId) {
         return seanceRepository.findByChefEquipeId(chefId);
+    }
+
+    public List<Seance> getAll() {
+        return seanceRepository.findAll();
+    }
+
+    public Seance start(Long id) {
+        Seance s = getById(id);
+
+        if (Boolean.TRUE.equals(s.getIsActive())) {
+            throw new RuntimeException("Séance déjà active");
+        }
+
+        s.setIsActive(true);
+        s.setDateSeance(LocalDateTime.now());
+
+        return seanceRepository.save(s);
+    }
+
+    public Seance finish(Long id) {
+
+        Seance s = getById(id);
+
+        if (!Boolean.TRUE.equals(s.getIsActive())) {
+            throw new RuntimeException("Séance pas active");
+        }
+
+        // fermeture séance
+        s.setIsActive(false);
+
+        // date réelle de fin
+        s.setDateFin(LocalDateTime.now());
+
+        return seanceRepository.save(s);
     }
 
 }

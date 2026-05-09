@@ -1,6 +1,7 @@
 package com.cm_policier.effectifs.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,10 +26,9 @@ public class Seance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate dateSeance;
+    private LocalDateTime dateSeance;
 
-    private String heureDebut;
-    private String heureFin;
+    private LocalDateTime dateFin;
 
     @ManyToOne
     private User chefEquipe;

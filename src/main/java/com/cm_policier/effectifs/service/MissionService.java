@@ -42,10 +42,17 @@ public class MissionService {
         return missionRepository.save(existing);
     }
 
+    // public void delete(Long id) {
+    // Mission mission = getById(id);
+    // mission.setIsActive(false); // soft delete
+    // missionRepository.save(mission);
+    // }
+
     public void delete(Long id) {
-        Mission mission = getById(id);
-        mission.setIsActive(false); // soft delete
-        missionRepository.save(mission);
+        Mission mission = missionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Mission introuvable"));
+
+        missionRepository.delete(mission);
     }
 
     public Mission startMission(Long id) {

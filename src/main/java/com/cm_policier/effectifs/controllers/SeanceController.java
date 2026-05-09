@@ -1,12 +1,12 @@
 package com.cm_policier.effectifs.controllers;
 
-import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.cm_policier.effectifs.dto.SeanceRequest;
 import com.cm_policier.effectifs.model.Seance;
 import com.cm_policier.effectifs.service.SeanceService;
 
@@ -18,11 +18,18 @@ public class SeanceController {
     private SeanceService seanceService;
 
     @PostMapping
-    public ResponseEntity<Seance> create(@RequestBody Seance seance,
-            Principal principal) {
+    public ResponseEntity<Seance> create(@RequestBody SeanceRequest request) {
+        return ResponseEntity.ok(seanceService.create(request));
+    }
 
-        return ResponseEntity.ok(
-                seanceService.create(seance, principal.getName()));
+    @PutMapping("/{id}/start")
+    public ResponseEntity<Seance> start(@PathVariable Long id) {
+        return ResponseEntity.ok(seanceService.start(id));
+    }
+
+    @PutMapping("/{id}/finish")
+    public ResponseEntity<Seance> finish(@PathVariable Long id) {
+        return ResponseEntity.ok(seanceService.finish(id));
     }
 
     @GetMapping
