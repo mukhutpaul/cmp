@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.cm_policier.effectifs.model.Policier;
 import com.cm_policier.effectifs.service.PolicierService;
+import java.time.LocalDate;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -33,6 +33,31 @@ public class PolicierController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         return service.getAll(page, size);
+    }
+
+    // ========================= SEARCH BY MATRICULE =========================
+
+    // SEARCH BY IDENTITE
+    @GetMapping("/identite")
+    public Policier getByIdentite(
+
+            @RequestParam String nom,
+            @RequestParam String postnom,
+            @RequestParam String prenom,
+            @RequestParam LocalDate dateNaissance
+
+    ) {
+
+        return service.findByIdentite(
+                nom,
+                postnom,
+                prenom,
+                dateNaissance);
+    }
+
+    @GetMapping("/matricule/{matricule}")
+    public Policier getByMatricule(@PathVariable String matricule) {
+        return service.findByMatricule(matricule);
     }
 
     // READ ONE

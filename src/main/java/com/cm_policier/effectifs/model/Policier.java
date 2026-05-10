@@ -31,6 +31,7 @@ public class Policier {
     @Column(length = 1)
     private String sexe;
 
+    @Column(name = "date_naissance")
     private LocalDate dateNaissance;
     private String lieuNaissance;
     private String villeNaissance;

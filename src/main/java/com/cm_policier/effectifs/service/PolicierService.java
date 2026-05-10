@@ -2,11 +2,11 @@ package com.cm_policier.effectifs.service;
 
 import lombok.RequiredArgsConstructor;
 
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import java.time.LocalDate;
 
 import com.cm_policier.effectifs.model.Policier;
 import com.cm_policier.effectifs.repository.PolicierRepository;
@@ -68,4 +68,28 @@ public class PolicierService {
 
         repository.delete(policier);
     }
+
+  
+    public Policier findByMatricule(String matricule) {
+        return repository.findByMatricule(matricule)
+                .orElseThrow(() -> new RuntimeException("Policier introuvable"));
+    }
+
+    public Policier findByIdentite(
+        String nom,
+        String postnom,
+        String prenom,
+        LocalDate dateNaissance
+) {
+
+    return repository
+            .findByNomAndPostnomAndPrenomAndDateNaissance(
+                    nom,
+                    postnom,
+                    prenom,
+                    dateNaissance
+            )
+            .orElseThrow(() ->
+                    new RuntimeException("Policier introuvable"));
+}
 }

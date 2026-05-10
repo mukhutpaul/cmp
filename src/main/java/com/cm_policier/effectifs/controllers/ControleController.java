@@ -4,9 +4,12 @@ import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.service.ControleService;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -47,5 +50,20 @@ public class ControleController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
+    }
+
+    @GetMapping("/search/identite")
+    public List<Controle> searchByIdentite(
+            @RequestParam(required = false) String nom,
+            @RequestParam(required = false) String postnom,
+            @RequestParam(required = false) String prenom,
+
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateNaissance) {
+
+        return service.searchByIdentite(
+                nom,
+                postnom,
+                prenom,
+                dateNaissance);
     }
 }

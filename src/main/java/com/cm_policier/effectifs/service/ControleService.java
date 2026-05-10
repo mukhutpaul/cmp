@@ -4,11 +4,13 @@ import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.repository.ControleRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -65,4 +67,18 @@ public class ControleService {
     public void delete(UUID id) {
         repository.deleteById(id);
     }
+
+public List<Controle> searchByIdentite(
+        String nom,
+        String postnom,
+        String prenom,
+        LocalDate dateNaissance
+) {
+    return repository.searchByPolicierIdentite(
+            nom,
+            postnom,
+            prenom,
+            dateNaissance
+    );
+}
 }
