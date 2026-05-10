@@ -73,4 +73,15 @@ public class MissionUniteService {
         mu.setIsActive(false);
         repository.save(mu);
     }
+
+    public List<Unite> getUnitesByMission(Long missionId) {
+
+    List<MissionUnite> relations =
+            repository.findByMissionId(missionId);
+
+    return relations.stream()
+            .map(MissionUnite::getUnite)
+            .toList();
+}
+  
 }

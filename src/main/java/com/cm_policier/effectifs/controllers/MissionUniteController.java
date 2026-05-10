@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cm_policier.effectifs.model.MissionUnite;
+import com.cm_policier.effectifs.model.Unite;
 import com.cm_policier.effectifs.service.MissionUniteService;
 
 import lombok.RequiredArgsConstructor;
@@ -23,13 +24,13 @@ import lombok.RequiredArgsConstructor;
 public class MissionUniteController {
 
     private final MissionUniteService service;
+    private final MissionUniteService missionUniteService;
 
     // CREATE
     @PostMapping
     public ResponseEntity<MissionUnite> create(
             @RequestParam Long missionId,
-            @RequestParam Long uniteId
-    ) {
+            @RequestParam Long uniteId) {
         return ResponseEntity.ok(service.create(missionId, uniteId));
     }
 
@@ -50,9 +51,16 @@ public class MissionUniteController {
     public ResponseEntity<MissionUnite> update(
             @PathVariable Long id,
             @RequestParam Long missionId,
-            @RequestParam Long uniteId
-    ) {
+            @RequestParam Long uniteId) {
         return ResponseEntity.ok(service.update(id, missionId, uniteId));
+    }
+
+    @GetMapping("/{missionId}/unites")
+    public ResponseEntity<List<Unite>> getUnitesByMission(
+            @PathVariable Long missionId) {
+
+        return ResponseEntity.ok(
+                missionUniteService.getUnitesByMission(missionId));
     }
 
     // DELETE (soft delete)
