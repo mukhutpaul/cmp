@@ -3,6 +3,8 @@ package com.cm_policier.effectifs.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @Setter
@@ -12,8 +14,9 @@ import lombok.*;
 public class Document {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "UUID")
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "controle_id")
@@ -24,5 +27,5 @@ public class Document {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String imageUrl; // chemin image
+    private String imageUrl;
 }

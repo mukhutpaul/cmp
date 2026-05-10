@@ -1,18 +1,10 @@
 package com.cm_policier.effectifs.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Getter
@@ -23,8 +15,9 @@ import lombok.Setter;
 public class Seance {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "UUID", updatable = false, nullable = false)
+    private UUID id;
 
     private LocalDateTime dateSeance;
 
