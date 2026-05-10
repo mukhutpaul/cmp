@@ -1,6 +1,7 @@
 package com.cm_policier.effectifs.controllers;
 
 import com.cm_policier.effectifs.model.DetailUnite;
+import com.cm_policier.effectifs.model.Unite;
 import com.cm_policier.effectifs.service.DetailUniteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -41,5 +42,14 @@ public class DetailUniteController {
     public ResponseEntity<?> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.ok().build();
+    }
+
+     @GetMapping("/user/{userId}/unites")
+    public ResponseEntity<List<Unite>> getUnitesByUser(
+            @PathVariable Long userId
+    ) {
+        return ResponseEntity.ok(
+                service.getUnitesByUser(userId)
+        );
     }
 }

@@ -1,6 +1,7 @@
 package com.cm_policier.effectifs.service;
 
 import com.cm_policier.effectifs.model.DetailUnite;
+import com.cm_policier.effectifs.model.Unite;
 import com.cm_policier.effectifs.repository.DetailUniteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,4 +47,14 @@ public class DetailUniteService {
         d.setIsActive(false); // soft delete
         repository.save(d);
     }
+
+    public List<Unite> getUnitesByUser(Long userId) {
+
+    List<DetailUnite> relations =
+            repository.findByUserId(userId);
+
+    return relations.stream()
+            .map(DetailUnite::getUnite)
+            .toList();
+}
 }
