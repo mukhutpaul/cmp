@@ -1,5 +1,4 @@
 
-/*
 package com.cm_policier.effectifs.config;
 
 import com.cm_policier.effectifs.model.Policier;
@@ -101,4 +100,3 @@ public class PolicierSeeder implements CommandLineRunner {
         System.out.println("===== 200000 policiers générés =====");
     }
 }
-*/

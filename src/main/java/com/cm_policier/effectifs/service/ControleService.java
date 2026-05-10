@@ -3,6 +3,9 @@ package com.cm_policier.effectifs.service;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.repository.ControleRepository;
 import lombok.RequiredArgsConstructor;
+
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,17 +28,17 @@ public class ControleService {
     }
 
     /* ========================= READ ONE ========================= */
-    public Controle getById(Long id) {
+    public Controle getById(UUID id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Controle introuvable"));
     }
 
     /* ========================= UPDATE ========================= */
-    public Controle update(Long id, Controle data) {
+    public Controle update(UUID id, Controle data) {
         Controle c = getById(id);
 
         c.setUid(data.getUid());
-        c.setPerson(data.getPerson());
+        c.setPolicier(data.getPolicier());
         c.setPresent(data.getPresent());
         c.setJustifie(data.getJustifie());
         c.setSituation(data.getSituation());
@@ -49,7 +52,7 @@ public class ControleService {
     }
 
     /* ========================= DELETE ========================= */
-    public void delete(Long id) {
+    public void delete(UUID id) {
         repository.deleteById(id);
     }
 }

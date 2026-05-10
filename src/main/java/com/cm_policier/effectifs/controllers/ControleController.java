@@ -2,6 +2,9 @@ package com.cm_policier.effectifs.controllers;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.service.ControleService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,19 +32,19 @@ public class ControleController {
 
     /* ========================= READ ONE ========================= */
     @GetMapping("/{id}")
-    public Controle getById(@PathVariable Long id) {
+    public Controle getById(@PathVariable UUID id) {
         return service.getById(id);
     }
 
     /* ========================= UPDATE ========================= */
     @PutMapping("/{id}")
-    public Controle update(@PathVariable Long id, @RequestBody Controle controle) {
+    public Controle update(@PathVariable UUID id, @RequestBody Controle controle) {
         return service.update(id, controle);
     }
 
     /* ========================= DELETE ========================= */
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable UUID id) {
         service.delete(id);
     }
 }

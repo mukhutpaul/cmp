@@ -22,7 +22,7 @@ public class Controle {
     private String uid;
 
     @ManyToOne
-    private Person person;
+    private Policier policier;
 
     private Boolean present;
     private Boolean justifie;
