@@ -1,4 +1,5 @@
 package com.cm_policier.effectifs.controllers;
+
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.service.ControleService;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,9 @@ public class ControleController {
     @GetMapping
     public Page<Controle> getAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
-    ) {
-        return service.getAll(page, size);
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String search) {
+        return service.getAll(page, size, search);
     }
 
     /* ========================= READ ONE ========================= */

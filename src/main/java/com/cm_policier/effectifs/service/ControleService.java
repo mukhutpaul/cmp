@@ -23,8 +23,18 @@ public class ControleService {
     }
 
     /* ========================= READ ALL (PAGINATION) ========================= */
-    public Page<Controle> getAll(int page, int size) {
-        return repository.findAll(PageRequest.of(page, size));
+    public Page<Controle> getAll(int page, int size, String search) {
+
+        PageRequest pageable = PageRequest.of(
+                page,
+                size,
+                org.springframework.data.domain.Sort.by("createdAt").descending());
+
+        if (search == null || search.isBlank()) {
+            return repository.findAll(pageable);
+        }
+
+        return repository.search(search, pageable);
     }
 
     /* ========================= READ ONE ========================= */
