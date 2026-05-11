@@ -46,4 +46,5 @@ public interface ControleRepository extends JpaRepository<Controle, UUID>, Contr
     long countByJustifieTrue();
 
     long countByJustifieFalse();
+    long countByPresentFalseAndJustifieFalse();
 }

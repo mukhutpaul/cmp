@@ -20,7 +20,7 @@ public class DashboardService {
         long totalControles = controleRepository.count();
         long totalPresent = controleRepository.countByPresentTrue();
         long totalJustifies = controleRepository.countByJustifieTrue();
-        long totalNonJustifies = controleRepository.countByJustifieFalse();
+        long totalNonJustifies =controleRepository.countByPresentFalseAndJustifieFalse();
 
         return DashboardStatsDTO.builder()
                 .totalPoliciers(policierRepository.count())
