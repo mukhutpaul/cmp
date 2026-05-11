@@ -38,4 +38,12 @@ public interface ControleRepository extends JpaRepository<Controle, UUID>, Contr
             @Param("postnom") String postnom,
             @Param("prenom") String prenom,
             @Param("dateNaissance") LocalDate dateNaissance);
+
+    long count();
+
+    long countByPresentTrue();
+
+    long countByJustifieTrue();
+
+    long countByJustifieFalse();
 }
