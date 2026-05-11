@@ -4,15 +4,17 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import com.cm_policier.effectifs.model.Session;
 
 public interface SessionRepository extends JpaRepository<Session, UUID> {
 
-    Optional<Session> findByUserIdAndActiveTrue(Long userId);
-
-    Optional<Session> findBySeanceIdAndActiveTrue(Long seanceId);
-
-    Optional<Session> findByControleurIdAndIsActiveTrue(Long controleurId);
-
+    // 🔵 session active globale
     Optional<Session> findByIsActiveTrue();
+
+    // 🔵 session active par contrôleur (relation ManyToOne => controleur.id)
+    Optional<Session> findByControleur_IdAndIsActiveTrue(Long controleurId);
+
+    // 🔵 session active par séance
+    Optional<Session> findBySeance_IdAndIsActiveTrue(UUID seanceId);
 }

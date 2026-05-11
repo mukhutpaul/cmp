@@ -19,7 +19,7 @@ public class SessionService {
     private SessionRepository sessionRepository;
 
     /**
-     * 🟢 CRÉER SESSION
+     * 🟢 CREATE SESSION
      */
     public Session createSession(User controleur, Seance seance) {
 
@@ -36,7 +36,7 @@ public class SessionService {
     }
 
     /**
-     * 🔵 OBTENIR SESSION ACTIVE GLOBALE
+     * 🔵 GET ACTIVE SESSION GLOBAL
      */
     public Session getActiveSession() {
         return sessionRepository.findByIsActiveTrue()
@@ -44,7 +44,7 @@ public class SessionService {
     }
 
     /**
-     * 🔴 FERMER SESSION PAR ID
+     * 🔴 CLOSE SESSION BY ID
      */
     public Session closeSession(UUID sessionId) {
 
@@ -62,11 +62,12 @@ public class SessionService {
     }
 
     /**
-     * 🔴 FERMER SESSION ACTIVE D'UN USER
+     * 🔴 CLOSE SESSION BY USER
      */
     public Session closeActiveSessionByUser(Long userId) {
 
-        Session session = sessionRepository.findByControleurIdAndIsActiveTrue(userId)
+        Session session = sessionRepository
+                .findByControleur_IdAndIsActiveTrue(userId)
                 .orElseThrow(() -> new RuntimeException("Aucune session active"));
 
         session.setIsActive(false);
