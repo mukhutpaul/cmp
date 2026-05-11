@@ -7,11 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.cm_policier.effectifs.dto.ApiResponse;
+import com.cm_policier.effectifs.dto.MobileLoginRequest;
 import com.cm_policier.effectifs.dto.UpdateUserRequest;
+import com.cm_policier.effectifs.model.DetailUnite;
 import com.cm_policier.effectifs.model.Mission;
+import com.cm_policier.effectifs.model.Seance;
+import com.cm_policier.effectifs.model.Session;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.security.JwtUtil;
 import com.cm_policier.effectifs.service.MissionService;
+import com.cm_policier.effectifs.service.SeanceService;
+import com.cm_policier.effectifs.service.SessionService;
 import com.cm_policier.effectifs.service.UserService;
 
 @RestController
@@ -22,9 +29,9 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-
     @Autowired
     private JwtUtil jwtUtil;
+    private SessionService sessionService;
 
     // =========================
     // REGISTER
@@ -61,7 +68,7 @@ public class AuthController {
 
             return ResponseEntity.ok(Map.of(
                     "token", token,
-                    "id",user.getId(),
+                    "id", user.getId(),
                     "username", user.getUsername(),
                     "email", user.getEmail(),
                     "noms", user.getNoms(),
@@ -77,56 +84,78 @@ public class AuthController {
         }
     }
 
-    // =========================
-    // GET ALL USERS
-    // =========================
-    @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
+    @Autowired
+    private SeanceService seanceService;
 
-        // 🔒 hide passwords
-        users.forEach(u -> u.setPassword(null));
+    @PostMapping("/mobile/login")
+    public ResponseEntity<?> mobileLogin(@RequestBody MobileLoginRequest request) {
 
-        return ResponseEntity.ok(users);
-    }
-
-    // =========================
-    // GET USER BY ID
-    // =========================
-    @GetMapping("/users/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Long id) {
         try {
-            User user = userService.getUserById(id);
-            user.setPassword(null);
 
-            return ResponseEntity.ok(user);
+            // 1. séance active obligatoire
+            Seance seanceActive = seanceService.getActiveSeance();
 
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body(Map.of(
-                    "message", "User not found",
-                    "error", e.getMessage()));
+            if (seanceActive == null) {
+                return ResponseEntity.status(403).body(
+                        new ApiResponse<>(false, "Aucune séance active", null));
+            }
+
+            // 2. login user
+            User user = userService.login(request.getUsername(), request.getPassword());
+
+            // 3. contrôle rôle
+            if (user.getProfile() == null ||
+                    !user.getProfile().getName().equals("CONTROLEUR")) {
+
+                return ResponseEntity.status(403).body(
+                        new ApiResponse<>(false, "Accès refusé : contrôleurs uniquement", null));
+            }
+
+            // 4. token
+            String token = jwtUtil.generateToken(user.getUsername());
+
+            // 5. unités
+            List<DetailUnite> unites = userService.getUnitesByUserId(user.getId());
+
+            // 6. SESSION ACTIVE (IMPORTANT)
+            Session session = sessionService.createSession(user, seanceActive);
+
+            // 7. RESPONSE PROPRE
+            Map<String, Object> payload = Map.of(
+                    "token", token,
+                    "user", Map.of(
+                            "id", user.getId(),
+                            "username", user.getUsername(),
+                            "noms", user.getNoms(),
+                            "profile", user.getProfile().getName()),
+                    "seance", seanceActive,
+                    "session", session, // 🔥 ajouté
+                    "unites", unites);
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Connexion réussie", payload));
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity.status(401).body(
+                    new ApiResponse<>(false, "Identifiants invalides", e.getMessage()));
         }
     }
 
-    // =========================
-    // UPDATE USER (PATCH)
-    // =========================
-    @PatchMapping("/users/{id}")
-    public ResponseEntity<?> updateUser(
-            @PathVariable Long id,
-            @RequestBody UpdateUserRequest request) {
+    @PostMapping("/mobile/logout/{userId}")
+    public ResponseEntity<?> logout(@PathVariable Long userId) {
+
         try {
-            User updated = userService.updateUser(id, request);
-            updated.setPassword(null);
 
-            return ResponseEntity.ok(Map.of(
-                    "message", "User updated successfully",
-                    "user", updated));
+            Session session = sessionService.closeActiveSessionByUser(userId);
 
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "message", "Update failed",
-                    "error", e.getMessage()));
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Session fermée", session));
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity.status(400).body(
+                    new ApiResponse<>(false, "Erreur fermeture session", e.getMessage()));
         }
     }
 

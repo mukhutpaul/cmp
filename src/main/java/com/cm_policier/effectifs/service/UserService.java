@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cm_policier.effectifs.dto.UpdateUserRequest;
+import com.cm_policier.effectifs.model.DetailUnite;
 import com.cm_policier.effectifs.model.Profile;
 import com.cm_policier.effectifs.model.User;
+import com.cm_policier.effectifs.repository.DetailUniteRepository;
 import com.cm_policier.effectifs.repository.ProfileRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
 
@@ -21,6 +23,8 @@ public class UserService {
 
     @Autowired
     private ProfileRepository profileRepository;
+     @Autowired
+    private DetailUniteRepository detailUniteRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -94,6 +98,9 @@ public class UserService {
         return userRepository.save(existing);
     }
 
+    public List<DetailUnite> getUnitesByUserId(Long userId) {
+    return detailUniteRepository.findByUserId(userId);
+}
     // =========================
     // DELETE USER
     // =========================

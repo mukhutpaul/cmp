@@ -1,6 +1,7 @@
 package com.cm_policier.effectifs.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +24,12 @@ public class SeanceController {
     }
 
     @PutMapping("/{id}/start")
-    public ResponseEntity<Seance> start(@PathVariable Long id) {
+    public ResponseEntity<Seance> start(@PathVariable UUID id) {
         return ResponseEntity.ok(seanceService.start(id));
     }
 
     @PutMapping("/{id}/finish")
-    public ResponseEntity<Seance> finish(@PathVariable Long id) {
+    public ResponseEntity<Seance> finish(@PathVariable UUID id) {
         return ResponseEntity.ok(seanceService.finish(id));
     }
 
@@ -38,17 +39,17 @@ public class SeanceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Seance> getById(@PathVariable Long id) {
+    public ResponseEntity<Seance> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(seanceService.getById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Seance> update(@PathVariable Long id, @RequestBody Seance seance) {
+    public ResponseEntity<Seance> update(@PathVariable UUID id, @RequestBody Seance seance) {
         return ResponseEntity.ok(seanceService.update(id, seance));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable UUID id) {
         seanceService.delete(id);
         return ResponseEntity.ok("Deleted successfully");
     }

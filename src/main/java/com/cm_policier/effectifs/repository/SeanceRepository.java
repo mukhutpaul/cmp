@@ -3,13 +3,17 @@ package com.cm_policier.effectifs.repository;
 
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.cm_policier.effectifs.model.Seance;
 
-public interface SeanceRepository extends JpaRepository<Seance, Long> {
+public interface SeanceRepository extends JpaRepository<Seance, UUID> {
 
     List<Seance> findByMissionId(Long missionId);
     List<Seance> findByChefEquipeId(Long chefId);
     List<Seance> findByIsActiveTrue();
+    Optional<Seance> findFirstByIsActiveTrueAndDateFinIsNull();
 }

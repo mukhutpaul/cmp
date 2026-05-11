@@ -3,6 +3,8 @@ package com.cm_policier.effectifs.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,12 +46,12 @@ public class SeanceService {
         return seanceRepository.save(s);
     }
 
-    public Seance getById(Long id) {
+    public Seance getById(UUID id) {
         return seanceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Seance not found"));
     }
 
-    public Seance update(Long id, Seance seance) {
+    public Seance update(UUID id, Seance seance) {
         Seance existing = getById(id);
 
         existing.setDateSeance(seance.getDateSeance());
@@ -61,23 +63,23 @@ public class SeanceService {
         return seanceRepository.save(existing);
     }
 
-  public void delete(Long id) {
+    public void delete(UUID id) {
 
-    Seance seance = seanceRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Séance introuvable"));
+        Seance seance = seanceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Séance introuvable"));
 
-    // 🚫 BLOQUAGE : séance active
-    if (Boolean.TRUE.equals(seance.getIsActive())) {
-        throw new RuntimeException("Impossible de supprimer une séance active");
+        // 🚫 BLOQUAGE : séance active
+        if (Boolean.TRUE.equals(seance.getIsActive())) {
+            throw new RuntimeException("Impossible de supprimer une séance active");
+        }
+
+        // 🚫 BLOQUAGE : séance clôturée
+        if (seance.getDateFin() != null) {
+            throw new RuntimeException("Impossible de supprimer une séance clôturée");
+        }
+
+        seanceRepository.deleteById(id);
     }
-
-    // 🚫 BLOQUAGE : séance clôturée
-    if (seance.getDateFin() != null) {
-        throw new RuntimeException("Impossible de supprimer une séance clôturée");
-    }
-
-    seanceRepository.deleteById(id);
-}
 
     public List<Seance> getByMission(Long missionId) {
         return seanceRepository.findByMissionId(missionId);
@@ -91,7 +93,7 @@ public class SeanceService {
         return seanceRepository.findAll();
     }
 
-    public Seance start(Long id) {
+    public Seance start(UUID id) {
         Seance s = getById(id);
 
         if (Boolean.TRUE.equals(s.getIsActive())) {
@@ -104,7 +106,12 @@ public class SeanceService {
         return seanceRepository.save(s);
     }
 
-    public Seance finish(Long id) {
+    public Seance getActiveSeance() {
+        return seanceRepository.findFirstByIsActiveTrueAndDateFinIsNull()
+                .orElse(null);
+    }
+
+    public Seance finish(UUID id) {
 
         Seance s = getById(id);
 
