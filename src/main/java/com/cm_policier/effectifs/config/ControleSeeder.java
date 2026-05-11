@@ -1,6 +1,5 @@
 package com.cm_policier.effectifs.config;
 
-
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Person;
 import com.cm_policier.effectifs.model.Policier;
@@ -49,7 +48,6 @@ public class ControleSeeder implements CommandLineRunner {
             Policier policier = policiers.get(random.nextInt(policiers.size()));
 
             Controle controle = Controle.builder()
-                    .id(UUID.randomUUID())
                     .uid("CTRL-" + (10000 + i))
 
                     .policier(policier)
@@ -75,4 +73,3 @@ public class ControleSeeder implements CommandLineRunner {
         System.out.println("🚀 2000 contrôles générés avec succès !");
     }
 }
-

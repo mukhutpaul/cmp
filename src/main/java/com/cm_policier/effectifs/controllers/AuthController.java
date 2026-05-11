@@ -9,14 +9,11 @@ import org.springframework.web.bind.annotation.*;
 
 import com.cm_policier.effectifs.dto.ApiResponse;
 import com.cm_policier.effectifs.dto.MobileLoginRequest;
-import com.cm_policier.effectifs.dto.UpdateUserRequest;
 import com.cm_policier.effectifs.model.DetailUnite;
-import com.cm_policier.effectifs.model.Mission;
 import com.cm_policier.effectifs.model.Seance;
 import com.cm_policier.effectifs.model.Session;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.security.JwtUtil;
-import com.cm_policier.effectifs.service.MissionService;
 import com.cm_policier.effectifs.service.SeanceService;
 import com.cm_policier.effectifs.service.SessionService;
 import com.cm_policier.effectifs.service.UserService;
