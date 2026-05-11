@@ -67,15 +67,18 @@ public class AuthController {
             String token = jwtUtil.generateToken(user.getUsername());
 
             return ResponseEntity.ok(Map.of(
-                    "token", token,
-                    "id", user.getId(),
-                    "username", user.getUsername(),
-                    "email", user.getEmail(),
-                    "noms", user.getNoms(),
+                "token", token,
+                "id", user.getId(),
+                "username", user.getUsername(),
+                "email", user.getEmail(),
+                "noms", user.getNoms(),
 
-                    "profile", user.getProfile() != null
-                            ? user.getProfile().getName()
-                            : null));
+                "profile", user.getProfile() != null
+                        ? user.getProfile().getName()
+                        : null,
+
+                // 🔥 ENTITÉ USER COMPLETE
+                "user", user));
 
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(Map.of(
@@ -176,5 +179,28 @@ public class AuthController {
                     "error", e.getMessage()));
         }
     }
+
+    // =========================
+// GET ALL USERS
+// =========================
+@GetMapping("/users")
+public ResponseEntity<?> getUsers() {
+
+    try {
+
+        List<User> users = userService.getAllUsers();
+
+        // Masquer les mots de passe
+        users.forEach(user -> user.setPassword(null));
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Liste des utilisateurs", users));
+
+    } catch (Exception e) {
+
+        return ResponseEntity.status(500).body(
+                new ApiResponse<>(false, "Erreur récupération utilisateurs", e.getMessage()));
+    }
+}
 
 }

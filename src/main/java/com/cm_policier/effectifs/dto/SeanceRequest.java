@@ -1,6 +1,4 @@
 package com.cm_policier.effectifs.dto;
-import java.util.UUID;
-
 import lombok.Data;
 
 @Data
