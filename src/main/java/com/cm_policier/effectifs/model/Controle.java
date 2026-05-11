@@ -23,6 +23,7 @@ public class Controle {
 
     @ManyToOne
     private Policier policier;
+    
 
     private Boolean present;
     private Boolean justifie;
