@@ -1,5 +1,7 @@
 package com.cm_policier.effectifs.service;
 import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +22,12 @@ public class DocumentService {
         return repository.findAll();
     }
 
-    public Document getById(Long id) {
+    public Document getById(UUID id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
     }
 
-    public Document update(Long id, Document document) {
+    public Document update(UUID id, Document document) {
         Document existing = getById(id);
 
         existing.setTitle(document.getTitle());
@@ -36,7 +38,7 @@ public class DocumentService {
         return repository.save(existing);
     }
 
-    public void delete(Long id) {
+    public void delete(UUID id) {
         repository.deleteById(id);
     }
 }

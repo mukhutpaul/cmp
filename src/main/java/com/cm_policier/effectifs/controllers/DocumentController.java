@@ -1,6 +1,7 @@
 package com.cm_policier.effectifs.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,17 +28,17 @@ public class DocumentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Document> getById(@PathVariable Long id) {
+    public ResponseEntity<Document> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(service.getById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Document> update(@PathVariable Long id, @RequestBody Document document) {
+    public ResponseEntity<Document> update(@PathVariable UUID id, @RequestBody Document document) {
         return ResponseEntity.ok(service.update(id, document));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable UUID id) {
         service.delete(id);
         return ResponseEntity.ok("Deleted successfully");
     }

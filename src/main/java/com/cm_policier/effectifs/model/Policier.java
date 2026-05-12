@@ -42,9 +42,11 @@ public class Policier {
     private String couleurYeux;
     private String telephone;
     private String email;
+    private String unite;
 
     @Column(columnDefinition = "TEXT")
     private String adresse;
+
 
     private String commune;
     private LocalDate dateEntreePolice;
