@@ -23,7 +23,7 @@ public class UserService {
 
     @Autowired
     private ProfileRepository profileRepository;
-     @Autowired
+    @Autowired
     private DetailUniteRepository detailUniteRepository;
 
     @Autowired
@@ -99,8 +99,9 @@ public class UserService {
     }
 
     public List<DetailUnite> getUnitesByUserId(Long userId) {
-    return detailUniteRepository.findByUserId(userId);
-}
+        return detailUniteRepository.findByUser_Id(userId);
+    }
+
     // =========================
     // DELETE USER
     // =========================
@@ -109,5 +110,19 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         userRepository.delete(user);
+    }
+
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+    }
+
+    public List<User> findUsersByEquipe(Long equipeId) {
+
+        List<User> users = userRepository.findByEquipe_Id(equipeId);
+
+        users.forEach(u -> u.setPassword(null));
+
+        return users;
     }
 }

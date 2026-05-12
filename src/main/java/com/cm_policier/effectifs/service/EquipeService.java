@@ -39,4 +39,10 @@ public class EquipeService {
     public void delete(Long id) {
         equipeRepository.deleteById(id);
     }
+
+    public Equipe findByChef(Long chefId) {
+
+    return equipeRepository.findByChefEquipe_Id(chefId)
+            .orElseThrow(() -> new RuntimeException("Equipe introuvable"));
+}
 }

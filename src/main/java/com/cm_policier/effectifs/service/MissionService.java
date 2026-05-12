@@ -99,4 +99,10 @@ public class MissionService {
         return missionRepository.save(mission);
     }
 
+    public Mission findMissionByEquipe(Long equipeId) {
+
+        return missionRepository.findByEquipe_Id(equipeId)
+                .orElse(null);
+    }
+
 }

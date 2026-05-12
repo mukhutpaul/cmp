@@ -4,6 +4,8 @@ import com.cm_policier.effectifs.model.DetailUnite;
 import com.cm_policier.effectifs.model.Unite;
 import com.cm_policier.effectifs.repository.DetailUniteRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class DetailUniteService {
-
+    
     private final DetailUniteRepository repository;
 
     public DetailUnite create(DetailUnite d) {
@@ -50,11 +52,15 @@ public class DetailUniteService {
 
     public List<Unite> getUnitesByUser(Long userId) {
 
-    List<DetailUnite> relations =
-            repository.findByUserId(userId);
+        List<DetailUnite> relations = repository.findByUnite_Id(userId);
 
-    return relations.stream()
-            .map(DetailUnite::getUnite)
-            .toList();
-}
+        return relations.stream()
+                .map(DetailUnite::getUnite)
+                .toList();
+    }
+
+    public List<DetailUnite> findUnitesByEquipe(Long equipeId) {
+
+        return repository.findByUser_Id(equipeId);
+    }
 }

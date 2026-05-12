@@ -12,5 +12,7 @@ public interface DetailUniteRepository extends JpaRepository<DetailUnite, Long> 
 
     boolean existsByUnite_IdAndIsActiveTrue(Long uniteId);
 
-    List<DetailUnite> findByUserId(Long userId);
+    List<DetailUnite> findByUser_Id(Long userId);
+
+    List<DetailUnite> findByUnite_Id(Long uniteId);
 }
