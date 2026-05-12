@@ -9,5 +9,5 @@ import com.cm_policier.effectifs.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
-    List<User> findByEquipe_Id(Long equipeId);
+   
 }

@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cm_policier.effectifs.dto.UpdateUserRequest;
+import com.cm_policier.effectifs.model.DetailEquipe;
 import com.cm_policier.effectifs.model.DetailUnite;
 import com.cm_policier.effectifs.model.Profile;
 import com.cm_policier.effectifs.model.User;
+import com.cm_policier.effectifs.repository.DetailEquipeRepository;
 import com.cm_policier.effectifs.repository.DetailUniteRepository;
 import com.cm_policier.effectifs.repository.ProfileRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
@@ -22,9 +24,15 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private DetailEquipeRepository detailEquipeRepository;
+    
+
+    @Autowired
     private ProfileRepository profileRepository;
+
     @Autowired
     private DetailUniteRepository detailUniteRepository;
+    
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -117,12 +125,16 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
     }
 
-    public List<User> findUsersByEquipe(Long equipeId) {
+  public List<User> findUsersByEquipe(Long equipeId) {
 
-        List<User> users = userRepository.findByEquipe_Id(equipeId);
+    List<DetailEquipe> details = detailEquipeRepository.findByEquipe_Id(equipeId);
 
-        users.forEach(u -> u.setPassword(null));
+    List<User> users = details.stream()
+            .map(DetailEquipe::getUser)
+            .toList();
 
-        return users;
-    }
+    users.forEach(u -> u.setPassword(null));
+
+    return users;
+}
 }
