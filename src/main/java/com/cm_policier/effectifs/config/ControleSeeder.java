@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -45,33 +46,53 @@ public class ControleSeeder implements CommandLineRunner {
             Policier policier = policiers.get(random.nextInt(policiers.size()));
 
             boolean present = random.nextBoolean();
-            boolean justifie = present ? random.nextBoolean() : false;
+            boolean justifie = present && random.nextBoolean();
+
+            // 🔥 Construction du nom complet
+            String nomComplet = Stream.of(
+                            policier.getPrenom(),
+                            policier.getNom(),
+                            policier.getPostnom()
+                    )
+                    .filter(s -> s != null && !s.isBlank())
+                    .reduce((a, b) -> a + " " + b)
+                    .orElse("N/A");
 
             Controle controle = Controle.builder()
+
+                    // UID
                     .uid("CTRL-" + (10000 + i))
 
+                    // Relation
                     .policier(policier)
 
+                    // Statut
                     .present(present)
                     .justifie(justifie)
 
-                    .matricule("PNC-" + (1000 + random.nextInt(9000)))
-                    .unite("UNITE-" + (1 + random.nextInt(10)))
-                    .grade(random.nextBoolean() ? "CAPORAL" : "SERGENT")
-                    .sexe(random.nextBoolean() ? "M" : "F")
+                    // 🔥 Infos récupérées depuis Policier
+                    .matricule(policier.getMatricule())
+                    .grade(policier.getOriginAdminGrade())
+                    .sexe(policier.getSexe())
+                    .noms(nomComplet)
 
+                    // Observation
                     .observation(faker.lorem().sentence(6))
 
+                    // Flags
                     .isControle(true)
                     .isActif(true)
                     .isCmd(false)
 
+                    // Biométrie
                     .fingerprint(null)
                     .fingerprint4(null)
                     .face(null)
 
+                    // QR Code
                     .qrcode("QR-" + faker.number().digits(8))
 
+                    // Dates
                     .createdAt(LocalDateTime.now().minusDays(random.nextInt(30)))
                     .updatedAt(LocalDateTime.now())
 
