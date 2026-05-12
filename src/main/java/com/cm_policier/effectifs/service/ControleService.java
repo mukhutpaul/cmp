@@ -53,8 +53,6 @@ public class ControleService {
         c.setPolicier(data.getPolicier());
         c.setPresent(data.getPresent());
         c.setJustifie(data.getJustifie());
-        c.setSituation(data.getSituation());
-        c.setStatus(data.getStatus());
         c.setMatricule(data.getMatricule());
         c.setUnite(data.getUnite());
         c.setGrade(data.getGrade());

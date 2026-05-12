@@ -1,10 +1,8 @@
 package com.cm_policier.effectifs.config;
 
 import com.cm_policier.effectifs.model.Controle;
-import com.cm_policier.effectifs.model.Person;
 import com.cm_policier.effectifs.model.Policier;
 import com.cm_policier.effectifs.repository.ControleRepository;
-import com.cm_policier.effectifs.repository.PersonRepository;
 import com.cm_policier.effectifs.repository.PolicierRepository;
 import com.github.javafaker.Faker;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
+
 
 @Component
 @RequiredArgsConstructor
@@ -54,9 +52,6 @@ public class ControleSeeder implements CommandLineRunner {
 
                     .present(random.nextBoolean())
                     .justifie(random.nextBoolean())
-
-                    .situation(random.nextBoolean() ? "NORMAL" : "SUSPICION")
-                    .status(random.nextBoolean() ? "VALID" : "PENDING")
 
                     .matricule("PNC-" + (1000 + random.nextInt(9000)))
                     .unite("UNITE-" + (1 + random.nextInt(10)))

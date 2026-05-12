@@ -4,9 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.criteria.Predicate;
-
 import org.springframework.stereotype.Repository;
-
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Policier;
 
