@@ -1,7 +1,9 @@
-package com.cm_policier.effectifs.dto;
+package com.cm_policier.effectifs.client;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import com.cm_policier.effectifs.dto.SyncPayload;
 
 @Service
 public class RemoteSyncClient {

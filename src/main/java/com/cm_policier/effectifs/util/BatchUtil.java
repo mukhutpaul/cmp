@@ -1,4 +1,4 @@
-package com.cm_policier.effectifs.dto;
+package com.cm_policier.effectifs.util;
 
 import java.util.ArrayList;
 import java.util.List;

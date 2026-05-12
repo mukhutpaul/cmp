@@ -9,5 +9,6 @@ import com.cm_policier.effectifs.model.Mission;
 
 public interface MissionRepository extends JpaRepository<Mission, Long> {
     List<Mission> findByIsActiveTrue();
-    Optional<Mission> findByEquipe_Id(Long equipeId);
+    Optional<Mission> findByChargeMission_Id(Long userId);
+    
 }

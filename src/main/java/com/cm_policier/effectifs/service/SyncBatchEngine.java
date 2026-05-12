@@ -3,7 +3,7 @@ package com.cm_policier.effectifs.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cm_policier.effectifs.dto.RemoteSyncClient;
+import com.cm_policier.effectifs.client.RemoteSyncClient;
 import com.cm_policier.effectifs.dto.SyncPayload;
 
 @Service
