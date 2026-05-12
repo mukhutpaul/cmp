@@ -1,4 +1,3 @@
-
 package com.cm_policier.effectifs.config;
 
 import com.cm_policier.effectifs.model.Policier;
@@ -27,18 +26,21 @@ public class PolicierSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        // Eviter doublons si déjà rempli
+        // éviter re-seed
         if (repository.count() > 0) {
             System.out.println("Base déjà remplie.");
             return;
         }
 
-        int total = 200_000;
+        int total = 15_000; // 🔥 limite demandée
         int batchSize = 1000;
 
         List<Policier> batch = new ArrayList<>();
 
         for (int i = 1; i <= total; i++) {
+
+            // 🔥 génération unités cycliques unite1 → unite2000
+            String unite = "unite" + ((i % 2000) + 1);
 
             Policier policier = Policier.builder()
                     .matricule("PNC-" + i)
@@ -71,6 +73,12 @@ public class PolicierSeeder implements CommandLineRunner {
                     .villeIntegration("Kinshasa")
                     .etatcivil(random.nextBoolean() ? "Marié" : "Célibataire")
                     .sport("Football")
+
+                    // =========================
+                    // 🔥 AJOUT UNITE
+                    // =========================
+                    .unite(unite)
+
                     .francaisParle(true)
                     .francaisEcrit(true)
                     .lingalaParle(true)
@@ -97,6 +105,6 @@ public class PolicierSeeder implements CommandLineRunner {
             repository.saveAll(batch);
         }
 
-        System.out.println("===== 200000 policiers générés =====");
+        System.out.println("===== 15000 policiers générés avec unités =====");
     }
 }
