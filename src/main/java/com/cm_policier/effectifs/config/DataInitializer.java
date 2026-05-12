@@ -25,8 +25,9 @@ public class DataInitializer {
             // 1. PROFILES
             // =========================
             Profile adminProfile = createIfNotExists(profileRepository, "ADMIN");
-            createIfNotExists(profileRepository, "SUPERVISEUR");
+            createIfNotExists(profileRepository, "CHEF_EQUIPE");
             createIfNotExists(profileRepository, "CONTROLEUR");
+            createIfNotExists(profileRepository, "CHARGE_MISSION");
             createIfNotExists(profileRepository, "MANAGER");
 
             // =========================

@@ -32,6 +32,7 @@ public class AuthController {
 
     @Autowired
     private JwtUtil jwtUtil;
+    @Autowired
     private SessionService sessionService;
 
     // =========================
