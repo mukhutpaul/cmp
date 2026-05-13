@@ -67,15 +67,11 @@ public class ControleService {
     }
 
 public List<Controle> searchByIdentite(
-        String nom,
-        String postnom,
-        String prenom,
+        String noms,
         LocalDate dateNaissance
 ) {
     return repository.searchByPolicierIdentite(
-            nom,
-            postnom,
-            prenom,
+            noms,
             dateNaissance
     );
 }

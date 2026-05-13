@@ -19,7 +19,7 @@ public interface ControleRepository extends JpaRepository<Controle, UUID>, Contr
                 WHERE (:search IS NULL OR
                       LOWER(c.matricule) LIKE LOWER(CONCAT('%', :search, '%'))
                       OR LOWER(c.uid) LIKE LOWER(CONCAT('%', :search, '%'))
-                      OR LOWER(p.nom) LIKE LOWER(CONCAT('%', :search, '%'))
+                      OR LOWER(c.noms) LIKE LOWER(CONCAT('%', :search, '%'))
                 )
             """)
     Page<Controle> search(String search, Pageable pageable);
@@ -34,9 +34,7 @@ public interface ControleRepository extends JpaRepository<Controle, UUID>, Contr
             AND p.dateNaissance = :dateNaissance
             """)
     List<Controle> searchByPolicierIdentite(
-            @Param("nom") String nom,
-            @Param("postnom") String postnom,
-            @Param("prenom") String prenom,
+            @Param("noms") String nom,
             @Param("dateNaissance") LocalDate dateNaissance);
 
     long count();
