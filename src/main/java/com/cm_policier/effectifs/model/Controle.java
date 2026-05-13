@@ -79,6 +79,8 @@ public class Controle {
     private Boolean isCmd = false;
 
     private Boolean isActif = false;
+    private Boolean isSync= false;
+    private Integer versionSync;
 
     // ===================== FILE =====================
 

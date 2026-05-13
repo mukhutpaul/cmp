@@ -95,6 +95,7 @@ public class ControleServiceLoader {
                                         .justifie(false)
                                         .isControle(false)
                                         .isActif(false)
+                                        .isSync(false)
                                         .face(null) // à remplir depuis FaceRepository
                                         .build();
 
