@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.UUID;
 
+import org.springdoc.core.converters.models.Pageable;
+import org.springdoc.core.converters.models.Sort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,11 @@ public class ControleService {
                 .orElseThrow(() -> new RuntimeException("Controle introuvable"));
     }
 
+    public List<Controle> getAll() {
+        return repository
+                .findTop200ByPresentTrueOrJustifieTrueOrderByUpdatedAtDesc();
+    }
+
     /* ========================= UPDATE ========================= */
     public Controle update(UUID id, Controle data) {
         Controle c = getById(id);
@@ -59,13 +66,11 @@ public class ControleService {
         repository.deleteById(id);
     }
 
-public List<Controle> searchByIdentite(
-        String noms,
-        LocalDate dateNaissance
-) {
-    return repository.searchByPolicierIdentite(
-            noms,
-            dateNaissance
-    );
-}
+    public List<Controle> searchByIdentite(
+            String noms,
+            LocalDate dateNaissance) {
+        return repository.searchByPolicierIdentite(
+                noms,
+                dateNaissance);
+    }
 }

@@ -45,4 +45,5 @@ public interface ControleRepository extends JpaRepository<Controle, UUID>, Contr
 
     long countByJustifieFalse();
     long countByPresentFalseAndJustifieFalse();
+    List<Controle> findTop200ByPresentTrueOrJustifieTrueOrderByUpdatedAtDesc();
 }

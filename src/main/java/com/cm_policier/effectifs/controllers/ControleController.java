@@ -28,11 +28,8 @@ public class ControleController {
 
     /* ========================= READ ALL (PAGINATION) ========================= */
     @GetMapping
-    public Page<Controle> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(required = false) String search) {
-        return service.getAll(page, size, search);
+    public List<Controle> getAll() {
+        return service.getAll();
     }
 
     /* ========================= READ ONE ========================= */
