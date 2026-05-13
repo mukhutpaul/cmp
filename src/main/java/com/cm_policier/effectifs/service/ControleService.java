@@ -48,15 +48,8 @@ public class ControleService {
     /* ========================= UPDATE ========================= */
     public Controle update(UUID id, Controle data) {
         Controle c = getById(id);
-
-        c.setUid(data.getUid());
-        c.setPolicier(data.getPolicier());
         c.setPresent(data.getPresent());
         c.setJustifie(data.getJustifie());
-        c.setMatricule(data.getMatricule());
-        c.setUnite(data.getUnite());
-        c.setGrade(data.getGrade());
-        c.setIsActif(data.getIsActif());
 
         return repository.save(c);
     }

@@ -1,5 +1,6 @@
 package com.cm_policier.effectifs.controllers;
 
+import com.cm_policier.effectifs.dto.ControleDto;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.service.ControleService;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class ControleController {
     }
 
     /* ========================= UPDATE ========================= */
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public Controle update(@PathVariable UUID id, @RequestBody Controle controle) {
         return service.update(id, controle);
     }
