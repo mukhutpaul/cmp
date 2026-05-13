@@ -21,11 +21,10 @@ public class ControleControllerLoader {
     @PostMapping("/charger")
     public ResponseEntity<?> charger(
             @RequestParam String unite,
-            @RequestParam Long userId,
-            @RequestParam Long seanceId
+            @RequestParam Long userId
     ) {
 
-        List<Controle> result = controleService.chargerControle(unite, userId, seanceId);
+        List<Controle> result = controleService.chargerControle(unite, userId);
 
         return ResponseEntity.ok(result);
     }
