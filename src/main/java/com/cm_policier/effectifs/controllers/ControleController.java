@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -37,6 +38,11 @@ public class ControleController {
     public Controle getById(@PathVariable UUID id) {
         return service.getById(id);
     }
+
+    // @GetMapping("/{matricule}")
+    // public Controle getById(@PathVariable String matricule) {
+    //     return Optional<Controle>service.findByMatricule(matricule);
+    // }
 
     /* ========================= UPDATE ========================= */
     @PatchMapping("/{id}")

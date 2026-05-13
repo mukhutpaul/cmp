@@ -66,6 +66,10 @@ public class ControleService {
         repository.deleteById(id);
     }
 
+     public void findByMatricule(String matricule) {
+        repository.findByMatricule(matricule);
+    }
+
     public List<Controle> searchByIdentite(
             String noms,
             LocalDate dateNaissance) {

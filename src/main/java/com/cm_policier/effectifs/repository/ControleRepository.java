@@ -4,6 +4,7 @@ import com.cm_policier.effectifs.model.Controle;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -46,4 +47,5 @@ public interface ControleRepository extends JpaRepository<Controle, UUID>, Contr
     long countByJustifieFalse();
     long countByPresentFalseAndJustifieFalse();
     List<Controle> findTop200ByPresentTrueOrJustifieTrueOrderByUpdatedAtDesc();
+    Optional<Controle>findByMatricule(String matricule);
 }
