@@ -10,7 +10,6 @@ import com.cm_policier.effectifs.model.Equipe;
 import com.cm_policier.effectifs.model.EquipeUnite;
 import com.cm_policier.effectifs.model.Mission;
 import com.cm_policier.effectifs.model.MissionUnite;
-import com.cm_policier.effectifs.model.Seance;
 import com.cm_policier.effectifs.model.Unite;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.DetailUniteRepository;
@@ -18,7 +17,6 @@ import com.cm_policier.effectifs.repository.EquipeRepository;
 import com.cm_policier.effectifs.repository.EquipeUniteRepository;
 import com.cm_policier.effectifs.repository.MissionRepository;
 import com.cm_policier.effectifs.repository.MissionUniteRepository;
-import com.cm_policier.effectifs.repository.SeanceRepository;
 import com.cm_policier.effectifs.repository.UniteRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
 
@@ -37,7 +35,7 @@ public class UniteChargeService {
     private final MissionRepository missionRepository;
     private final EquipeRepository equipeRepository;
     private final UserRepository userRepository;
-    private final SeanceRepository seanceRepository;
+
 
     public void chargerUnite(ChargerUniteRequest req) {
 

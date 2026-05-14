@@ -20,6 +20,6 @@ public class UniteChargeController {
     @PostMapping("/charger")
     public ResponseEntity<?> chargerUnite(@RequestBody ChargerUniteRequest request) {
         uniteChargeService.chargerUnite(request);
-        return ResponseEntity.ok("Unité chargée avec succès");
+        return ResponseEntity.ok("données pc chargées avec succès");
     }
 }

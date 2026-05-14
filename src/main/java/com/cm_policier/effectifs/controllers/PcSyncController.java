@@ -1,7 +1,6 @@
 package com.cm_policier.effectifs.controllers;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.cm_policier.effectifs.dto.ApiResponse;
@@ -9,67 +8,62 @@ import com.cm_policier.effectifs.dto.SyncPayloadDTO;
 import com.cm_policier.effectifs.model.*;
 import com.cm_policier.effectifs.service.*;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/pc")
-@CrossOrigin("*")
+@RequiredArgsConstructor
 public class PcSyncController {
 
-        @Autowired
-        private UserService userService;
+    private final PcLocalSyncService syncService;
 
-        @Autowired
-        private EquipeService equipeService;
+    private final UserService userService;
+    private final EquipeService equipeService;
+    private final MissionService missionService;
+    private final DetailUniteService detailUniteService;
 
-        @Autowired
-        private MissionService missionService;
+    @PostMapping("/sync/{chefId}")
+    public ResponseEntity<?> syncData(@PathVariable Long chefId) {
 
-        @Autowired
-        private DetailUniteService detailUniteService;
+        try {
 
-        @PostMapping("/sync/{chefId}")
-        public ResponseEntity<?> syncData(@PathVariable Long chefId) {
+            User chef = userService.findById(chefId);
 
-                try {
+            if (chef == null) {
+                return ResponseEntity.badRequest()
+                        .body(new ApiResponse<>(false, "Chef introuvable", null));
+            }
 
-                        User chef = userService.findById(chefId);
+            Equipe equipe = equipeService.findByChef(chefId);
 
-                        if (chef == null) {
-                                return ResponseEntity.badRequest().body(
-                                                new ApiResponse<>(false, "Chef introuvable", null));
-                        }
+            if (equipe == null) {
+                return ResponseEntity.badRequest()
+                        .body(new ApiResponse<>(false, "Equipe introuvable", null));
+            }
 
-                        Equipe equipe = equipeService.findByChef(chefId);
+            List<User> users = userService.findUsersByEquipe(equipe.getId());
+            Mission mission = missionService.findMissionByUser(chefId);
+            List<DetailUnite> unites = detailUniteService.findUnitesByEquipe(equipe.getId());
 
-                        if (equipe == null) {
-                                return ResponseEntity.badRequest().body(
-                                                new ApiResponse<>(false, "Equipe introuvable", null));
-                        }
+            SyncPayloadDTO payload = SyncPayloadDTO.builder()
+                    .chefEquipe(chef)
+                    .equipe(equipe)
+                    .mission(mission)
+                    .users(users)
+                    .unites(unites)
+                    .build();
 
-                        // USERS
-                        List<User> users = userService.findUsersByEquipe(equipe.getId());
+            // 🔥 SAVE LOCAL DB
+            syncService.saveSyncData(payload);
 
-                        // MISSION (corrigé)
-                        Mission mission = missionService.findMissionByUser(chefId);
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Sync + Save local réussi", payload)
+            );
 
-                        // UNITES
-                        List<DetailUnite> unites = detailUniteService.findUnitesByEquipe(equipe.getId());
+        } catch (Exception e) {
 
-                        SyncPayloadDTO payload = SyncPayloadDTO.builder()
-                                        .chefEquipe(chef)
-                                        .equipe(equipe)
-                                        .mission(mission)
-                                        .users(users)
-                                        .unites(unites)
-                                        .build();
-
-                        return ResponseEntity.ok(
-                                        new ApiResponse<>(true, "Synchronisation réussie", payload));
-
-                } catch (Exception e) {
-                        e.printStackTrace();
-
-                        return ResponseEntity.internalServerError().body(
-                                        new ApiResponse<>(false, "Erreur sync", e.getMessage()));
-                }
+            return ResponseEntity.internalServerError()
+                    .body(new ApiResponse<>(false, "Erreur sync", e.getMessage()));
         }
+    }
 }
