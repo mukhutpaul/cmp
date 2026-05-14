@@ -5,6 +5,7 @@ import com.cm_policier.effectifs.repository.ControleRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springdoc.core.converters.models.Pageable;
@@ -66,7 +67,7 @@ public class ControleService {
         repository.deleteById(id);
     }
 
-     public void findByMatricule(String matricule) {
+    public void findByMatricule(String matricule) {
         repository.findByMatricule(matricule);
     }
 
@@ -76,5 +77,9 @@ public class ControleService {
         return repository.searchByPolicierIdentite(
                 noms,
                 dateNaissance);
+    }
+
+    public Optional<Controle> getByMatricule(String matricule) {
+        return repository.findByMatricule(matricule);
     }
 }

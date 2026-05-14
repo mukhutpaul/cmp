@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -39,10 +40,14 @@ public class ControleController {
         return service.getById(id);
     }
 
-    // @GetMapping("/{matricule}")
-    // public Controle getById(@PathVariable String matricule) {
-    //     return Optional<Controle>service.findByMatricule(matricule);
-    // }
+    @GetMapping("/matricule/{matricule}")
+    public ResponseEntity<Controle> getByMatricule(@PathVariable String matricule) {
+
+        Optional<Controle> controle = service.getByMatricule(matricule);
+
+        return controle.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
     /* ========================= UPDATE ========================= */
     @PatchMapping("/{id}")
