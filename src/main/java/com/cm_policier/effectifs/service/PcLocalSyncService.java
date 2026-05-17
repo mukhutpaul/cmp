@@ -38,20 +38,30 @@ public class PcLocalSyncService {
 
             for (User u : payload.getUsers()) {
 
-                if (u == null) continue;
+                if (u == null)
+                    continue;
 
                 User user = userRepository.findById(u.getId())
                         .orElse(new User());
 
+                // ================= BASIC =================
                 user.setId(u.getId());
                 user.setUsername(u.getUsername());
                 user.setEmail(u.getEmail());
                 user.setNoms(u.getNoms());
-
-                // 🔥 IMPORTANT : password sync
-                user.setPassword(u.getPassword());
-
                 user.setProfile(u.getProfile());
+
+                // ================= PASSWORD SAFE =================
+                // garder ancien password si null
+                if (u.getPassword() != null && !u.getPassword().isBlank()) {
+
+                    user.setPassword(u.getPassword());
+
+                } else if (user.getPassword() == null) {
+
+                    // cas nouvel utilisateur sans password
+                    user.setPassword("defaultPassword");
+                }
 
                 safeUsers.add(user);
             }
