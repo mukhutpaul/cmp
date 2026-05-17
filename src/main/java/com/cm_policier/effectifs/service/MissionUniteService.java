@@ -83,5 +83,9 @@ public class MissionUniteService {
             .map(MissionUnite::getUnite)
             .toList();
 }
+
+  public List<MissionUnite> findByMission(Long missionId) {
+        return repository.findByMissionId(missionId);
+    }
   
 }

@@ -83,4 +83,8 @@ public class EquipeUniteService {
             .map(EquipeUnite::getUnite)
             .toList();
 }
+
+  public List<EquipeUnite> findByEquipe(Long equipeId) {
+        return repository.findByEquipeId(equipeId);
+    }
 }

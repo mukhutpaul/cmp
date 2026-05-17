@@ -3,9 +3,7 @@ package com.cm_policier.effectifs.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.cm_policier.effectifs.model.EquipeUnite;
-import com.cm_policier.effectifs.model.MissionUnite;
 
 public interface EquipeUniteRepository extends JpaRepository<EquipeUnite, Long> {
   boolean existsByEquipeIdAndUniteId(Long equipeId, Long uniteId);

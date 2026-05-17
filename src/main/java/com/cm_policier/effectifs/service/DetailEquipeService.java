@@ -40,4 +40,10 @@ public class DetailEquipeService {
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+     public List<DetailEquipe> findByEquipe(Long equipeId) {
+        return repository.findByEquipeId(equipeId);
+    }
+
+ 
 }

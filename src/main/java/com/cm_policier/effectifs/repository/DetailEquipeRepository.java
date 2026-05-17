@@ -10,5 +10,6 @@ import com.cm_policier.effectifs.model.DetailEquipe;
 public interface DetailEquipeRepository extends JpaRepository<DetailEquipe, Long> {
     List<DetailEquipe> findByEquipe_Id(Long equipeId);
     Optional<DetailEquipe> findByUser_Id(Long userId);
+    List<DetailEquipe> findByEquipeId(Long equipeId);
     
 }
