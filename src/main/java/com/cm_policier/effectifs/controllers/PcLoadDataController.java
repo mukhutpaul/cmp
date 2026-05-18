@@ -71,31 +71,27 @@ public class PcLoadDataController {
 
             // ================= USERS GROUPÉS =================
             Set<User> usersSet = new HashSet<>();
-
             List<User> equipeUsers = userService.findUsersByEquipe(equipe.getId());
 
-            System.out.println("========== USERS ==========");
+            List<User> fullUsers = new ArrayList<>();
 
-            for (User u : equipeUsers) {
+            if (equipeUsers != null) {
 
-                System.out.println("ID = " + u.getId());
+                for (User u : equipeUsers) {
 
-                System.out.println("USERNAME = " + u.getUsername());
+                    User fullUser = userService.findById(u.getId());
 
-                System.out.println("PASSWORD = " + u.getPassword());
+                    fullUsers.add(fullUser);
 
-                System.out.println("EMAIL = " + u.getEmail());
-
-                System.out.println("NOMS = " + u.getNoms());
-
-                System.out.println(
-                        "PROFILE = " +
-                                (u.getProfile() != null
-                                        ? u.getProfile().getName()
-                                        : "NULL"));
-
-                System.out.println("------------------------");
+                    System.out.println("========== USER ==========");
+                    System.out.println("ID = " + fullUser.getId());
+                    System.out.println("USERNAME = " + fullUser.getUsername());
+                    System.out.println("PASSWORD = " + fullUser.getPassword());
+                    System.out.println("--------------------------");
+                }
             }
+
+            equipeUsers = fullUsers;
 
             if (equipeUsers != null) {
                 usersSet.addAll(equipeUsers);
