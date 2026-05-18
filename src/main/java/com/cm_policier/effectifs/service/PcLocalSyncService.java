@@ -36,9 +36,50 @@ public class PcLocalSyncService {
     public void saveSyncData(PcloadDataDTO data) {
 
         // ================= USERS =================
+        // ================= USERS =================
         if (data.getUsers() != null) {
-            for (User u : data.getUsers()) {
-                userRepository.saveAndFlush(u);
+
+            for (User incomingUser : data.getUsers()) {
+
+                User userToSave;
+
+                // utilisateur existe déjà
+                if (incomingUser.getId() != null &&
+                        userRepository.existsById(incomingUser.getId())) {
+
+                    User existingUser = userRepository
+                            .findById(incomingUser.getId())
+                            .orElse(null);
+
+                    if (existingUser != null) {
+
+                        // garder ancien password si null
+                        if (incomingUser.getPassword() == null ||
+                                incomingUser.getPassword().isBlank()) {
+
+                            incomingUser.setPassword(
+                                    existingUser.getPassword());
+                        }
+
+                        userToSave = incomingUser;
+
+                    } else {
+                        userToSave = incomingUser;
+                    }
+
+                } else {
+
+                    // nouvel utilisateur
+                    userToSave = incomingUser;
+                }
+
+                System.out.println(
+                        "SAVE USER => "
+                                + userToSave.getUsername()
+                                + " PASSWORD = "
+                                + userToSave.getPassword());
+
+                userRepository.saveAndFlush(userToSave);
             }
         }
 
