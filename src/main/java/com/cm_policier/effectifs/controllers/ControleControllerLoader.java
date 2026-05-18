@@ -12,7 +12,7 @@ import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.service.ControleServiceLoader;
 
 @RestController
-@RequestMapping("/api/controle")
+@RequestMapping("/api/mobile")
 public class ControleControllerLoader {
 
     @Autowired

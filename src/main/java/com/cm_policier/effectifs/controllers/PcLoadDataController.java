@@ -166,6 +166,7 @@ public class PcLoadDataController {
                             .build();
 
             // ================= SAVE =================
+            syncService.saveSyncData(payload);
          
 
             return ResponseEntity.ok(

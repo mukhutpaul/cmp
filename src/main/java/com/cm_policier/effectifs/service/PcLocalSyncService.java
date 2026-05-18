@@ -40,53 +40,49 @@ public class PcLocalSyncService {
         // ================= USERS =================
         if (data.getUsers() != null) {
             for (User u : data.getUsers()) {
-                userRepository.save(u);
+                userRepository.saveAndFlush(u);
             }
-        }
-
-        // ================= EQUIPE =================
-        if (data.getEquipe() != null) {
-            equipeRepository.save(data.getEquipe());
         }
 
         // ================= MISSION =================
         if (data.getMission() != null) {
-            missionRepository.save(data.getMission());
+            missionRepository.saveAndFlush(data.getMission());
+        }
+
+        // ================= EQUIPE =================
+        if (data.getEquipe() != null) {
+            equipeRepository.saveAndFlush(data.getEquipe());
+        }
+
+        // ================= DETAIL EQUIPE =================
+        if (data.getDetailEquipes() != null) {
+            detailEquipeRepository.saveAll(data.getDetailEquipes());
+        }
+
+        // ================= EQUIPE UNITE =================
+        if (data.getEquipeUnites() != null) {
+            equipeUniteRepository.saveAll(data.getEquipeUnites());
+        }
+
+        // ================= MISSION UNITE =================
+        if (data.getMissionUnites() != null) {
+            missionUniteRepository.saveAll(data.getMissionUnites());
         }
 
         // ================= UNITES =================
         if (data.getUnites() != null) {
             for (Unite u : data.getUnites()) {
-                uniteRepository.save(u);
+                uniteRepository.saveAndFlush(u);
             }
         }
 
         // ================= DETAIL UNITE =================
         if (data.getDetailUnites() != null) {
-            for (DetailUnite du : data.getDetailUnites()) {
-                detailUniteRepository.save(du);
-            }
+            detailUniteRepository.saveAll(data.getDetailUnites());
         }
-
-        // ================= DETAIL EQUIPE =================
-        if (data.getDetailEquipes() != null) {
-            for (DetailEquipe de : data.getDetailEquipes()) {
-                detailEquipeRepository.save(de);
-            }
-        }
-
-        // ================= EQUIPE-UNITE =================
-        if (data.getEquipeUnites() != null) {
-            for (EquipeUnite eu : data.getEquipeUnites()) {
-                equipeUniteRepository.save(eu);
-            }
-        }
-
-        // ================= MISSION-UNITE =================
-        if (data.getMissionUnites() != null) {
-            for (MissionUnite mu : data.getMissionUnites()) {
-                missionUniteRepository.save(mu);
-            }
-        }
+        System.out.println("USERS SAVED: " + data.getUsers().size());
+        System.out.println("UNITES SAVED: " + data.getUnites().size());
+        System.out.println("EQUIPE: " + data.getEquipe().getId());
     }
+
 }
