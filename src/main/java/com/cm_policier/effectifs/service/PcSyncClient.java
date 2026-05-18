@@ -7,11 +7,16 @@ import org.springframework.web.client.RestTemplate;
 import com.cm_policier.effectifs.dto.ApiResponse;
 import com.cm_policier.effectifs.dto.PcSyncLoginDTO;
 import com.cm_policier.effectifs.dto.SyncResponseDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class PcSyncClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper mapper;
 
     private static final String BASE_URL = "http://10.26.176.185:8090";
 
@@ -30,17 +35,9 @@ public class PcSyncClient {
             throw new RuntimeException("Erreur sync: réponse vide");
         }
 
-        // ✔ conversion SAFE sans ObjectMapper
-        Object data = response.getBody().getData();
-
-        return convert(data);
-    }
-
-    private SyncResponseDTO convert(Object data) {
-        com.fasterxml.jackson.databind.ObjectMapper mapper =
-                new com.fasterxml.jackson.databind.ObjectMapper()
-                        .findAndRegisterModules(); // ✔ FIX LocalDateTime
-
-        return mapper.convertValue(data, SyncResponseDTO.class);
+        return mapper.convertValue(
+                response.getBody().getData(),
+                SyncResponseDTO.class
+        );
     }
 }

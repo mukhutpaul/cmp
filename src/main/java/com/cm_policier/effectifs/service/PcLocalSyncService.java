@@ -1,21 +1,14 @@
 package com.cm_policier.effectifs.service;
 
 import org.springframework.stereotype.Service;
-import com.cm_policier.effectifs.dto.PcloadDataDTO;
 import com.cm_policier.effectifs.dto.SyncResponseDTO;
-import com.cm_policier.effectifs.model.Unite;
-import com.cm_policier.effectifs.model.User;
-import com.cm_policier.effectifs.repository.DetailEquipeRepository;
-import com.cm_policier.effectifs.repository.DetailUniteRepository;
-import com.cm_policier.effectifs.repository.EquipeRepository;
-import com.cm_policier.effectifs.repository.EquipeUniteRepository;
-import com.cm_policier.effectifs.repository.MissionRepository;
-import com.cm_policier.effectifs.repository.MissionUniteRepository;
-import com.cm_policier.effectifs.repository.UniteRepository;
-import com.cm_policier.effectifs.repository.UserRepository;
+import com.cm_policier.effectifs.model.*;
+import com.cm_policier.effectifs.repository.*;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,80 +28,46 @@ public class PcLocalSyncService {
     public void saveSyncData(SyncResponseDTO data) {
 
         // ================= USERS =================
-        // ================= USERS =================
-        // ================= USERS =================
         if (data.getUsers() != null) {
 
             for (User incomingUser : data.getUsers()) {
 
-                // ===== USER EXISTE =====
                 if (incomingUser.getId() != null) {
 
-                    User existingUser = userRepository
-                            .findById(incomingUser.getId())
-                            .orElse(null);
+                    User existing = userRepository.findById(incomingUser.getId()).orElse(null);
 
-                    if (existingUser != null) {
+                    if (existing != null) {
 
-                        // mise à jour champs simples
-                        existingUser.setUsername(incomingUser.getUsername());
-                        existingUser.setEmail(incomingUser.getEmail());
-                        existingUser.setNoms(incomingUser.getNoms());
-                        existingUser.setProfile(incomingUser.getProfile());
+                        existing.setUsername(incomingUser.getUsername());
+                        existing.setEmail(incomingUser.getEmail());
+                        existing.setNoms(incomingUser.getNoms());
+                        existing.setProfile(incomingUser.getProfile());
 
-                        // ===== PASSWORD =====
-                        // récupérer password venant API
                         if (incomingUser.getPassword() != null
-                                && !incomingUser.getPassword().trim().isEmpty()) {
-
-                            existingUser.setPassword(
-                                    incomingUser.getPassword());
-
+                                && !incomingUser.getPassword().isBlank()) {
+                            existing.setPassword(incomingUser.getPassword());
                         }
 
-                        System.out.println(
-                                "UPDATE USER => "
-                                        + existingUser.getUsername()
-                                        + " PASSWORD => "
-                                        + existingUser.getPassword());
-
-                        userRepository.saveAndFlush(existingUser);
+                        userRepository.save(existing);
 
                     } else {
-
-                        // nouvel utilisateur
-                        System.out.println(
-                                "NEW USER => "
-                                        + incomingUser.getUsername()
-                                        + " PASSWORD => "
-                                        + incomingUser.getPassword());
-
-                        userRepository.saveAndFlush(incomingUser);
+                        userRepository.save(incomingUser);
                     }
 
-                }
-
-                // ===== NEW USER =====
-                else {
-
-                    System.out.println(
-                            "NEW USER => "
-                                    + incomingUser.getUsername()
-                                    + " PASSWORD => "
-                                    + incomingUser.getPassword());
-
-                    userRepository.saveAndFlush(incomingUser);
+                } else {
+                    userRepository.save(incomingUser);
                 }
             }
         }
+
         // ================= MISSION =================
         if (data.getMission() != null) {
-            missionRepository.saveAndFlush(data.getMission());
+            missionRepository.save(data.getMission());
         }
 
         // ================= EQUIPE =================
         if (data.getEquipe() != null) {
-            equipeRepository.saveAndFlush(data.getEquipe());
+            equipeRepository.save(data.getEquipe());
         }
 
         // ================= DETAIL EQUIPE =================
@@ -129,7 +88,7 @@ public class PcLocalSyncService {
         // ================= UNITES =================
         if (data.getUnites() != null) {
             for (Unite u : data.getUnites()) {
-                uniteRepository.saveAndFlush(u);
+                uniteRepository.save(u);
             }
         }
 
@@ -137,9 +96,10 @@ public class PcLocalSyncService {
         if (data.getDetailUnites() != null) {
             detailUniteRepository.saveAll(data.getDetailUnites());
         }
-        System.out.println("USERS SAVED: " + data.getUsers().size());
-        System.out.println("UNITES SAVED: " + data.getUnites().size());
-        System.out.println("EQUIPE: " + data.getEquipe().getId());
-    }
 
+        System.out.println("SYNC OK:");
+        System.out.println("USERS = " + (data.getUsers() != null ? data.getUsers().size() : 0));
+        System.out.println("UNITES = " + (data.getUnites() != null ? data.getUnites().size() : 0));
+        System.out.println("EQUIPE ID = " + (data.getEquipe() != null ? data.getEquipe().getId() : null));
+    }
 }
