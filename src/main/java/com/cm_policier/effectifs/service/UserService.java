@@ -62,7 +62,17 @@ public class UserService {
     // GET ALL USERS
     // =========================
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        List<User> users = userRepository.findAll();
+
+        for (User u : users) {
+            System.out.println("===== USER DEBUG =====");
+            System.out.println("ID: " + u.getId());
+            System.out.println("USERNAME: " + u.getUsername());
+            System.out.println("PASSWORD: " + u.getPassword());
+            System.out.println("EMAIL: " + u.getEmail());
+        }
+
+        return users;
     }
 
     // =========================

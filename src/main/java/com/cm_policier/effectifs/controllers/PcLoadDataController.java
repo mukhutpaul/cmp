@@ -76,21 +76,24 @@ public class PcLoadDataController {
             List<User> fullUsers = new ArrayList<>();
 
             if (equipeUsers != null) {
-
                 for (User u : equipeUsers) {
 
-                    // ✅ récupérer user COMPLET avec password
-                    User fullUser = userService.findFullById(u.getId());
+                    User fullUser = userService.findById(u.getId()); // 🔥 IMPORTANT
 
-                    fullUsers.add(fullUser);
+                    if (fullUser != null) {
+                        fullUsers.add(fullUser);
 
-                    System.out.println("========== USER ==========");
-                    System.out.println("ID = " + fullUser.getId());
-                    System.out.println("USERNAME = " + fullUser.getUsername());
-                    System.out.println("PASSWORD = " + fullUser.getPassword());
-                    System.out.println("--------------------------");
+                        System.out.println("===== USER DEBUG =====");
+                        System.out.println("ID: " + fullUser.getId());
+                        System.out.println("USERNAME: " + fullUser.getUsername());
+                        System.out.println("PASSWORD: " + fullUser.getPassword());
+                        System.out.println("EMAIL: " + fullUser.getEmail());
+                    }
                 }
             }
+
+            List<User> users = new ArrayList<>(fullUsers);
+            users.add(chef);
 
             equipeUsers = fullUsers;
 
@@ -111,7 +114,7 @@ public class PcLoadDataController {
                 }
             }
 
-            List<User> users = new ArrayList<>(usersSet);
+            // List<User> users = new ArrayList<>(usersSet);
 
             // ================= UNITES GROUPÉES =================
             Set<Unite> uniteSet = new HashSet<>();
