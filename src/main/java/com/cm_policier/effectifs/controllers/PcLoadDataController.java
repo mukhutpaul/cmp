@@ -130,7 +130,7 @@ public class PcLoadDataController {
             payload.setDetailUnites(detailUnites);
 
             // ================= SAVE LOCAL =================
-            syncService.saveSyncData(payload);
+            //syncService.saveSyncData(payload);
 
             return ResponseEntity.ok(
                     new ApiResponse<>(true,
