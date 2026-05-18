@@ -35,15 +35,13 @@ public class PcLocalSyncService {
 
         // ================= USERS =================
         // ================= USERS =================
+        // ================= USERS =================
         if (data.getUsers() != null) {
 
             for (User incomingUser : data.getUsers()) {
 
-                User userToSave;
-
-                // utilisateur existe déjà
-                if (incomingUser.getId() != null &&
-                        userRepository.existsById(incomingUser.getId())) {
+                // ===== USER EXISTE =====
+                if (incomingUser.getId() != null) {
 
                     User existingUser = userRepository
                             .findById(incomingUser.getId())
@@ -51,36 +49,57 @@ public class PcLocalSyncService {
 
                     if (existingUser != null) {
 
-                        // garder ancien password si null
-                        if (incomingUser.getPassword() == null ||
-                                incomingUser.getPassword().isBlank()) {
+                        // mise à jour champs simples
+                        existingUser.setUsername(incomingUser.getUsername());
+                        existingUser.setEmail(incomingUser.getEmail());
+                        existingUser.setNoms(incomingUser.getNoms());
+                        existingUser.setProfile(incomingUser.getProfile());
 
-                            incomingUser.setPassword(
-                                    existingUser.getPassword());
+                        // ===== PASSWORD =====
+                        // récupérer password venant API
+                        if (incomingUser.getPassword() != null
+                                && !incomingUser.getPassword().trim().isEmpty()) {
+
+                            existingUser.setPassword(
+                                    incomingUser.getPassword());
+
                         }
 
-                        userToSave = incomingUser;
+                        System.out.println(
+                                "UPDATE USER => "
+                                        + existingUser.getUsername()
+                                        + " PASSWORD => "
+                                        + existingUser.getPassword());
+
+                        userRepository.saveAndFlush(existingUser);
 
                     } else {
-                        userToSave = incomingUser;
+
+                        // nouvel utilisateur
+                        System.out.println(
+                                "NEW USER => "
+                                        + incomingUser.getUsername()
+                                        + " PASSWORD => "
+                                        + incomingUser.getPassword());
+
+                        userRepository.saveAndFlush(incomingUser);
                     }
 
-                } else {
-
-                    // nouvel utilisateur
-                    userToSave = incomingUser;
                 }
 
-                System.out.println(
-                        "SAVE USER => "
-                                + userToSave.getUsername()
-                                + " PASSWORD = "
-                                + userToSave.getPassword());
+                // ===== NEW USER =====
+                else {
 
-                userRepository.saveAndFlush(userToSave);
+                    System.out.println(
+                            "NEW USER => "
+                                    + incomingUser.getUsername()
+                                    + " PASSWORD => "
+                                    + incomingUser.getPassword());
+
+                    userRepository.saveAndFlush(incomingUser);
+                }
             }
         }
-
         // ================= MISSION =================
         if (data.getMission() != null) {
             missionRepository.saveAndFlush(data.getMission());
