@@ -30,48 +30,22 @@ public class PcLocalSyncService {
 
             for (User incoming : data.getUsers()) {
 
-                if (incoming.getId() != null) {
+                User user = new User();
 
-                    userRepository.findById(incoming.getId())
-                            .map(existing -> {
+                // IMPORTANT: on ne force PAS update fragile
+                if (incoming.getId() != null &&
+                        userRepository.existsById(incoming.getId())) {
 
-                                existing.setUsername(incoming.getUsername());
-                                existing.setEmail(incoming.getEmail());
-                                existing.setNoms(incoming.getNoms());
-                                existing.setProfile(incoming.getProfile());
-
-                                if (incoming.getPassword() != null &&
-                                        !incoming.getPassword().isBlank()) {
-                                    existing.setPassword(incoming.getPassword());
-                                }
-
-                                return userRepository.save(existing);
-                            })
-                            .orElseGet(() -> {
-                                // IMPORTANT : nouveau user MAIS propre copie
-                                User newUser = new User();
-
-                                newUser.setId(incoming.getId());
-                                newUser.setUsername(incoming.getUsername());
-                                newUser.setEmail(incoming.getEmail());
-                                newUser.setNoms(incoming.getNoms());
-                                newUser.setProfile(incoming.getProfile());
-                                newUser.setPassword(incoming.getPassword());
-
-                                return userRepository.save(newUser);
-                            });
-
-                } else {
-                    // nouveau user sans id
-                    User newUser = new User();
-                    newUser.setUsername(incoming.getUsername());
-                    newUser.setEmail(incoming.getEmail());
-                    newUser.setNoms(incoming.getNoms());
-                    newUser.setProfile(incoming.getProfile());
-                    newUser.setPassword(incoming.getPassword());
-
-                    userRepository.save(newUser);
+                    user.setId(incoming.getId());
                 }
+
+                user.setUsername(incoming.getUsername());
+                user.setEmail(incoming.getEmail());
+                user.setNoms(incoming.getNoms());
+                user.setPassword(incoming.getPassword());
+                user.setProfile(incoming.getProfile());
+
+                userRepository.save(user);
             }
         }
 
