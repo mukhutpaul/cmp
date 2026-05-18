@@ -26,14 +26,12 @@ public class UserService {
 
     @Autowired
     private DetailEquipeRepository detailEquipeRepository;
-    
 
     @Autowired
     private ProfileRepository profileRepository;
 
     @Autowired
     private DetailUniteRepository detailUniteRepository;
-    
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -126,27 +124,30 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
     }
 
-  public List<User> findUsersByEquipe(Long equipeId) {
-
-    List<DetailEquipe> details = detailEquipeRepository.findByEquipe_Id(equipeId);
-
-    List<User> users = details.stream()
-            .map(DetailEquipe::getUser)
-            .toList();
-
-    users.forEach(u -> u.setPassword(null));
-
-    return users;
-}
-
-public List<User> findAllByIds(List<Long> ids) {
-
-    if (ids == null || ids.isEmpty()) {
-        return new ArrayList<>();
+    public User findFullById(Long id) {
+        return userRepository.findFullById(id);
     }
 
-    return userRepository.findAllByIds(ids);
-}
+    public List<User> findUsersByEquipe(Long equipeId) {
 
+        List<DetailEquipe> details = detailEquipeRepository.findByEquipe_Id(equipeId);
+
+        List<User> users = details.stream()
+                .map(DetailEquipe::getUser)
+                .toList();
+
+        users.forEach(u -> u.setPassword(null));
+
+        return users;
+    }
+
+    public List<User> findAllByIds(List<Long> ids) {
+
+        if (ids == null || ids.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return userRepository.findAllByIds(ids);
+    }
 
 }

@@ -79,7 +79,8 @@ public class PcLoadDataController {
 
                 for (User u : equipeUsers) {
 
-                    User fullUser = userService.findById(u.getId());
+                    // ✅ récupérer user COMPLET avec password
+                    User fullUser = userService.findFullById(u.getId());
 
                     fullUsers.add(fullUser);
 
