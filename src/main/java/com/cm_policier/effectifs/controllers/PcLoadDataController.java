@@ -72,13 +72,9 @@ public class PcLoadDataController {
             // ================= USERS GROUPÉS =================
             Set<User> usersSet = new HashSet<>();
 
-            List<User> rawUsers = userService.findUsersByEquipe(equipe.getId());
+            List<User> equipeUsers = userService.findUsersByEquipe(equipe.getId());
 
-            List<Long> ids = rawUsers.stream()
-                    .map(User::getId)
-                    .toList();
-
-            List<User> equipeUsers = userService.findAllByIds(equipe.getId());
+          
 
             if (equipeUsers != null) {
                 usersSet.addAll(equipeUsers);
