@@ -74,7 +74,28 @@ public class PcLoadDataController {
 
             List<User> equipeUsers = userService.findUsersByEquipe(equipe.getId());
 
-          
+            System.out.println("========== USERS ==========");
+
+            for (User u : equipeUsers) {
+
+                System.out.println("ID = " + u.getId());
+
+                System.out.println("USERNAME = " + u.getUsername());
+
+                System.out.println("PASSWORD = " + u.getPassword());
+
+                System.out.println("EMAIL = " + u.getEmail());
+
+                System.out.println("NOMS = " + u.getNoms());
+
+                System.out.println(
+                        "PROFILE = " +
+                                (u.getProfile() != null
+                                        ? u.getProfile().getName()
+                                        : "NULL"));
+
+                System.out.println("------------------------");
+            }
 
             if (equipeUsers != null) {
                 usersSet.addAll(equipeUsers);
