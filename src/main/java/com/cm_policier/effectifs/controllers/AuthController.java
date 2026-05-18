@@ -4,36 +4,49 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.cm_policier.effectifs.dto.ApiResponse;
 import com.cm_policier.effectifs.dto.MobileLoginRequest;
+import com.cm_policier.effectifs.dto.PcSyncLoginDTO;
+import com.cm_policier.effectifs.dto.SyncResponseDTO;
 import com.cm_policier.effectifs.model.DetailUnite;
 import com.cm_policier.effectifs.model.Seance;
 import com.cm_policier.effectifs.model.Session;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.security.JwtUtil;
+import com.cm_policier.effectifs.service.PcLocalSyncService;
+import com.cm_policier.effectifs.service.PcSyncClient;
 import com.cm_policier.effectifs.service.SeanceService;
 import com.cm_policier.effectifs.service.SessionService;
 import com.cm_policier.effectifs.service.UserService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(
-    origins = "*",
-    allowedHeaders = "*",
-    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
-)
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {
+        RequestMethod.GET,
+        RequestMethod.POST,
+        RequestMethod.PUT,
+        RequestMethod.DELETE
+})
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private UserService userService;
+    // =========================
+    // SERVICES
+    // =========================
 
-    @Autowired
-    private JwtUtil jwtUtil;
-    @Autowired
-    private SessionService sessionService;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
+    private final SessionService sessionService;
+    private final SeanceService seanceService;
+
+    private final PcSyncClient pcSyncClient;
+    private final PcLocalSyncService pcLocalSyncService;
 
     // =========================
     // REGISTER
@@ -47,6 +60,7 @@ public class AuthController {
             return ResponseEntity.ok(Map.of(
                     "message", "User created successfully",
                     "user", savedUser));
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "message", "Registration failed",
@@ -55,7 +69,7 @@ public class AuthController {
     }
 
     // =========================
-    // LOGIN
+    // LOGIN LOCAL
     // =========================
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
@@ -69,18 +83,13 @@ public class AuthController {
             String token = jwtUtil.generateToken(user.getUsername());
 
             return ResponseEntity.ok(Map.of(
-                "token", token,
-                "id", user.getId(),
-                "username", user.getUsername(),
-                "email", user.getEmail(),
-                "noms", user.getNoms(),
-
-                "profile", user.getProfile() != null
-                        ? user.getProfile().getName()
-                        : null,
-
-                // 🔥 ENTITÉ USER COMPLETE
-                "user", user));
+                    "token", token,
+                    "id", user.getId(),
+                    "username", user.getUsername(),
+                    "email", user.getEmail(),
+                    "noms", user.getNoms(),
+                    "profile", user.getProfile() != null ? user.getProfile().getName() : null,
+                    "user", user));
 
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(Map.of(
@@ -89,15 +98,54 @@ public class AuthController {
         }
     }
 
-    @Autowired
-    private SeanceService seanceService;
+    // =========================
+    // LOGIN DISTANT + SYNC LOCAL
+    // =========================
+    @PostMapping("/login-distant")
+    public ResponseEntity<?> loginDistant(@RequestBody Map<String, String> request) {
 
+        try {
+
+            System.out.println("LOGIN DISTANT START");
+
+            String username = request.get("username");
+            String password = request.get("password");
+
+            PcSyncLoginDTO dto = new PcSyncLoginDTO();
+            dto.setUsername(username);
+            dto.setPassword(password);
+
+            // ===== APPEL SERVEUR DISTANT =====
+            System.out.println("CALL DISTANT SERVER");
+
+            SyncResponseDTO response = pcSyncClient.sync(dto);
+
+            // ===== SAVE LOCAL DB =====
+            System.out.println("SAVE LOCAL DB");
+
+            pcLocalSyncService.saveSyncData(response); // ✔️ ICI CORRECTION
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of(
+                            "message", "Invalid credentials",
+                            "error", e.getMessage()));
+        }
+    }
+
+    // =========================
+    // MOBILE LOGIN
+    // =========================
     @PostMapping("/mobile/login")
     public ResponseEntity<?> mobileLogin(@RequestBody MobileLoginRequest request) {
 
         try {
 
-            // 1. séance active obligatoire
             Seance seanceActive = seanceService.getActiveSeance();
 
             if (seanceActive == null) {
@@ -105,10 +153,8 @@ public class AuthController {
                         new ApiResponse<>(false, "Aucune séance active", null));
             }
 
-            // 2. login user
             User user = userService.login(request.getUsername(), request.getPassword());
 
-            // 3. contrôle rôle
             if (user.getProfile() == null ||
                     !user.getProfile().getName().equals("CONTROLEUR")) {
 
@@ -116,16 +162,12 @@ public class AuthController {
                         new ApiResponse<>(false, "Accès refusé : contrôleurs uniquement", null));
             }
 
-            // 4. token
             String token = jwtUtil.generateToken(user.getUsername());
 
-            // 5. unités
             List<DetailUnite> unites = userService.getUnitesByUserId(user.getId());
 
-            // 6. SESSION ACTIVE (IMPORTANT)
             Session session = sessionService.createSession(user, seanceActive);
 
-            // 7. RESPONSE PROPRE
             Map<String, Object> payload = Map.of(
                     "token", token,
                     "user", Map.of(
@@ -134,7 +176,7 @@ public class AuthController {
                             "noms", user.getNoms(),
                             "profile", user.getProfile().getName()),
                     "seance", seanceActive,
-                    "session", session, // 🔥 ajouté
+                    "session", session,
                     "unites", unites);
 
             return ResponseEntity.ok(
@@ -147,6 +189,9 @@ public class AuthController {
         }
     }
 
+    // =========================
+    // LOGOUT MOBILE
+    // =========================
     @PostMapping("/mobile/logout/{userId}")
     public ResponseEntity<?> logout(@PathVariable Long userId) {
 
@@ -183,28 +228,23 @@ public class AuthController {
     }
 
     // =========================
-// GET ALL USERS
-// =========================
-@GetMapping("/users")
-public ResponseEntity<?> getUsers() {
+    // GET ALL USERS
+    // =========================
+    @GetMapping("/users")
+    public ResponseEntity<?> getUsers() {
 
-    try {
+        try {
 
-        List<User> users = userService.getAllUsers();
+            List<User> users = userService.getAllUsers();
+            users.forEach(user -> user.setPassword(null));
 
-        // Masquer les mots de passe
-        users.forEach(user -> user.setPassword(null));
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Liste des utilisateurs", users));
 
-        return ResponseEntity.ok(
-                new ApiResponse<>(true, "Liste des utilisateurs", users));
+        } catch (Exception e) {
 
-    } catch (Exception e) {
-
-        return ResponseEntity.status(500).body(
-                new ApiResponse<>(false, "Erreur récupération utilisateurs", e.getMessage()));
+            return ResponseEntity.status(500).body(
+                    new ApiResponse<>(false, "Erreur récupération utilisateurs", e.getMessage()));
+        }
     }
-}
-
-
-
 }

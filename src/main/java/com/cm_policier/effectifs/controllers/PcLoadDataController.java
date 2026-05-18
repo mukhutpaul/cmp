@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.cm_policier.effectifs.dto.ApiResponse;
 import com.cm_policier.effectifs.dto.PcSyncLoginDTO;
-import com.cm_policier.effectifs.dto.PcloadDataDTO;
+import com.cm_policier.effectifs.dto.SyncResponseDTO;
 import com.cm_policier.effectifs.model.*;
 import com.cm_policier.effectifs.service.*;
 
@@ -31,10 +31,7 @@ public class PcLoadDataController {
     private final MissionUniteService missionUniteService;
 
     @PostMapping("/sync")
-    public ResponseEntity<?> syncData(
-            @RequestBody PcSyncLoginDTO request) {
-
-        System.out.println("🔥🔥🔥 SYNC LOCAL API CALLED 🔥🔥🔥");
+    public ResponseEntity<?> syncData(@RequestBody PcSyncLoginDTO request) {
 
         try {
 
@@ -47,8 +44,7 @@ public class PcLoadDataController {
 
             if (chef == null) {
                 return ResponseEntity.badRequest()
-                        .body(new ApiResponse<>(
-                                false,
+                        .body(new ApiResponse<>(false,
                                 "Username ou mot de passe incorrect",
                                 null));
             }
@@ -60,69 +56,30 @@ public class PcLoadDataController {
 
             if (equipe == null) {
                 return ResponseEntity.badRequest()
-                        .body(new ApiResponse<>(
-                                false,
+                        .body(new ApiResponse<>(false,
                                 "Equipe introuvable",
                                 null));
             }
 
-            System.out.println("EQUIPE ID = " + equipe.getId());
-
-            // ================= MISSION =================
             Mission mission = equipe.getMission();
 
-            // ================= USERS GROUPÉS =================
-            Set<User> usersSet = new HashSet<>();
-            List<User> equipeUsers = userService.findUsersByEquipe(equipe.getId());
-
-            List<User> fullUsers = new ArrayList<>();
-
-            if (equipeUsers != null) {
-                for (User u : equipeUsers) {
-
-                    User fullUser = userService.findById(u.getId()); // 🔥 IMPORTANT
-
-                    if (fullUser != null) {
-                        fullUsers.add(fullUser);
-
-                        System.out.println("===== USER DEBUG =====");
-                        System.out.println("ID: " + fullUser.getId());
-                        System.out.println("USERNAME: " + fullUser.getUsername());
-                        System.out.println("PASSWORD: " + fullUser.getPassword());
-                        System.out.println("EMAIL: " + fullUser.getEmail());
-                    }
-                }
-            }
-
-            List<User> users = new ArrayList<>(fullUsers);
+            // ================= USERS =================
+            List<User> users = new ArrayList<>(userService.findUsersByEquipe(equipe.getId()));
             users.add(chef);
-
-            equipeUsers = fullUsers;
-
-            if (equipeUsers != null) {
-                usersSet.addAll(equipeUsers);
-            }
-
-            usersSet.add(chef);
 
             User chargeMission = null;
 
             if (mission != null && mission.getChargeMission() != null) {
-                chargeMission = userService.findById(
-                        mission.getChargeMission().getId());
-
+                chargeMission = userService.findById(mission.getChargeMission().getId());
                 if (chargeMission != null) {
-                    usersSet.add(chargeMission);
+                    users.add(chargeMission);
                 }
             }
 
-            // List<User> users = new ArrayList<>(usersSet);
-
-            // ================= UNITES GROUPÉES =================
+            // ================= UNITES =================
             Set<Unite> uniteSet = new HashSet<>();
 
             List<EquipeUnite> equipeUnites = equipeUniteService.findByEquipe(equipe.getId());
-
             if (equipeUnites != null) {
                 for (EquipeUnite eu : equipeUnites) {
                     if (eu.getUnite() != null) {
@@ -131,8 +88,9 @@ public class PcLoadDataController {
                 }
             }
 
-            List<MissionUnite> missionUnites = missionUniteService.findByMission(
-                    mission != null ? mission.getId() : null);
+            List<MissionUnite> missionUnites = (mission != null)
+                    ? missionUniteService.findByMission(mission.getId())
+                    : new ArrayList<>();
 
             if (missionUnites != null) {
                 for (MissionUnite mu : missionUnites) {
@@ -154,42 +112,28 @@ public class PcLoadDataController {
 
             List<Unite> unites = new ArrayList<>(uniteSet);
 
-            // ================= RELATIONS =================
+            // ================= DETAIL EQUIPE =================
             List<DetailEquipe> detailEquipes = detailEquipeService.findByEquipe(equipe.getId());
 
-            System.out.println("DETAIL EQUIPE SIZE = " + detailEquipes.size());
+            // ================= PAYLOAD FINAL (SYNC DTO) =================
+            SyncResponseDTO payload = new SyncResponseDTO();
 
-            System.out.println("EQUIPE UNITES SIZE = " + equipeUnites.size());
-            System.out.println("MISSION UNITES SIZE = " + missionUnites.size());
-            System.out.println("DETAIL UNITES SIZE = " + detailUnites.size());
+            payload.setChefEquipe(chef);
+            payload.setChargeMission(chargeMission);
+            payload.setEquipe(equipe);
+            payload.setMission(mission);
+            payload.setUsers(users);
+            payload.setUnites(unites);
+            payload.setDetailEquipes(detailEquipes);
+            payload.setEquipeUnites(equipeUnites);
+            payload.setMissionUnites(missionUnites);
+            payload.setDetailUnites(detailUnites);
 
-            // ================= PAYLOAD =================
-            PcloadDataDTO payload = PcloadDataDTO.builder()
-                    .chefEquipe(chef)
-                    .chargeMission(chargeMission)
-                    .equipe(equipe)
-                    .mission(mission)
-
-                    // USERS
-                    .users(users)
-
-                    // UNITES GROUPÉES
-                    .unites(unites)
-
-                    // RELATIONS CONSERVÉES
-                    .detailEquipes(detailEquipes)
-                    .equipeUnites(equipeUnites)
-                    .detailUnites(detailUnites)
-                    .missionUnites(missionUnites)
-
-                    .build();
-
-            // ================= SAVE =================
+            // ================= SAVE LOCAL =================
             syncService.saveSyncData(payload);
 
             return ResponseEntity.ok(
-                    new ApiResponse<>(
-                            true,
+                    new ApiResponse<>(true,
                             "Synchronisation réussie",
                             payload));
 
@@ -198,8 +142,7 @@ public class PcLoadDataController {
             e.printStackTrace();
 
             return ResponseEntity.internalServerError()
-                    .body(new ApiResponse<>(
-                            false,
+                    .body(new ApiResponse<>(false,
                             "Erreur sync",
                             e.getMessage()));
         }

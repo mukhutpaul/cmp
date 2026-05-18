@@ -14,4 +14,5 @@ public class PcSyncLoginDTO {
     private String password;
 
     private String baseUrl;
+    private String localIp;
 }
