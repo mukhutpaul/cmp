@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.cm_policier.effectifs.dto.UpdateUserRequest;
 import com.cm_policier.effectifs.model.DetailEquipe;
@@ -62,7 +64,11 @@ public class UserService {
     // GET ALL USERS
     // =========================
     public List<User> getAllUsers() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.debugAll();
+
+        for (User u : users) {
+            System.out.println("RAW PASSWORD = " + u.getPassword());
+        }
 
         for (User u : users) {
             System.out.println("===== USER DEBUG =====");
@@ -145,8 +151,6 @@ public class UserService {
         List<User> users = details.stream()
                 .map(DetailEquipe::getUser)
                 .toList();
-
-        users.forEach(u -> u.setPassword(null));
 
         return users;
     }
