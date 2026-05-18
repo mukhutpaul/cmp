@@ -15,10 +15,13 @@ public class PcSyncClient {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper mapper = new ObjectMapper();
 
+    // 🔥 URL FIXE DU SERVEUR DISTANT
+    private static final String BASE_URL = "http://10.26.176.185:8090";
+
     public SyncResponseDTO sync(PcSyncLoginDTO request) {
 
-        // ================= URL DYNAMIQUE =================
-        String url = request.getBaseUrl() + "/api/pc/sync";
+        // ================= URL =================
+        String url = BASE_URL + "/api/pc/sync";
 
         // ================= CALL API =================
         ResponseEntity<ApiResponse> response =
