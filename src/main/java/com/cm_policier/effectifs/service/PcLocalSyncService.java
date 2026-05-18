@@ -1,11 +1,9 @@
 package com.cm_policier.effectifs.service;
 
 import org.springframework.stereotype.Service;
+
+import com.cm_policier.effectifs.dto.PcloadDataDTO;
 import com.cm_policier.effectifs.dto.SyncResponseDTO;
-import com.cm_policier.effectifs.model.DetailEquipe;
-import com.cm_policier.effectifs.model.DetailUnite;
-import com.cm_policier.effectifs.model.EquipeUnite;
-import com.cm_policier.effectifs.model.MissionUnite;
 import com.cm_policier.effectifs.model.Unite;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.DetailEquipeRepository;
@@ -35,7 +33,7 @@ public class PcLocalSyncService {
     private final MissionUniteRepository missionUniteRepository;
 
     @Transactional
-    public void saveSyncData(SyncResponseDTO data) {
+    public void saveSyncData(PcloadDataDTO data) {
 
         // ================= USERS =================
         if (data.getUsers() != null) {
