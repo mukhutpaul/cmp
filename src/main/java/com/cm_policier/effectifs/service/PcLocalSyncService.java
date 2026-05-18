@@ -8,8 +8,6 @@ import com.cm_policier.effectifs.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class PcLocalSyncService {
@@ -30,32 +28,49 @@ public class PcLocalSyncService {
         // ================= USERS =================
         if (data.getUsers() != null) {
 
-            for (User incomingUser : data.getUsers()) {
+            for (User incoming : data.getUsers()) {
 
-                if (incomingUser.getId() != null) {
+                if (incoming.getId() != null) {
 
-                    User existing = userRepository.findById(incomingUser.getId()).orElse(null);
+                    userRepository.findById(incoming.getId())
+                            .map(existing -> {
 
-                    if (existing != null) {
+                                existing.setUsername(incoming.getUsername());
+                                existing.setEmail(incoming.getEmail());
+                                existing.setNoms(incoming.getNoms());
+                                existing.setProfile(incoming.getProfile());
 
-                        existing.setUsername(incomingUser.getUsername());
-                        existing.setEmail(incomingUser.getEmail());
-                        existing.setNoms(incomingUser.getNoms());
-                        existing.setProfile(incomingUser.getProfile());
+                                if (incoming.getPassword() != null &&
+                                        !incoming.getPassword().isBlank()) {
+                                    existing.setPassword(incoming.getPassword());
+                                }
 
-                        if (incomingUser.getPassword() != null
-                                && !incomingUser.getPassword().isBlank()) {
-                            existing.setPassword(incomingUser.getPassword());
-                        }
+                                return userRepository.save(existing);
+                            })
+                            .orElseGet(() -> {
+                                // IMPORTANT : nouveau user MAIS propre copie
+                                User newUser = new User();
 
-                        userRepository.save(existing);
+                                newUser.setId(incoming.getId());
+                                newUser.setUsername(incoming.getUsername());
+                                newUser.setEmail(incoming.getEmail());
+                                newUser.setNoms(incoming.getNoms());
+                                newUser.setProfile(incoming.getProfile());
+                                newUser.setPassword(incoming.getPassword());
 
-                    } else {
-                        userRepository.save(incomingUser);
-                    }
+                                return userRepository.save(newUser);
+                            });
 
                 } else {
-                    userRepository.save(incomingUser);
+                    // nouveau user sans id
+                    User newUser = new User();
+                    newUser.setUsername(incoming.getUsername());
+                    newUser.setEmail(incoming.getEmail());
+                    newUser.setNoms(incoming.getNoms());
+                    newUser.setProfile(incoming.getProfile());
+                    newUser.setPassword(incoming.getPassword());
+
+                    userRepository.save(newUser);
                 }
             }
         }
