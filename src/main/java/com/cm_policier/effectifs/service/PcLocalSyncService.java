@@ -1,9 +1,7 @@
 package com.cm_policier.effectifs.service;
 
 import org.springframework.stereotype.Service;
-
 import com.cm_policier.effectifs.dto.PcloadDataDTO;
-import com.cm_policier.effectifs.dto.SyncResponseDTO;
 import com.cm_policier.effectifs.model.Unite;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.DetailEquipeRepository;
