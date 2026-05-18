@@ -17,204 +17,218 @@ public class PcLocalSyncService {
     private final UniteRepository uniteRepository;
     private final DetailUniteRepository detailUniteRepository;
     private final MissionRepository missionRepository;
+
     private final DetailEquipeRepository detailEquipeRepository;
     private final EquipeUniteRepository equipeUniteRepository;
     private final MissionUniteRepository missionUniteRepository;
 
-    @Transactional
-    public void saveSyncData(SyncResponseDTO data) {
+   @Transactional
+public void saveSyncData(SyncResponseDTO data) {
 
-        // ================= USERS =================
-        if (data.getUsers() != null) {
-            for (User u : data.getUsers()) {
+    // ================= USERS (1) =================
+    if (data.getUsers() != null) {
 
-                User user = userRepository.findById(u.getId())
-                        .orElse(new User());
+        for (User incoming : data.getUsers()) {
 
-                user.setId(u.getId());
-                user.setUsername(u.getUsername());
-                user.setEmail(u.getEmail());
-                user.setNoms(u.getNoms());
-                user.setPassword(u.getPassword());
-                user.setProfile(u.getProfile());
+            User user = new User();
 
-                userRepository.save(user);
-            }
-        }
-
-        // ================= MISSION (IMPORTANT FIRST) =================
-        Mission mission = null;
-
-        if (data.getMission() != null) {
-
-            Mission m = data.getMission();
-
-            mission = missionRepository.findById(m.getId())
-                    .orElse(new Mission());
-
-            mission.setId(m.getId());
-            mission.setDateDebut(m.getDateDebut());
-            mission.setDateFin(m.getDateFin());
-            mission.setZone(m.getZone());
-            mission.setNumero(m.getNumero());
-            mission.setIsActive(m.getIsActive());
-
-            if (m.getChargeMission() != null && m.getChargeMission().getId() != null) {
-                User ref = new User();
-                ref.setId(m.getChargeMission().getId());
-                mission.setChargeMission(ref);
+            if (incoming.getId() != null &&
+                    userRepository.existsById(incoming.getId())) {
+                user.setId(incoming.getId());
             }
 
-            mission = missionRepository.saveAndFlush(mission);
+            user.setUsername(incoming.getUsername());
+            user.setEmail(incoming.getEmail());
+            user.setNoms(incoming.getNoms());
+            user.setPassword(incoming.getPassword());
+            user.setProfile(incoming.getProfile());
+
+            userRepository.save(user);
         }
-
-        // ================= EQUIPE =================
-        Equipe equipe = null;
-
-        if (data.getEquipe() != null) {
-
-            Equipe e = data.getEquipe();
-
-            equipe = equipeRepository.findById(e.getId())
-                    .orElse(new Equipe());
-
-            equipe.setId(e.getId());
-            equipe.setIsActive(e.getIsActive());
-
-            // ⚠️ IMPORTANT: utiliser mission persistée
-            equipe.setMission(mission != null ? mission : e.getMission());
-
-            equipe.setUser(e.getUser());
-
-            equipe = equipeRepository.saveAndFlush(equipe);
-        }
-
-        // ================= DETAIL EQUIPE =================
-        if (data.getDetailEquipes() != null) {
-
-            for (DetailEquipe d : data.getDetailEquipes()) {
-
-                DetailEquipe entity = new DetailEquipe();
-
-                entity.setId(d.getId());
-                entity.setIsActive(d.getIsActive());
-
-                if (equipe != null && d.getEquipe() != null) {
-                    Equipe ref = new Equipe();
-                    ref.setId(equipe.getId());
-                    entity.setEquipe(ref);
-                }
-
-                if (d.getUser() != null) {
-                    User ref = new User();
-                    ref.setId(d.getUser().getId());
-                    entity.setUser(ref);
-                }
-
-                detailEquipeRepository.save(entity);
-            }
-        }
-
-        // ================= EQUIPE UNITE =================
-        if (data.getEquipeUnites() != null) {
-
-            for (EquipeUnite euIn : data.getEquipeUnites()) {
-
-                EquipeUnite eu = new EquipeUnite();
-                eu.setId(euIn.getId());
-                eu.setIsActive(euIn.getIsActive());
-
-                if (equipe != null) {
-                    Equipe ref = new Equipe();
-                    ref.setId(equipe.getId());
-                    eu.setEquipe(ref);
-                }
-
-                if (euIn.getUnite() != null) {
-                    Unite u = new Unite();
-                    u.setId(euIn.getUnite().getId());
-                    eu.setUnite(u);
-                }
-
-                equipeUniteRepository.save(eu);
-            }
-        }
-
-        // ================= MISSION UNITE =================
-        if (data.getMissionUnites() != null) {
-
-            for (MissionUnite muIn : data.getMissionUnites()) {
-
-                MissionUnite mu = new MissionUnite();
-                mu.setId(muIn.getId());
-                mu.setIsActive(muIn.getIsActive());
-
-                if (mission != null) {
-                    Mission ref = new Mission();
-                    ref.setId(mission.getId());
-                    mu.setMission(ref);
-                }
-
-                if (muIn.getUnite() != null) {
-                    Unite u = new Unite();
-                    u.setId(muIn.getUnite().getId());
-                    mu.setUnite(u);
-                }
-
-                missionUniteRepository.save(mu);
-            }
-        }
-
-        // ================= UNITES =================
-        if (data.getUnites() != null) {
-
-            for (Unite uIn : data.getUnites()) {
-
-                Unite u = uniteRepository.findById(uIn.getId())
-                        .orElse(new Unite());
-
-                u.setId(uIn.getId());
-                u.setName(uIn.getName());
-                u.setSignature(uIn.getSignature());
-                u.setEquipeaf(uIn.getEquipeaf());
-
-                if (uIn.getCommandant() != null) {
-                    Person p = new Person();
-                    p.setIdPersonnel(uIn.getCommandant().getIdPersonnel());
-                    u.setCommandant(p);
-                }
-
-                uniteRepository.save(u);
-            }
-        }
-
-        // ================= DETAIL UNITE =================
-        if (data.getDetailUnites() != null) {
-
-            for (DetailUnite du : data.getDetailUnites()) {
-
-                DetailUnite entity = detailUniteRepository.findById(du.getId())
-                        .orElse(new DetailUnite());
-
-                entity.setId(du.getId());
-                entity.setIsActive(du.getIsActive());
-
-                if (du.getUser() != null) {
-                    User ref = new User();
-                    ref.setId(du.getUser().getId());
-                    entity.setUser(ref);
-                }
-
-                if (du.getUnite() != null) {
-                    Unite ref = new Unite();
-                    ref.setId(du.getUnite().getId());
-                    entity.setUnite(ref);
-                }
-
-                detailUniteRepository.save(entity);
-            }
-        }
-
-        System.out.println("SYNC OK COMPLET");
     }
+
+    // ================= UNITES (2) =================
+    if (data.getUnites() != null) {
+
+        for (Unite incoming : data.getUnites()) {
+
+            Unite unite = new Unite();
+
+            unite.setId(incoming.getId());
+            unite.setName(incoming.getName());
+            unite.setSignature(incoming.getSignature());
+            unite.setEquipeaf(incoming.getEquipeaf());
+
+            if (incoming.getCommandant() != null &&
+                    incoming.getCommandant().getIdPersonnel() != null) {
+
+                Person p = new Person();
+                p.setIdPersonnel(incoming.getCommandant().getIdPersonnel());
+
+                unite.setCommandant(p);
+            }
+
+            uniteRepository.save(unite);
+        }
+    }
+
+    // ================= MISSION (3) =================
+    if (data.getMission() != null) {
+
+        Mission incoming = data.getMission();
+
+        Mission mission;
+
+        if (incoming.getId() != null) {
+            mission = missionRepository.findById(incoming.getId())
+                    .orElse(new Mission());
+        } else {
+            mission = new Mission();
+        }
+
+        mission.setDateDebut(incoming.getDateDebut());
+        mission.setDateFin(incoming.getDateFin());
+        mission.setZone(incoming.getZone());
+        mission.setNumero(incoming.getNumero());
+        mission.setIsActive(incoming.getIsActive());
+
+        if (incoming.getChargeMission() != null &&
+                incoming.getChargeMission().getId() != null) {
+
+            User charge = new User();
+            charge.setId(incoming.getChargeMission().getId());
+
+            mission.setChargeMission(charge);
+        }
+
+        missionRepository.save(mission);
+    }
+
+    // ================= EQUIPE (4) =================
+    if (data.getEquipe() != null) {
+
+        Equipe incoming = data.getEquipe();
+
+        Equipe equipe;
+
+        if (incoming.getId() != null) {
+            equipe = equipeRepository.findById(incoming.getId())
+                    .orElse(new Equipe());
+        } else {
+            equipe = new Equipe();
+        }
+
+        equipe.setMission(incoming.getMission());
+        equipe.setUser(incoming.getUser());
+        equipe.setIsActive(incoming.getIsActive());
+
+        equipeRepository.save(equipe);
+    }
+
+    // ================= DETAIL EQUIPE (5) =================
+    if (data.getDetailEquipes() != null) {
+
+        for (DetailEquipe incoming : data.getDetailEquipes()) {
+
+            DetailEquipe detail = new DetailEquipe();
+
+            detail.setId(incoming.getId());
+            detail.setIsActive(incoming.getIsActive());
+
+            if (incoming.getEquipe() != null && incoming.getEquipe().getId() != null) {
+                Equipe e = new Equipe();
+                e.setId(incoming.getEquipe().getId());
+                detail.setEquipe(e);
+            }
+
+            if (incoming.getUser() != null && incoming.getUser().getId() != null) {
+                User u = new User();
+                u.setId(incoming.getUser().getId());
+                detail.setUser(u);
+            }
+
+            detailEquipeRepository.save(detail);
+        }
+    }
+
+    // ================= MISSION UNITE (6) =================
+    if (data.getMissionUnites() != null) {
+
+        for (MissionUnite incoming : data.getMissionUnites()) {
+
+            MissionUnite mu = new MissionUnite();
+
+            mu.setId(incoming.getId());
+            mu.setIsActive(incoming.getIsActive());
+
+            if (incoming.getMission() != null && incoming.getMission().getId() != null) {
+                Mission m = new Mission();
+                m.setId(incoming.getMission().getId());
+                mu.setMission(m);
+            }
+
+            if (incoming.getUnite() != null && incoming.getUnite().getId() != null) {
+                Unite u = new Unite();
+                u.setId(incoming.getUnite().getId());
+                mu.setUnite(u);
+            }
+
+            missionUniteRepository.save(mu);
+        }
+    }
+
+    // ================= EQUIPE UNITE (7) =================
+    if (data.getEquipeUnites() != null) {
+
+        for (EquipeUnite incoming : data.getEquipeUnites()) {
+
+            EquipeUnite eu = new EquipeUnite();
+
+            eu.setId(incoming.getId());
+            eu.setIsActive(incoming.getIsActive());
+
+            if (incoming.getEquipe() != null && incoming.getEquipe().getId() != null) {
+                Equipe e = new Equipe();
+                e.setId(incoming.getEquipe().getId());
+                eu.setEquipe(e);
+            }
+
+            if (incoming.getUnite() != null && incoming.getUnite().getId() != null) {
+                Unite u = new Unite();
+                u.setId(incoming.getUnite().getId());
+                eu.setUnite(u);
+            }
+
+            equipeUniteRepository.save(eu);
+        }
+    }
+
+    // ================= DETAIL UNITE (8) =================
+    if (data.getDetailUnites() != null) {
+
+        for (DetailUnite du : data.getDetailUnites()) {
+
+            DetailUnite entity;
+
+            if (du.getId() != null) {
+                entity = detailUniteRepository.findById(du.getId())
+                        .orElse(new DetailUnite());
+            } else {
+                entity = new DetailUnite();
+            }
+
+            entity.setUser(
+                    du.getUser() != null ? userRepository.findById(du.getUser().getId()).orElse(null) : null);
+
+            entity.setUnite(
+                    du.getUnite() != null ? uniteRepository.findById(du.getUnite().getId()).orElse(null) : null);
+
+            entity.setIsActive(du.getIsActive());
+
+            detailUniteRepository.save(entity);
+        }
+    }
+
+    System.out.println("SYNC OK");
+}
 }
