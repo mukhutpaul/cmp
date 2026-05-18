@@ -17,6 +17,7 @@ public class PcLocalSyncService {
     private final UniteRepository uniteRepository;
     private final DetailUniteRepository detailUniteRepository;
     private final MissionRepository missionRepository;
+
     private final DetailEquipeRepository detailEquipeRepository;
     private final EquipeUniteRepository equipeUniteRepository;
     private final MissionUniteRepository missionUniteRepository;
@@ -24,66 +25,64 @@ public class PcLocalSyncService {
     @Transactional
     public void saveSyncData(SyncResponseDTO data) {
 
-        // ================= USERS (UPSERT PROPRE) =================
+        // ================= USERS =================
         if (data.getUsers() != null) {
 
             for (User incoming : data.getUsers()) {
 
-                User user = userRepository.findById(incoming.getId())
-                        .orElseGet(User::new);
+                if (incoming.getId() != null) {
 
-                user.setId(incoming.getId());
-                user.setUsername(incoming.getUsername());
-                user.setEmail(incoming.getEmail());
-                user.setNoms(incoming.getNoms());
-                user.setPassword(incoming.getPassword());
+                    userRepository.findById(incoming.getId())
+                            .map(existing -> {
 
-                userRepository.save(user);
+                                existing.setUsername(incoming.getUsername());
+                                existing.setEmail(incoming.getEmail());
+                                existing.setNoms(incoming.getNoms());
+                                existing.setProfile(incoming.getProfile());
+
+                                if (incoming.getPassword() != null &&
+                                        !incoming.getPassword().isBlank()) {
+                                    existing.setPassword(incoming.getPassword());
+                                }
+
+                                return userRepository.save(existing);
+                            })
+                            .orElseGet(() -> {
+                                // IMPORTANT : nouveau user MAIS propre copie
+                                User newUser = new User();
+
+                                newUser.setId(incoming.getId());
+                                newUser.setUsername(incoming.getUsername());
+                                newUser.setEmail(incoming.getEmail());
+                                newUser.setNoms(incoming.getNoms());
+                                newUser.setProfile(incoming.getProfile());
+                                newUser.setPassword(incoming.getPassword());
+
+                                return userRepository.save(newUser);
+                            });
+
+                } else {
+                    // nouveau user sans id
+                    User newUser = new User();
+                    newUser.setUsername(incoming.getUsername());
+                    newUser.setEmail(incoming.getEmail());
+                    newUser.setNoms(incoming.getNoms());
+                    newUser.setProfile(incoming.getProfile());
+                    newUser.setPassword(incoming.getPassword());
+
+                    userRepository.save(newUser);
+                }
             }
         }
 
         // ================= MISSION =================
         if (data.getMission() != null) {
-
-            Mission incoming = data.getMission();
-
-            Mission mission = missionRepository.findById(incoming.getId())
-                    .orElseGet(Mission::new);
-
-            mission.setId(incoming.getId());
-            mission.setChargeMission(incoming.getChargeMission());
-
-
-            missionRepository.save(mission);
+            missionRepository.save(data.getMission());
         }
 
         // ================= EQUIPE =================
         if (data.getEquipe() != null) {
-
-            Equipe incoming = data.getEquipe();
-
-            Equipe equipe = equipeRepository.findById(incoming.getId())
-                    .orElseGet(Equipe::new);
-
-            equipe.setId(incoming.getId());
-            equipe.setUser(incoming.getUser());
-
-            equipeRepository.save(equipe);
-        }
-
-        // ================= UNITES =================
-        if (data.getUnites() != null) {
-
-            for (Unite u : data.getUnites()) {
-
-                Unite unite = uniteRepository.findById(u.getId())
-                        .orElseGet(Unite::new);
-
-                unite.setId(u.getId());
-                unite.setName(u.getName());
-
-                uniteRepository.save(unite);
-            }
+            equipeRepository.save(data.getEquipe());
         }
 
         // ================= DETAIL EQUIPE =================
@@ -101,11 +100,21 @@ public class PcLocalSyncService {
             missionUniteRepository.saveAll(data.getMissionUnites());
         }
 
+        // ================= UNITES =================
+        if (data.getUnites() != null) {
+            for (Unite u : data.getUnites()) {
+                uniteRepository.save(u);
+            }
+        }
+
         // ================= DETAIL UNITE =================
         if (data.getDetailUnites() != null) {
             detailUniteRepository.saveAll(data.getDetailUnites());
         }
 
-        System.out.println("SYNC OK");
+        System.out.println("SYNC OK:");
+        System.out.println("USERS = " + (data.getUsers() != null ? data.getUsers().size() : 0));
+        System.out.println("UNITES = " + (data.getUnites() != null ? data.getUnites().size() : 0));
+        System.out.println("EQUIPE ID = " + (data.getEquipe() != null ? data.getEquipe().getId() : null));
     }
 }
