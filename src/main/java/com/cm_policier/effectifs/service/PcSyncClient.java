@@ -18,7 +18,8 @@ public class PcSyncClient {
     public SyncResponseDTO sync(PcSyncLoginDTO request) {
 
         // ================= URL DYNAMIQUE =================
-        String url = request.getBaseUrl() + "/api/pc/sync";
+        //String url = request.getBaseUrl() + "http://localhost:8090/api/pc/sync";
+        String url = "http://10.26.176.185:8090/api";
 
         // ================= CALL API =================
         ResponseEntity<ApiResponse> response =

@@ -34,6 +34,8 @@ public class PcLoadDataController {
     public ResponseEntity<?> syncData(
             @RequestBody PcSyncLoginDTO request) {
 
+        System.out.println("🔥🔥🔥 SYNC LOCAL API CALLED 🔥🔥🔥");
+
         try {
 
             System.out.println("\n========== SYNC START ==========");
