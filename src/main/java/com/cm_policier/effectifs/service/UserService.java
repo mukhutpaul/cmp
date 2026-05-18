@@ -1,5 +1,6 @@
 package com.cm_policier.effectifs.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,4 +138,15 @@ public class UserService {
 
     return users;
 }
+
+public List<User> findAllByIds(List<Long> ids) {
+
+    if (ids == null || ids.isEmpty()) {
+        return new ArrayList<>();
+    }
+
+    return userRepository.findAllByIds(ids);
+}
+
+
 }

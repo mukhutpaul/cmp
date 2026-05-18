@@ -72,8 +72,13 @@ public class PcLoadDataController {
             // ================= USERS GROUPÉS =================
             Set<User> usersSet = new HashSet<>();
 
-            List<User> equipeUsers =
-                    userService.findUsersByEquipe(equipe.getId());
+            List<User> rawUsers = userService.findUsersByEquipe(equipe.getId());
+
+            List<Long> ids = rawUsers.stream()
+                    .map(User::getId)
+                    .toList();
+
+            List<User> equipeUsers = userService.findAllByIds(equipe.getId());
 
             if (equipeUsers != null) {
                 usersSet.addAll(equipeUsers);
@@ -97,8 +102,7 @@ public class PcLoadDataController {
             // ================= UNITES GROUPÉES =================
             Set<Unite> uniteSet = new HashSet<>();
 
-            List<EquipeUnite> equipeUnites =
-                    equipeUniteService.findByEquipe(equipe.getId());
+            List<EquipeUnite> equipeUnites = equipeUniteService.findByEquipe(equipe.getId());
 
             if (equipeUnites != null) {
                 for (EquipeUnite eu : equipeUnites) {
@@ -108,9 +112,8 @@ public class PcLoadDataController {
                 }
             }
 
-            List<MissionUnite> missionUnites =
-                    missionUniteService.findByMission(
-                            mission != null ? mission.getId() : null);
+            List<MissionUnite> missionUnites = missionUniteService.findByMission(
+                    mission != null ? mission.getId() : null);
 
             if (missionUnites != null) {
                 for (MissionUnite mu : missionUnites) {
@@ -120,8 +123,7 @@ public class PcLoadDataController {
                 }
             }
 
-            List<DetailUnite> detailUnites =
-                    detailUniteService.findUnitesByEquipe(equipe.getId());
+            List<DetailUnite> detailUnites = detailUniteService.findUnitesByEquipe(equipe.getId());
 
             if (detailUnites != null) {
                 for (DetailUnite du : detailUnites) {
@@ -134,8 +136,7 @@ public class PcLoadDataController {
             List<Unite> unites = new ArrayList<>(uniteSet);
 
             // ================= RELATIONS =================
-            List<DetailEquipe> detailEquipes =
-                    detailEquipeService.findByEquipe(equipe.getId());
+            List<DetailEquipe> detailEquipes = detailEquipeService.findByEquipe(equipe.getId());
 
             System.out.println("DETAIL EQUIPE SIZE = " + detailEquipes.size());
 
@@ -144,30 +145,28 @@ public class PcLoadDataController {
             System.out.println("DETAIL UNITES SIZE = " + detailUnites.size());
 
             // ================= PAYLOAD =================
-            PcloadDataDTO payload =
-                    PcloadDataDTO.builder()
-                            .chefEquipe(chef)
-                            .chargeMission(chargeMission)
-                            .equipe(equipe)
-                            .mission(mission)
+            PcloadDataDTO payload = PcloadDataDTO.builder()
+                    .chefEquipe(chef)
+                    .chargeMission(chargeMission)
+                    .equipe(equipe)
+                    .mission(mission)
 
-                            // USERS
-                            .users(users)
+                    // USERS
+                    .users(users)
 
-                            // UNITES GROUPÉES
-                            .unites(unites)
+                    // UNITES GROUPÉES
+                    .unites(unites)
 
-                            // RELATIONS CONSERVÉES
-                            .detailEquipes(detailEquipes)
-                            .equipeUnites(equipeUnites)
-                            .detailUnites(detailUnites)
-                            .missionUnites(missionUnites)
+                    // RELATIONS CONSERVÉES
+                    .detailEquipes(detailEquipes)
+                    .equipeUnites(equipeUnites)
+                    .detailUnites(detailUnites)
+                    .missionUnites(missionUnites)
 
-                            .build();
+                    .build();
 
             // ================= SAVE =================
             syncService.saveSyncData(payload);
-         
 
             return ResponseEntity.ok(
                     new ApiResponse<>(

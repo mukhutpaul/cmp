@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "users")
@@ -22,6 +23,7 @@ public class User {
     private String username;
 
     @Column(nullable = false)
+    @JsonProperty // force l’inclusion dans JSON
     private String password;
 
     @Column(nullable = false, unique = true)
