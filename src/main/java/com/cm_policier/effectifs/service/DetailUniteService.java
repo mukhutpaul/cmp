@@ -6,14 +6,16 @@ import com.cm_policier.effectifs.repository.DetailUniteRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class DetailUniteService {
-    
+
     private final DetailUniteRepository repository;
 
     public DetailUnite create(DetailUnite d) {
@@ -45,14 +47,18 @@ public class DetailUniteService {
     }
 
     public void delete(Long id) {
-        DetailUnite d = getById(id);
-        d.setIsActive(false); // soft delete
-        repository.save(d);
+
+        DetailUnite d = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "DetailUnite introuvable"));
+
+        repository.delete(d);
     }
 
     public List<Unite> getUnitesByUser(Long userId) {
 
-        List<DetailUnite> relations = repository.findByUnite_Id(userId);
+        List<DetailUnite> relations = repository.findByUser_Id(userId);
 
         return relations.stream()
                 .map(DetailUnite::getUnite)

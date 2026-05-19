@@ -44,12 +44,10 @@ public class DetailUniteController {
         return ResponseEntity.ok().build();
     }
 
-     @GetMapping("/user/{userId}/unites")
+    @GetMapping("/user/{userId}/unites")
     public ResponseEntity<List<Unite>> getUnitesByUser(
-            @PathVariable Long userId
-    ) {
+            @PathVariable Long userId) {
         return ResponseEntity.ok(
-                service.getUnitesByUser(userId)
-        );
+                service.getUnitesByUser(userId));
     }
 }

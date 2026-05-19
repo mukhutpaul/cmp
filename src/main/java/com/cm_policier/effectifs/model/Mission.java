@@ -1,8 +1,6 @@
 package com.cm_policier.effectifs.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
