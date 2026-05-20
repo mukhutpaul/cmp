@@ -35,7 +35,9 @@ public interface ControleRepository extends JpaRepository<Controle, UUID>, Contr
             AND p.dateNaissance = :dateNaissance
             """)
     List<Controle> searchByPolicierIdentite(
-            @Param("noms") String nom,
+            @Param("nom") String nom,
+            @Param("postnom") String postnom,
+            @Param("prenom") String prenom,
             @Param("dateNaissance") LocalDate dateNaissance);
 
     long count();

@@ -69,10 +69,14 @@ public class ControleService {
     }
 
     public List<Controle> searchByIdentite(
-            String noms,
+            String nom,
+            String postnom,
+            String prenom,
             LocalDate dateNaissance) {
         return repository.searchByPolicierIdentite(
-                noms,
+                nom,
+                postnom,
+                prenom,
                 dateNaissance);
     }
 
