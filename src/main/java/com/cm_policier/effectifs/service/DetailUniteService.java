@@ -67,6 +67,6 @@ public class DetailUniteService {
 
     public List<DetailUnite> findUnitesByEquipe(Long equipeId) {
 
-        return repository.findByUser_Id(equipeId);
+        return repository.findByEquipe(equipeId);
     }
 }
