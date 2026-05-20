@@ -1,6 +1,7 @@
 package com.cm_policier.effectifs.service;
 
 import org.springframework.stereotype.Service;
+
 import com.cm_policier.effectifs.dto.SyncResponseDTO;
 import com.cm_policier.effectifs.model.*;
 import com.cm_policier.effectifs.repository.*;
@@ -30,9 +31,18 @@ public class PcLocalSyncService {
 
             for (User incoming : data.getUsers()) {
 
-                User user = (incoming.getId() != null)
-                        ? userRepository.findById(incoming.getId()).orElse(new User())
-                        : new User();
+                User user;
+
+                if (incoming.getId() != null) {
+                    user = userRepository.findById(incoming.getId())
+                            .orElseGet(() -> {
+                                User u = new User();
+                                u.setId(incoming.getId());
+                                return u;
+                            });
+                } else {
+                    user = new User();
+                }
 
                 user.setUsername(incoming.getUsername());
                 user.setEmail(incoming.getEmail());
@@ -49,9 +59,18 @@ public class PcLocalSyncService {
 
             Mission incoming = data.getMission();
 
-            Mission mission = (incoming.getId() != null)
-                    ? missionRepository.findById(incoming.getId()).orElse(new Mission())
-                    : new Mission();
+            Mission mission;
+
+            if (incoming.getId() != null) {
+                mission = missionRepository.findById(incoming.getId())
+                        .orElseGet(() -> {
+                            Mission m = new Mission();
+                            m.setId(incoming.getId());
+                            return m;
+                        });
+            } else {
+                mission = new Mission();
+            }
 
             mission.setDateDebut(incoming.getDateDebut());
             mission.setDateFin(incoming.getDateFin());
@@ -59,12 +78,16 @@ public class PcLocalSyncService {
             mission.setNumero(incoming.getNumero());
             mission.setIsActive(incoming.getIsActive());
 
-            if (incoming.getChargeMission() != null && incoming.getChargeMission().getId() != null) {
+            if (incoming.getChargeMission() != null
+                    && incoming.getChargeMission().getId() != null) {
+
                 mission.setChargeMission(
-                        userRepository.findById(incoming.getChargeMission().getId()).orElse(null));
+                        userRepository.findById(
+                                incoming.getChargeMission().getId())
+                                .orElse(null));
             }
 
-            mission = missionRepository.save(mission);
+            missionRepository.save(mission);
         }
 
         // ================= EQUIPE =================
@@ -72,20 +95,37 @@ public class PcLocalSyncService {
 
             Equipe incoming = data.getEquipe();
 
-            Equipe equipe = (incoming.getId() != null)
-                    ? equipeRepository.findById(incoming.getId()).orElse(new Equipe())
-                    : new Equipe();
+            Equipe equipe;
+
+            if (incoming.getId() != null) {
+                equipe = equipeRepository.findById(incoming.getId())
+                        .orElseGet(() -> {
+                            Equipe e = new Equipe();
+                            e.setId(incoming.getId());
+                            return e;
+                        });
+            } else {
+                equipe = new Equipe();
+            }
 
             equipe.setIsActive(incoming.getIsActive());
 
-            if (incoming.getMission() != null && incoming.getMission().getId() != null) {
+            if (incoming.getMission() != null
+                    && incoming.getMission().getId() != null) {
+
                 equipe.setMission(
-                        missionRepository.findById(incoming.getMission().getId()).orElse(null));
+                        missionRepository.findById(
+                                incoming.getMission().getId())
+                                .orElse(null));
             }
 
-            if (incoming.getUser() != null && incoming.getUser().getId() != null) {
+            if (incoming.getUser() != null
+                    && incoming.getUser().getId() != null) {
+
                 equipe.setUser(
-                        userRepository.findById(incoming.getUser().getId()).orElse(null));
+                        userRepository.findById(
+                                incoming.getUser().getId())
+                                .orElse(null));
             }
 
             equipeRepository.save(equipe);
@@ -96,20 +136,37 @@ public class PcLocalSyncService {
 
             for (DetailEquipe incoming : data.getDetailEquipes()) {
 
-                DetailEquipe detail = (incoming.getId() != null)
-                        ? detailEquipeRepository.findById(incoming.getId()).orElse(new DetailEquipe())
-                        : new DetailEquipe();
+                DetailEquipe detail;
+
+                if (incoming.getId() != null) {
+                    detail = detailEquipeRepository.findById(incoming.getId())
+                            .orElseGet(() -> {
+                                DetailEquipe d = new DetailEquipe();
+                                d.setId(incoming.getId());
+                                return d;
+                            });
+                } else {
+                    detail = new DetailEquipe();
+                }
 
                 detail.setIsActive(incoming.getIsActive());
 
-                if (incoming.getEquipe() != null && incoming.getEquipe().getId() != null) {
+                if (incoming.getEquipe() != null
+                        && incoming.getEquipe().getId() != null) {
+
                     detail.setEquipe(
-                            equipeRepository.findById(incoming.getEquipe().getId()).orElse(null));
+                            equipeRepository.findById(
+                                    incoming.getEquipe().getId())
+                                    .orElse(null));
                 }
 
-                if (incoming.getUser() != null && incoming.getUser().getId() != null) {
+                if (incoming.getUser() != null
+                        && incoming.getUser().getId() != null) {
+
                     detail.setUser(
-                            userRepository.findById(incoming.getUser().getId()).orElse(null));
+                            userRepository.findById(
+                                    incoming.getUser().getId())
+                                    .orElse(null));
                 }
 
                 detailEquipeRepository.save(detail);
@@ -121,17 +178,30 @@ public class PcLocalSyncService {
 
             for (Unite incoming : data.getUnites()) {
 
-                Unite unite = (incoming.getId() != null)
-                        ? uniteRepository.findById(incoming.getId()).orElse(new Unite())
-                        : new Unite();
+                Unite unite;
+
+                if (incoming.getId() != null) {
+                    unite = uniteRepository.findById(incoming.getId())
+                            .orElseGet(() -> {
+                                Unite u = new Unite();
+                                u.setId(incoming.getId());
+                                return u;
+                            });
+                } else {
+                    unite = new Unite();
+                }
 
                 unite.setName(incoming.getName());
                 unite.setSignature(incoming.getSignature());
                 unite.setEquipeaf(incoming.getEquipeaf());
 
-                if (incoming.getCommandant() != null && incoming.getCommandant().getIdPersonnel() != null) {
+                if (incoming.getCommandant() != null
+                        && incoming.getCommandant().getIdPersonnel() != null) {
+
                     Person p = new Person();
-                    p.setIdPersonnel(incoming.getCommandant().getIdPersonnel());
+                    p.setIdPersonnel(
+                            incoming.getCommandant().getIdPersonnel());
+
                     unite.setCommandant(p);
                 }
 
@@ -144,18 +214,37 @@ public class PcLocalSyncService {
 
             for (EquipeUnite incoming : data.getEquipeUnites()) {
 
-                EquipeUnite eu = new EquipeUnite();
+                EquipeUnite eu;
+
+                if (incoming.getId() != null) {
+                    eu = equipeUniteRepository.findById(incoming.getId())
+                            .orElseGet(() -> {
+                                EquipeUnite e = new EquipeUnite();
+                                e.setId(incoming.getId());
+                                return e;
+                            });
+                } else {
+                    eu = new EquipeUnite();
+                }
 
                 eu.setIsActive(incoming.getIsActive());
 
-                if (incoming.getEquipe() != null && incoming.getEquipe().getId() != null) {
+                if (incoming.getEquipe() != null
+                        && incoming.getEquipe().getId() != null) {
+
                     eu.setEquipe(
-                            equipeRepository.findById(incoming.getEquipe().getId()).orElse(null));
+                            equipeRepository.findById(
+                                    incoming.getEquipe().getId())
+                                    .orElse(null));
                 }
 
-                if (incoming.getUnite() != null && incoming.getUnite().getId() != null) {
+                if (incoming.getUnite() != null
+                        && incoming.getUnite().getId() != null) {
+
                     eu.setUnite(
-                            uniteRepository.findById(incoming.getUnite().getId()).orElse(null));
+                            uniteRepository.findById(
+                                    incoming.getUnite().getId())
+                                    .orElse(null));
                 }
 
                 equipeUniteRepository.save(eu);
@@ -163,22 +252,43 @@ public class PcLocalSyncService {
         }
 
         // ================= MISSION UNITE =================
+           System.out.println("MISSIONS SIZE = " 
+        + data.getMissionUnites().size());
         if (data.getMissionUnites() != null) {
 
             for (MissionUnite incoming : data.getMissionUnites()) {
 
-                MissionUnite mu = new MissionUnite();
+                MissionUnite mu;
+
+                if (incoming.getId() != null) {
+                    mu = missionUniteRepository.findById(incoming.getId())
+                            .orElseGet(() -> {
+                                MissionUnite m = new MissionUnite();
+                                m.setId(incoming.getId());
+                                return m;
+                            });
+                } else {
+                    mu = new MissionUnite();
+                }
 
                 mu.setIsActive(incoming.getIsActive());
 
-                if (incoming.getMission() != null && incoming.getMission().getId() != null) {
+                if (incoming.getMission() != null
+                        && incoming.getMission().getId() != null) {
+
                     mu.setMission(
-                            missionRepository.findById(incoming.getMission().getId()).orElse(null));
+                            missionRepository.findById(
+                                    incoming.getMission().getId())
+                                    .orElse(null));
                 }
 
-                if (incoming.getUnite() != null && incoming.getUnite().getId() != null) {
+                if (incoming.getUnite() != null
+                        && incoming.getUnite().getId() != null) {
+
                     mu.setUnite(
-                            uniteRepository.findById(incoming.getUnite().getId()).orElse(null));
+                            uniteRepository.findById(
+                                    incoming.getUnite().getId())
+                                    .orElse(null));
                 }
 
                 missionUniteRepository.save(mu);
@@ -186,30 +296,53 @@ public class PcLocalSyncService {
         }
 
         // ================= DETAIL UNITE =================
+        System.out.println("DETAIL UNITES SIZE = " 
+        + data.getDetailUnites().size());
         if (data.getDetailUnites() != null) {
 
             for (DetailUnite incoming : data.getDetailUnites()) {
 
-                DetailUnite entity = (incoming.getId() != null)
-                        ? detailUniteRepository.findById(incoming.getId()).orElse(new DetailUnite())
-                        : new DetailUnite();
-
-                entity.setIsActive(incoming.getIsActive());
-
-                if (incoming.getUser() != null && incoming.getUser().getId() != null) {
-                    entity.setUser(
-                            userRepository.findById(incoming.getUser().getId()).orElse(null));
+                if (incoming.getId() == null) {
+                    continue;
                 }
 
-                if (incoming.getUnite() != null && incoming.getUnite().getId() != null) {
-                    entity.setUnite(
-                            uniteRepository.findById(incoming.getUnite().getId()).orElse(null));
+                DetailUnite detail = detailUniteRepository
+                        .findById(incoming.getId())
+                        .orElse(new DetailUnite());
+
+                detail.setId(incoming.getId());
+
+                detail.setIsActive(incoming.getIsActive());
+
+                // USER
+                if (incoming.getUser() != null
+                        && incoming.getUser().getId() != null) {
+
+                    User user = userRepository
+                            .findById(incoming.getUser().getId())
+                            .orElse(null);
+
+                    detail.setUser(user);
                 }
 
-                detailUniteRepository.save(entity);
+                // UNITE
+                if (incoming.getUnite() != null
+                        && incoming.getUnite().getId() != null) {
+
+                    Unite unite = uniteRepository
+                            .findById(incoming.getUnite().getId())
+                            .orElse(null);
+
+                    detail.setUnite(unite);
+                }
+
+                System.out.println("SAVE DETAIL = " + detail.getId());
+
+                detailUniteRepository.save(detail);
             }
         }
 
         System.out.println("SYNC OK CLEAN ✔");
     }
 }
+
