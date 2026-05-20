@@ -85,6 +85,8 @@ public class Controle {
     // ===================== FILE =====================
 
     private String qrcode;
+    private String province;
+    private String equipe;
 
     // ===================== TIMESTAMPS =====================
 
