@@ -67,7 +67,7 @@ public class ControleServiceLoader {
                 User chefMission = mission.getChargeMission();
 
                 // 6. policiers unité
-                List<Policier> policiers = policierRepository.findByUnite(unite);
+                List<Policier> policiers = policierRepository.findByUnit(unite);
 
                 // 7. séance active
                 Seance seance = seanceRepository.findByIsActiveTrue()

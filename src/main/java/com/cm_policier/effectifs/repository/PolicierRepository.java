@@ -13,14 +13,15 @@ import com.cm_policier.effectifs.model.Policier;
 public interface PolicierRepository extends JpaRepository<Policier, Long> {
     //Optional<Policier> findByMatricule(String matricule);
     Optional<Policier> findByMatricule(String matricule);
-    List<Policier> findByUnite(String unit);
+    List<Policier> findByUnit(String unit);
 
     
     boolean existsByMatricule(String matricule);
     //Policier findByMatricule(String matricule);
-    Optional<Policier> findByNomAndPostnomAndPrenomAndDateNaissance(
-        String lastname,
-        String postname,
-        String firstnames,
-        LocalDate birthDate);
+    Optional<Policier> findByLastnameAndPostnameAndFirstnamesAndBirthDate(
+            String lastname,
+            String postname,
+            String firstnames,
+            LocalDate birthDate
+    );
 }

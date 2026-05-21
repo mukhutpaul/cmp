@@ -73,18 +73,18 @@ public class PolicierService {
     }
 
     public Policier findByIdentite(
-        String nom,
-        String postnom,
-        String prenom,
-        LocalDate dateNaissance
+        String lastname,
+        String postname,
+        String firstnames,
+        LocalDate birthDate
 ) {
 
     return repository
-            .findByNomAndPostnomAndPrenomAndDateNaissance(
-                    nom,
-                    postnom,
-                    prenom,
-                    dateNaissance
+            .findByLastnameAndPostnameAndFirstnamesAndBirthDate(
+                    lastname,
+                    postname,
+                    firstnames,
+                    birthDate
             )
             .orElseThrow(() ->
                     new RuntimeException("Policier introuvable"));

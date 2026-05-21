@@ -1,36 +1,36 @@
-package com.cm_policier.effectifs.config;
+// package com.cm_policier.effectifs.config;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
+// import org.springframework.boot.CommandLineRunner;
+// import org.springframework.stereotype.Component;
 
-import com.cm_policier.effectifs.model.Unite;
-import com.cm_policier.effectifs.repository.UniteRepository;
+// import com.cm_policier.effectifs.model.Unite;
+// import com.cm_policier.effectifs.repository.UniteRepository;
 
-import lombok.RequiredArgsConstructor;
+// import lombok.RequiredArgsConstructor;
 
-@Component
-@RequiredArgsConstructor
-public class DataInitializerUnite implements CommandLineRunner {
+// @Component
+// @RequiredArgsConstructor
+// public class DataInitializerUnite implements CommandLineRunner {
 
-    private final UniteRepository uniteRepository;
+//     private final UniteRepository uniteRepository;
 
-    @Override
-    public void run(String... args) throws Exception {
+//     @Override
+//     public void run(String... args) throws Exception {
 
-        // éviter doublons
-        if (uniteRepository.count() > 0) {
-            return;
-        }
+//         // éviter doublons
+//         if (uniteRepository.count() > 0) {
+//             return;
+//         }
 
-        for (int i = 1; i <= 2001; i++) {
+//         for (int i = 1; i <= 2001; i++) {
 
-            Unite unite = Unite.builder()
-                    .name("unite" + i)
-                    .build();
+//             Unite unite = Unite.builder()
+//                     .name("unite" + i)
+//                     .build();
 
-            uniteRepository.save(unite);
-        }
+//             uniteRepository.save(unite);
+//         }
 
-        System.out.println("✅ 100 unités générées");
-    }
-}
+//         System.out.println("✅ 100 unités générées");
+//     }
+// }

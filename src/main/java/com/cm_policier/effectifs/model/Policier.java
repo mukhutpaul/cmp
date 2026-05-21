@@ -6,12 +6,8 @@ import java.time.LocalDate;
 
 @Entity
 @Table(
-    name = "policier",
-    uniqueConstraints = {
-        @UniqueConstraint(name = "uk_policier_matricule", columnNames = "matricule"),
-        @UniqueConstraint(name = "uk_policier_pk_photo", columnNames = "pk_photo")
-    }
-)
+    name = "policier")
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,114 +19,155 @@ public class Policier {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "matricule", nullable = false, unique = true, length = 255)
+    // 1
+    @Column(name = "matricule", unique = true)
     private String matricule;
 
-    @Column(name = "lastname", length = 255)
+    // 2
+    @Column(name = "lastname")
     private String lastname;
 
-    @Column(name = "postname", length = 255)
+    // 3
+    @Column(name = "postname")
     private String postname;
 
-    @Column(name = "firstnames", length = 255)
+    // 4
+    @Column(name = "firstnames")
     private String firstnames;
 
+    // 5
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @Column(name = "gender", length = 255)
+    // 6
+    @Column(name = "gender")
     private String gender;
 
-    @Column(name = "city_birth", length = 255)
+    // 7
+    @Column(name = "city_birth")
     private String cityBirth;
 
-    @Column(name = "lieu", length = 255)
+    // 8
+    @Column(name = "lieu")
     private String lieu;
 
+    // 9
+    @Column(name = "country_birth")
+    private String countryBirth;
+
+    // 10
     @Column(name = "date_added")
     private LocalDate dateAdded;
 
-    @Column(name = "rank", length = 255)
+    // 11
+    @Column(name = "rank")
     private String rank;
 
+    // 12
     @Column(name = "rank_nomination_act_date")
     private LocalDate rankNominationActDate;
 
+    // 13
     @Column(name = "date_entry_in_police")
     private LocalDate dateEntryInPolice;
 
-    @Column(name = "profession", length = 255)
+    // 14
+    @Column(name = "profession")
     private String profession;
 
+    // 15
     @Column(name = "profession_start_date")
     private LocalDate professionStartDate;
 
-    @Column(name = "main_unit", length = 255)
+    // 16
+    @Column(name = "main_unit")
     private String mainUnit;
 
-    @Column(name = "unit", length = 255)
+    // 17
+    @Column(name = "unit")
     private String unit;
 
-    @Column(name = "spouse_lastname", length = 255)
+    // 18
+    @Column(name = "spouse_lastname")
     private String spouseLastname;
 
-    @Column(name = "spouse_postname", length = 255)
+    // 19
+    @Column(name = "spouse_postname")
     private String spousePostname;
 
-    @Column(name = "spouse_firstname", length = 255)
+    // 20
+    @Column(name = "spouse_firstname")
     private String spouseFirstname;
 
-    @Column(name = "spouse_nationality", length = 255)
+    // 21
+    @Column(name = "spouse_nationality")
     private String spouseNationality;
 
-    @Column(name = "spouse_profession", length = 255)
+    // 22
+    @Column(name = "spouse_profession")
     private String spouseProfession;
 
-    @Column(name = "bloodtype", length = 255)
+    // 23
+    @Column(name = "bloodtype")
     private String bloodtype;
 
-    @Column(name = "district_origin", length = 255)
+    // 24
+    @Column(name = "district_origin")
     private String districtOrigin;
 
-    @Column(name = "territoire_origin", length = 255)
+    // 25
+    @Column(name = "territoire_origin")
     private String territoireOrigin;
 
-    @Column(name = "village_origin", length = 255)
+    // 26
+    @Column(name = "village_origin")
     private String villageOrigin;
 
-    @Column(name = "address_street", length = 255)
+    // 27
+    @Column(name = "address_street")
     private String addressStreet;
 
-    @Column(name = "address_commune", length = 255)
+    // 28
+    @Column(name = "address_commune")
     private String addressCommune;
 
-    @Column(name = "telephone", length = 255)
+    // 29
+    @Column(name = "telephone")
     private String telephone;
 
-    @Column(name = "emergency_lastname", length = 255)
+    // 30
+    @Column(name = "emergency_lastname")
     private String emergencyLastname;
 
-    @Column(name = "emergency_postname", length = 255)
+    // 31
+    @Column(name = "emergency_postname")
     private String emergencyPostname;
 
-    @Column(name = "emergency_firstname", length = 255)
+    // 32
+    @Column(name = "emergency_firstname")
     private String emergencyFirstname;
 
-    @Column(name = "emergency_relation", length = 255)
+    // 33
+    @Column(name = "emergency_relation")
     private String emergencyRelation;
 
-    @Column(name = "emergency_address_street", length = 255)
+    // 34
+    @Column(name = "emergency_address_street")
     private String emergencyAddressStreet;
 
-    @Column(name = "emergency_address_commune", length = 255)
+    // 35
+    @Column(name = "emergency_address_commune")
     private String emergencyAddressCommune;
 
-    @Column(name = "emergency_telephone", length = 255)
+    // 36
+    @Column(name = "emergency_telephone")
     private String emergencyTelephone;
 
-    @Column(name = "position", length = 255)
+    // 37
+    @Column(name = "position")
     private String position;
 
-    @Column(name = "pk_photo", nullable = false, unique = true, length = 255)
+    // 38
+    @Column(name = "pk_photo", unique = true)
     private String pkPhoto;
 }

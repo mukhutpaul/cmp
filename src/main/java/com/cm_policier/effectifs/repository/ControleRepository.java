@@ -29,16 +29,16 @@ public interface ControleRepository extends JpaRepository<Controle, UUID>, Contr
                         SELECT c FROM Controle c
                         JOIN c.policier p
                         WHERE
-                        LOWER(p.nom) LIKE LOWER(CONCAT('%', :nom, '%'))
-                        AND LOWER(p.postnom) LIKE LOWER(CONCAT('%', :postnom, '%'))
-                        AND LOWER(p.prenom) LIKE LOWER(CONCAT('%', :prenom, '%'))
-                        AND p.dateNaissance = :dateNaissance
+                        LOWER(p.lastname) LIKE LOWER(CONCAT('%', :lastname, '%'))
+                        AND LOWER(p.postname) LIKE LOWER(CONCAT('%', :postname, '%'))
+                        AND LOWER(p.firstnames) LIKE LOWER(CONCAT('%', :firstname, '%'))
+                        AND p.birthDate = :birthDate
                         """)
         List<Controle> searchByPolicierIdentite(
-                        @Param("nom") String nom,
-                        @Param("postnom") String postnom,
-                        @Param("prenom") String prenom,
-                        @Param("dateNaissance") LocalDate dateNaissance);
+                        @Param("lastname") String lastname,
+                        @Param("postname") String postname,
+                        @Param("firstname") String firstname,
+                        @Param("birthDate") LocalDate birthDate);
 
         long count();
 
