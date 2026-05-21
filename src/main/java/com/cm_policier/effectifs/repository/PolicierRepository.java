@@ -24,4 +24,7 @@ public interface PolicierRepository extends JpaRepository<Policier, Long> {
             String firstnames,
             LocalDate birthDate
     );
+
+      // 🔥 AJOUTE ÇA
+    boolean existsByPkPhoto(String pkPhoto);
 }
