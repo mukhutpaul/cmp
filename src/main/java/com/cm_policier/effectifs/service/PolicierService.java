@@ -33,28 +33,25 @@ public class PolicierService {
     }
 
     // READ ONE
-    public Policier findById(UUID id) {
+    public Policier findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Policier introuvable"));
     }
 
     // UPDATE
-    public Policier update(UUID id, Policier policier) {
+    public Policier update(Long id, Policier policier) {
 
         Policier existing = findById(id);
 
         existing.setMatricule(policier.getMatricule());
-        existing.setNom(policier.getNom());
-        existing.setPostnom(policier.getPostnom());
-        existing.setPrenom(policier.getPrenom());
-        existing.setSexe(policier.getSexe());
-        existing.setDateNaissance(policier.getDateNaissance());
-        existing.setLieuNaissance(policier.getLieuNaissance());
+        existing.setLastname(policier.getLastname());
+        existing.setPostname(policier.getPostname());
+        existing.setFirstnames(policier.getFirstnames());
+        existing.setGender(policier.getGender());
+        existing.setBirthDate(policier.getBirthDate());
+        existing.setLieu(policier.getLieu());
         existing.setTelephone(policier.getTelephone());
-        existing.setEmail(policier.getEmail());
-        existing.setAdresse(policier.getAdresse());
-        existing.setCommune(policier.getCommune());
-        existing.setStatut(policier.getStatut());
+
 
         // ajoute les autres champs si nécessaire
 
@@ -62,7 +59,7 @@ public class PolicierService {
     }
 
     // DELETE
-    public void delete(UUID id) {
+    public void delete(Long id) {
 
         Policier policier = findById(id);
 

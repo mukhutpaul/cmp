@@ -45,65 +45,6 @@ public class ControleServiceLoader {
         @Autowired
         private SeanceRepository seanceRepository;
 
-        // public List<Controle> chargerControle(String unite, Long userId) {
-
-        // // 1. contrôleur connecté
-        // User controleur = userRepository.findById(userId)
-        // .orElseThrow(() -> new RuntimeException("Controleur introuvable"));
-
-        // // 2. équipe du contrôleur
-        // DetailEquipe detailEquipe = detailEquipeRepository.findByUser_Id(userId)
-        // .orElseThrow(() -> new RuntimeException("Equipe introuvable"));
-
-        // Equipe equipe = detailEquipe.getEquipe();
-
-        // // 3. mission
-        // Mission mission = equipe.getMission();
-
-        // // 4. chef équipe (user dans equipe)
-        // User chefEquipe = equipe.getUser();
-
-        // // 5. chef mission
-        // User chefMission = mission.getChargeMission();
-
-        // // 6. policiers de l’unité
-        // List<Policier> policiers = policierRepository.findByUnite(unite);
-
-        // List<Controle> controles = new ArrayList<>();
-        // Seance seance = seanceRepository.findByIsActiveTrue()
-        // .orElseThrow(() -> new RuntimeException("Aucune séance active trouvée"));
-
-        // for (Policier p : policiers) {
-
-        // Controle c = Controle.builder()
-        // .uid(equipe.getId().toString() + p.getId().toString() + "000000")
-        // .policier(p)
-
-        // .noms(p.getNom() + " " + p.getPostnom() + " " + p.getPrenom())
-        // .matricule(p.getMatricule())
-        // .unite(p.getUnite())
-        // .grade(p.getStatut())
-        // .sexe(p.getSexe())
-
-        // .controleur(controleur)
-        // .chefEquipe(chefEquipe)
-        // .chargeMission(chefMission)
-
-        // .seance(seance) // ou fetch repository
-        // .present(false)
-        // .justifie(false)
-        // .isControle(false)
-        // .isActif(false)
-        // .isSync(false)
-        // .face(null) // à remplir depuis FaceRepository
-        // .build();
-
-        // controles.add(c);
-        // }
-
-        // return controleRepository.saveAll(controles);
-        // }
-
         public List<Controle> chargerControle(String unite, Long userId) {
 
                 // 1. contrôleur connecté
@@ -158,11 +99,11 @@ public class ControleServiceLoader {
 
                                         .policier(p)
 
-                                        .noms(p.getNom() + " " + p.getPostnom() + " " + p.getPrenom())
+                                        .noms(p.getLastname() + " " + p.getPostname() + " " + p.getFirstnames())
                                         .matricule(p.getMatricule())
-                                        .unite(p.getUnite())
-                                        .grade(p.getStatut())
-                                        .sexe(p.getSexe())
+                                        .unite(p.getUnit())
+                                        .grade(p.getRank())
+                                        .sexe(p.getGender())
 
                                         .controleur(controleur)
                                         .chefEquipe(chefEquipe)

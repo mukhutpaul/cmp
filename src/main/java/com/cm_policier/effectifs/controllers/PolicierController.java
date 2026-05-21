@@ -5,12 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import com.cm_policier.effectifs.model.Policier;
 import com.cm_policier.effectifs.service.PolicierService;
 import java.time.LocalDate;
 
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/policiers")
@@ -62,14 +60,14 @@ public class PolicierController {
 
     // READ ONE
     @GetMapping("/{id}")
-    public Policier getById(@PathVariable UUID id) {
+    public Policier getById(@PathVariable Long id) {
         return service.findById(id);
     }
 
     // UPDATE
     @PutMapping("/{id}")
     public Policier update(
-            @PathVariable UUID id,
+            @PathVariable Long id,
             @RequestBody Policier policier) {
         return service.update(id, policier);
     }
@@ -77,7 +75,7 @@ public class PolicierController {
     // DELETE
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
+    public void delete(@PathVariable Long id) {
         service.delete(id);
     }
 }

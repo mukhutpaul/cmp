@@ -10,17 +10,17 @@ import org.springframework.stereotype.Repository;
 import com.cm_policier.effectifs.model.Policier;
 
 @Repository
-public interface PolicierRepository extends JpaRepository<Policier, UUID> {
+public interface PolicierRepository extends JpaRepository<Policier, Long> {
     //Optional<Policier> findByMatricule(String matricule);
     Optional<Policier> findByMatricule(String matricule);
-    List<Policier> findByUnite(String unite);
+    List<Policier> findByUnite(String unit);
 
     
     boolean existsByMatricule(String matricule);
     //Policier findByMatricule(String matricule);
     Optional<Policier> findByNomAndPostnomAndPrenomAndDateNaissance(
-        String nom,
-        String postnom,
-        String prenom,
-        LocalDate dateNaissance);
+        String lastname,
+        String postname,
+        String firstnames,
+        LocalDate birthDate);
 }

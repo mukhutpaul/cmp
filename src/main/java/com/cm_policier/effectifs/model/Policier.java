@@ -1,14 +1,17 @@
 package com.cm_policier.effectifs.model;
-
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
-@Table(name = "policier")
+@Table(
+    name = "policier",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_policier_matricule", columnNames = "matricule"),
+        @UniqueConstraint(name = "uk_policier_pk_photo", columnNames = "pk_photo")
+    }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,158 +20,117 @@ import java.util.UUID;
 public class Policier {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "UUID")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name = "matricule", nullable = false, unique = true, length = 255)
     private String matricule;
 
-    private String nom;
-    private String postnom;
-    private String prenom;
+    @Column(name = "lastname", length = 255)
+    private String lastname;
 
-    @Column(length = 1)
-    private String sexe;
+    @Column(name = "postname", length = 255)
+    private String postname;
 
-    @Column(name = "date_naissance")
-    private LocalDate dateNaissance;
-    private String lieuNaissance;
-    private String villeNaissance;
-    private String villageNaissance;
-    private String paysDeNaissance;
+    @Column(name = "firstnames", length = 255)
+    private String firstnames;
 
-    private Integer taille;
-    private String couleurYeux;
-    private String telephone;
-    private String email;
-    private String unite;
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
 
-    @Column(columnDefinition = "TEXT")
-    private String adresse;
+    @Column(name = "gender", length = 255)
+    private String gender;
 
+    @Column(name = "city_birth", length = 255)
+    private String cityBirth;
 
-    private String commune;
-    private LocalDate dateEntreePolice;
-    private String statut;
+    @Column(name = "lieu", length = 255)
+    private String lieu;
 
-    @Builder.Default
-    @Column(nullable = false)
-    private LocalDateTime dateCreation = LocalDateTime.now();
+    @Column(name = "date_added")
+    private LocalDate dateAdded;
 
-    private String groupeSanguin;
-    private String provinceOrigin;
+    @Column(name = "rank", length = 255)
+    private String rank;
+
+    @Column(name = "rank_nomination_act_date")
+    private LocalDate rankNominationActDate;
+
+    @Column(name = "date_entry_in_police")
+    private LocalDate dateEntryInPolice;
+
+    @Column(name = "profession", length = 255)
     private String profession;
-    private LocalDate professionStart;
 
-    private String villeIntegration;
-    private String enrolmentsCommissariat;
-    private String enrolmentsProvince;
+    @Column(name = "profession_start_date")
+    private LocalDate professionStartDate;
 
-    private LocalDate dateMarriage;
-    private String etatcivil;
+    @Column(name = "main_unit", length = 255)
+    private String mainUnit;
 
+    @Column(name = "unit", length = 255)
+    private String unit;
+
+    @Column(name = "spouse_lastname", length = 255)
+    private String spouseLastname;
+
+    @Column(name = "spouse_postname", length = 255)
+    private String spousePostname;
+
+    @Column(name = "spouse_firstname", length = 255)
+    private String spouseFirstname;
+
+    @Column(name = "spouse_nationality", length = 255)
+    private String spouseNationality;
+
+    @Column(name = "spouse_profession", length = 255)
+    private String spouseProfession;
+
+    @Column(name = "bloodtype", length = 255)
+    private String bloodtype;
+
+    @Column(name = "district_origin", length = 255)
     private String districtOrigin;
+
+    @Column(name = "territoire_origin", length = 255)
     private String territoireOrigin;
-    private String secteurOrigin;
+
+    @Column(name = "village_origin", length = 255)
     private String villageOrigin;
 
-    private String originAdminMinistry;
-    private String originAdminService;
-    private String originAdminGrade;
+    @Column(name = "address_street", length = 255)
+    private String addressStreet;
 
-    private String origAdminNominatifAct;
-    private LocalDate origAdminNominatifActDate;
-    private LocalDate origAdminEntryDate;
-    private String orgnAdminEntryPlace;
+    @Column(name = "address_commune", length = 255)
+    private String addressCommune;
 
-    private String distinction;
-    private LocalDate distinctionDate;
-    private String distinctionNr;
-    private String distinctionMention;
+    @Column(name = "telephone", length = 255)
+    private String telephone;
 
-    private String adresseInstitutionNr;
-    private String adresseInstitutionAvenue;
-    private String adresseInstitutionCommune;
+    @Column(name = "emergency_lastname", length = 255)
+    private String emergencyLastname;
 
-    private String persRefNom;
-    private String persRefPostnom;
-    private String persRefPrenom;
-    private String persRefFiliation;
-    private String persRefAdresseNr;
-    private String persRefAdresseAvenue;
-    private String persRefAdresseCommune;
-    private String persRefAdresseTelephone;
+    @Column(name = "emergency_postname", length = 255)
+    private String emergencyPostname;
 
-    private String policierNumPermis;
-    private String policierCategoriePermis;
-    private LocalDate policierDatePermis;
+    @Column(name = "emergency_firstname", length = 255)
+    private String emergencyFirstname;
 
-    private String observation;
-    private String sport;
+    @Column(name = "emergency_relation", length = 255)
+    private String emergencyRelation;
 
-    // ================= LANGUES (SAFE DEFAULT = false) =================
+    @Column(name = "emergency_address_street", length = 255)
+    private String emergencyAddressStreet;
 
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean francaisParle = true;
+    @Column(name = "emergency_address_commune", length = 255)
+    private String emergencyAddressCommune;
 
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean francaisEcrit = true;
+    @Column(name = "emergency_telephone", length = 255)
+    private String emergencyTelephone;
 
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean lingalaParle = true;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean lingalaEcrit = true;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean kikongoParle = true;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean kikongoEcrit = true;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean swahiliParle = true;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean swahiliEcrit = true;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean tshilubaParle = true;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean tshilubaEcrit = true;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean englishParle = true;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean englishEcrit = true;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean autreLangueParle = true;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean autreLangueEcrit = true;
-
-    private String autresLangues;
-
-    private Integer pcount;
-
-    @Column(length = 15)
+    @Column(name = "position", length = 255)
     private String position;
+
+    @Column(name = "pk_photo", nullable = false, unique = true, length = 255)
+    private String pkPhoto;
 }
