@@ -6,25 +6,29 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import com.cm_policier.effectifs.model.Policier;
 
 @Repository
 public interface PolicierRepository extends JpaRepository<Policier, Long> {
-    //Optional<Policier> findByMatricule(String matricule);
-    Optional<Policier> findByMatricule(String matricule);
-    List<Policier> findByUnit(String unit);
+  // Optional<Policier> findByMatricule(String matricule);
+  Optional<Policier> findByMatricule(String matricule);
 
-    
-    boolean existsByMatricule(String matricule);
-    //Policier findByMatricule(String matricule);
-    Optional<Policier> findByLastnameAndPostnameAndFirstnamesAndBirthDate(
-            String lastname,
-            String postname,
-            String firstnames,
-            LocalDate birthDate
-    );
+  List<Policier> findByUnit(String unit);
 
-      // 🔥 AJOUTE ÇA
-    boolean existsByPkPhoto(String pkPhoto);
+  boolean existsByMatricule(String matricule);
+
+  // Policier findByMatricule(String matricule);
+  Optional<Policier> findByLastnameAndPostnameAndFirstnamesAndBirthDate(
+      String lastname,
+      String postname,
+      String firstnames,
+      LocalDate birthDate);
+
+  // 🔥 AJOUTE ÇA
+  boolean existsByPkPhoto(String pkPhoto);
+
+  @Query("SELECT DISTINCT p.unit FROM Policier p WHERE p.unit IS NOT NULL")
+  List<String> findAllUnits();
 }
