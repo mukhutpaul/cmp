@@ -79,17 +79,19 @@ public class Controle {
     private Boolean isCmd = false;
 
     private Boolean isActif = false;
-    private Boolean isSync= false;
-    private Integer versionSync;
+    private Boolean isSync = false;
+    private Integer versionSync = 1;
 
     // ===================== FILE =====================
 
     private String qrcode;
     private String province;
     private String equipe;
+    private String deviceId;
 
     // ===================== TIMESTAMPS =====================
 
+    private LocalDateTime syncedAt;
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
