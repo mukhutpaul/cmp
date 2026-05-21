@@ -47,7 +47,7 @@ public class ControleService {
 
     public List<Controle> getAll() {
         return repository
-                .findTop200ByPresentTrueOrJustifieTrueOrderByUpdatedAtDesc();
+                .findAllByOrderByUpdatedAtDesc();
     }
 
     /* ========================= UPDATE ========================= */
