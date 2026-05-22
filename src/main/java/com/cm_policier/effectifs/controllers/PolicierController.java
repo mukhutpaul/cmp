@@ -2,11 +2,13 @@ package com.cm_policier.effectifs.controllers;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import com.cm_policier.effectifs.dto.PolicierDto;
 import com.cm_policier.effectifs.model.Policier;
 import com.cm_policier.effectifs.service.PolicierService;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,11 +29,9 @@ public class PolicierController {
 
     // READ ALL
     @GetMapping
-    public List<Policier> getAll() {
-        return service.getAll();
+    public List<PolicierDto> getAll() {
+        return service.getPoliciers();
     }
-
-    // ========================= SEARCH BY MATRICULE =========================
 
     // SEARCH BY IDENTITE
     @GetMapping("/identite")
@@ -51,6 +51,7 @@ public class PolicierController {
                 dateNaissance);
     }
 
+    // SEARCH BY MATRICULE
     @GetMapping("/matricule/{matricule}")
     public Policier getByMatricule(@PathVariable String matricule) {
         return service.findByMatricule(matricule);
@@ -67,6 +68,7 @@ public class PolicierController {
     public Policier update(
             @PathVariable Long id,
             @RequestBody Policier policier) {
+
         return service.update(id, policier);
     }
 

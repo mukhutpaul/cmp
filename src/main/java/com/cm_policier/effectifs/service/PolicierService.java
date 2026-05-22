@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
+import com.cm_policier.effectifs.dto.PolicierDto;
 import com.cm_policier.effectifs.model.Policier;
 import com.cm_policier.effectifs.repository.PolicierRepository;
 
@@ -29,8 +30,34 @@ public class PolicierService {
         return repository.save(policier);
     }
 
-    public List<Policier> getAll() {
-        return repository.findAll();
+    public List<PolicierDto> getPoliciers() {
+
+        List<Policier> policiers = repository.findAll();
+
+        return policiers.stream().map(p -> {
+
+            PolicierDto dto = new PolicierDto();
+
+            dto.setId(p.getId());
+            dto.setMatricule(p.getMatricule());
+            dto.setLastname(p.getLastname());
+            dto.setPostname(p.getPostname());
+            dto.setFirstnames(p.getFirstnames());
+            dto.setUnit(p.getUnit());
+            dto.setMainUnit(p.getMainUnit());
+            dto.setGender(p.getGender());
+            dto.setTelephone(p.getTelephone());
+            dto.setPkPhoto(p.getPkPhoto());
+
+            if (p.getPkPhoto() != null && !p.getPkPhoto().isEmpty()) {
+
+                dto.setPhotoUrl(
+                        "http://localhost:8090/photos/" + p.getPkPhoto() + ".jpg");
+            }
+
+            return dto;
+
+        }).toList();
     }
 
     // READ ONE
