@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.cm_policier.effectifs.model.Policier;
 import com.cm_policier.effectifs.service.PolicierService;
 import java.time.LocalDate;
-
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/policiers")
@@ -27,10 +27,8 @@ public class PolicierController {
 
     // READ ALL
     @GetMapping
-    public Page<Policier> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        return service.getAll(page, size);
+    public List<Policier> getAll() {
+        return service.getAll();
     }
 
     // ========================= SEARCH BY MATRICULE =========================

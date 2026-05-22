@@ -2,7 +2,6 @@ package com.cm_policier.effectifs.service;
 
 import lombok.RequiredArgsConstructor;
 
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -10,6 +9,8 @@ import java.time.LocalDate;
 
 import com.cm_policier.effectifs.model.Policier;
 import com.cm_policier.effectifs.repository.PolicierRepository;
+
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -28,8 +29,8 @@ public class PolicierService {
         return repository.save(policier);
     }
 
-    public Page<Policier> getAll(int page, int size) {
-        return repository.findAll(PageRequest.of(page, size));
+    public List<Policier> getAll() {
+        return repository.findAll();
     }
 
     // READ ONE
@@ -52,7 +53,6 @@ public class PolicierService {
         existing.setLieu(policier.getLieu());
         existing.setTelephone(policier.getTelephone());
 
-
         // ajoute les autres champs si nécessaire
 
         return repository.save(existing);
@@ -66,27 +66,23 @@ public class PolicierService {
         repository.delete(policier);
     }
 
-  
     public Policier findByMatricule(String matricule) {
         return repository.findByMatricule(matricule)
                 .orElseThrow(() -> new RuntimeException("Policier introuvable"));
     }
 
     public Policier findByIdentite(
-        String lastname,
-        String postname,
-        String firstnames,
-        LocalDate birthDate
-) {
+            String lastname,
+            String postname,
+            String firstnames,
+            LocalDate birthDate) {
 
-    return repository
-            .findByLastnameAndPostnameAndFirstnamesAndBirthDate(
-                    lastname,
-                    postname,
-                    firstnames,
-                    birthDate
-            )
-            .orElseThrow(() ->
-                    new RuntimeException("Policier introuvable"));
-}
+        return repository
+                .findByLastnameAndPostnameAndFirstnamesAndBirthDate(
+                        lastname,
+                        postname,
+                        firstnames,
+                        birthDate)
+                .orElseThrow(() -> new RuntimeException("Policier introuvable"));
+    }
 }
