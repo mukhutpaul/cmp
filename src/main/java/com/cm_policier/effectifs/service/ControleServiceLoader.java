@@ -24,106 +24,106 @@ import com.cm_policier.effectifs.repository.UserRepository;
 @Service
 public class ControleServiceLoader {
 
-        @Autowired
-        private PolicierRepository policierRepository;
+    @Autowired
+    private PolicierRepository policierRepository;
 
-        @Autowired
-        private ControleRepository controleRepository;
+    @Autowired
+    private ControleRepository controleRepository;
 
-        @Autowired
-        private DetailEquipeRepository detailEquipeRepository;
+    @Autowired
+    private DetailEquipeRepository detailEquipeRepository;
 
-        @Autowired
-        private EquipeRepository equipeRepository;
+    @Autowired
+    private EquipeRepository equipeRepository;
 
-        @Autowired
-        private MissionRepository missionRepository;
+    @Autowired
+    private MissionRepository missionRepository;
 
-        @Autowired
-        private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-        @Autowired
-        private SeanceRepository seanceRepository;
+    @Autowired
+    private SeanceRepository seanceRepository;
 
-        public List<Controle> chargerControle(String unite, Long userId) {
+    public List<Controle> chargerControle(String unite, Long userId) {
 
-                // 1. contrôleur connecté
-                User controleur = userRepository.findById(userId)
-                                .orElseThrow(() -> new RuntimeException("Controleur introuvable"));
+        // 1. contrôleur connecté
+        User controleur = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Controleur introuvable"));
 
-                // 2. équipe du contrôleur
-                DetailEquipe detailEquipe = detailEquipeRepository.findByUser_Id(userId)
-                                .orElseThrow(() -> new RuntimeException("Equipe introuvable"));
+        // 2. équipe du contrôleur
+        DetailEquipe detailEquipe = detailEquipeRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Equipe introuvable"));
 
-                Equipe equipe = detailEquipe.getEquipe();
+        Equipe equipe = detailEquipe.getEquipe();
 
-                // 3. mission
-                Mission mission = equipe.getMission();
+        // 3. mission
+        Mission mission = equipe.getMission();
 
-                // 4. chef équipe
-                User chefEquipe = equipe.getUser();
+        // 4. chef équipe
+        User chefEquipe = equipe.getUser();
 
-                // 5. chargé mission
-                User chefMission = mission.getChargeMission();
+        // 5. chargé mission
+        User chefMission = mission.getChargeMission();
 
-                // 6. policiers unité
-                List<Policier> policiers = policierRepository.findByUnit(unite);
+        // 6. policiers unité
+        List<Policier> policiers = policierRepository.findByUnit(unite);
 
-                // 7. séance active
-                Seance seance = seanceRepository.findByIsActiveTrue()
-                                .orElseThrow(() -> new RuntimeException("Aucune séance active trouvée"));
+        // 7. séance active
+        Seance seance = seanceRepository.findByIsActiveTrue()
+                .orElseThrow(() -> new RuntimeException("Aucune séance active trouvée"));
 
-                List<Controle> controles = new ArrayList<>();
+        List<Controle> controles = new ArrayList<>();
+        int sequence = 1;
 
-                int sequence = 1;
+        for (Policier p : policiers) {
 
-                for (Policier p : policiers) {
+            String missionCode = mission.getNumero().replace("-", "");
 
-                        // ================= UID =================
+            String uid = String.format(
+                    "%s-CE%d-CTR%d-%06d",
+                    missionCode,
+                    chefEquipe.getId(),
+                    controleur.getId(),
+                    sequence++
+            );
 
-                        String missionCode = mission.getNumero()
-                                        .replace("-", "");
+            Controle c = Controle.builder()
+                    .uid(uid)
 
-                        String uid = String.format(
-                                        "%s-CE%d-CTR%d-%06d",
-                                        missionCode,
-                                        chefEquipe.getId(),
-                                        controleur.getId(),
-                                        sequence++);
+                    // ================= RELATIONS =================
+                    .policier(p)
+                    .controleur(controleur)
+                    .chefEquipe(chefEquipe)
+                    .chargeMission(chefMission)
+                    .seance(seance)
 
-                        // ================= CONTROLE =================
+                    // 🔥 AJOUTS DEMANDÉS
+                    .equipe(equipe)
+                    .mission(mission)
 
-                        Controle c = Controle.builder()
+                    // ================= INFOS =================
+                    .noms(p.getLastname() + " " + p.getPostname() + " " + p.getFirstnames())
+                    .matricule(p.getMatricule())
+                    .unite(p.getUnit())
+                    .grade(p.getRank())
+                    .sexe(p.getGender())
 
-                                        .uid(uid)
+                    // ================= FLAGS =================
+                    .present(false)
+                    .justifie(false)
+                    .isControle(false)
+                    .isActif(false)
+                    .isSync(false)
 
-                                        .policier(p)
+                    // ================= BIOMETRIE =================
+                    .face(null)
 
-                                        .noms(p.getLastname() + " " + p.getPostname() + " " + p.getFirstnames())
-                                        .matricule(p.getMatricule())
-                                        .unite(p.getUnit())
-                                        .grade(p.getRank())
-                                        .sexe(p.getGender())
+                    .build();
 
-                                        .controleur(controleur)
-                                        .chefEquipe(chefEquipe)
-                                        .chargeMission(chefMission)
-
-                                        .seance(seance)
-
-                                        .present(false)
-                                        .justifie(false)
-                                        .isControle(false)
-                                        .isActif(false)
-                                        .isSync(false)
-
-                                        .face(null)
-
-                                        .build();
-
-                        controles.add(c);
-                }
-
-                return controleRepository.saveAll(controles);
+            controles.add(c);
         }
+
+        return controleRepository.saveAll(controles);
+    }
 }
