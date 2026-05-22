@@ -4,6 +4,12 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import com.cm_policier.effectifs.model.Equipe;
+import com.cm_policier.effectifs.model.Justification;
+import com.cm_policier.effectifs.model.Mission;
+import com.cm_policier.effectifs.model.Policier;
+import com.cm_policier.effectifs.model.Seance;
+import com.cm_policier.effectifs.model.User;
 
 @Getter
 @Setter
@@ -12,82 +18,57 @@ import java.util.UUID;
 @Builder
 public class ControleResponseDto {
 
-    // ===================== IDENTIFIANTS =====================
-
     private UUID id;
     private String uid;
 
-    // ===================== RELATIONS =====================
+    // ================= RELATIONS =================
 
-    private Long policierId;
+    private Policier policier;
+    private User controleur;
+    private User chefEquipe;
+    private User chargeMission;
 
-    private UUID justificationId;
+    private Seance seance;
+    private Equipe equipe;
+    private Mission mission;
+    private Justification justification;
 
-    private Long controleurId;
-
-    private UUID seanceId;
-
-    private Long chefEquipeId;
-
-    private Long chargeMissionId;
-
-    private Long equipeId;
-
-    private Long missionId;
-
-    // ===================== INFORMATIONS =====================
+    // ================= INFORMATIONS =================
 
     private String noms;
-
     private Boolean present;
-
     private Boolean justifie;
-
     private String observation;
-
     private Boolean isControle;
 
     private String matricule;
-
     private String unite;
-
     private String grade;
-
     private String sexe;
 
-    // ===================== BIOMETRIE =====================
+    // ================= BIOMETRIE =================
 
     private String fingerprint;
-
     private String fingerprint4;
 
-    // ===================== FLAGS =====================
+    // ================= FLAGS =================
 
     private Boolean isCmd;
-
     private Boolean isActif;
-
     private Boolean isSync;
-
     private Integer versionSync;
 
-    // ===================== FILE =====================
+    // ================= FILE =================
 
     private String qrcode;
-
     private String province;
-
     private String deviceId;
-
     private String pkPhoto;
-
     private String photoUrl;
 
-    // ===================== TIMESTAMPS =====================
+    // ================= TIMESTAMPS =================
 
     private LocalDateTime syncedAt;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 }

@@ -2,6 +2,7 @@ package com.cm_policier.effectifs.service;
 
 import com.cm_policier.effectifs.dto.ControleResponseDto;
 import com.cm_policier.effectifs.model.Controle;
+import com.cm_policier.effectifs.util.*;
 import com.cm_policier.effectifs.repository.ControleRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -12,182 +13,117 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ControleService {
 
-    private final ControleRepository repository;
+        private final ControleRepository repository;
 
-    /* ========================= CREATE ========================= */
-    public Controle create(Controle controle) {
-        controle.setCreatedAt(java.time.LocalDateTime.now());
-        return repository.save(controle);
-    }
-
-    /* ========================= READ ALL (PAGINATION) ========================= */
-    public Page<Controle> getAll(int page, int size, String search) {
-
-        PageRequest pageable = PageRequest.of(
-                page,
-                size,
-                org.springframework.data.domain.Sort.by("createdAt").descending());
-
-        if (search == null || search.isBlank()) {
-            return repository.findAll(pageable);
+        /* ========================= CREATE ========================= */
+        public Controle create(Controle controle) {
+                controle.setCreatedAt(java.time.LocalDateTime.now());
+                return repository.save(controle);
         }
 
-        return repository.search(search, pageable);
-    }
+        /* ========================= READ ALL (PAGINATION) ========================= */
+        public Page<Controle> getAll(int page, int size, String search) {
 
-    /* ========================= READ ONE ========================= */
-    public Controle getById(UUID id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Controle introuvable"));
-    }
+                PageRequest pageable = PageRequest.of(
+                                page,
+                                size,
+                                org.springframework.data.domain.Sort.by("createdAt").descending());
 
-    public List<ControleResponseDto> getAll() {
+                if (search == null || search.isBlank()) {
+                        return repository.findAll(pageable);
+                }
 
-        List<Controle> controles = repository.findAllByOrderByUpdatedAtDesc();
+                return repository.search(search, pageable);
+        }
 
-        return controles.stream()
-                .map(controle -> {
+        /* ========================= READ ONE ========================= */
+        public Controle getById(UUID id) {
+                return repository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Controle introuvable"));
+        }
 
-                    ControleResponseDto dto = ControleResponseDto.builder()
+        public List<ControleResponseDto> getAll() {
 
-                            // ===================== IDENTIFIANTS =====================
+                List<Controle> controles = repository.findAllByOrderByUpdatedAtDesc();
 
-                            .id(controle.getId())
-                            .uid(controle.getUid())
+                return controles.stream()
+                                .map((Controle controle) -> {
+                                        return ControleResponseDto.builder()
+                                                        .id(controle.getId())
+                                                        .uid(controle.getUid())
+                                                        .policier(controle.getPolicier())
+                                                        .controleur(controle.getControleur())
+                                                        .chefEquipe(controle.getChefEquipe())
+                                                        .chargeMission(controle.getChargeMission())
+                                                        .seance(controle.getSeance())
+                                                        .equipe(controle.getEquipe())
+                                                        .mission(controle.getMission())
+                                                        .justification(controle.getJustification())
+                                                        .noms(controle.getNoms())
+                                                        .present(controle.getPresent())
+                                                        .justifie(controle.getJustifie())
+                                                        .observation(controle.getObservation())
+                                                        .isControle(controle.getIsControle())
+                                                        .matricule(controle.getMatricule())
+                                                        .unite(controle.getUnite())
+                                                        .grade(controle.getGrade())
+                                                        .sexe(controle.getSexe())
+                                                        .fingerprint(controle.getFingerprint())
+                                                        .fingerprint4(controle.getFingerprint4())
+                                                        .isCmd(controle.getIsCmd())
+                                                        .isActif(controle.getIsActif())
+                                                        .isSync(controle.getIsSync())
+                                                        .versionSync(controle.getVersionSync())
+                                                        .qrcode(controle.getQrcode())
+                                                        .province(controle.getProvince())
+                                                        .deviceId(controle.getDeviceId())
+                                                        .pkPhoto(controle.getPkPhoto())
+                                                        .photoUrl(PhotoUtil.buildPhotoUrl(controle.getPkPhoto()))
+                                                        .syncedAt(controle.getSyncedAt())
+                                                        .createdAt(controle.getCreatedAt())
+                                                        .updatedAt(controle.getUpdatedAt())
+                                                        .build();
+                                })
+                                .collect(Collectors.toList());
+        }
 
-                            // ===================== RELATIONS =====================
+        /* ========================= UPDATE ========================= */
+        public Controle update(UUID id, Controle data) {
+                Controle c = getById(id);
+                c.setPresent(data.getPresent());
+                c.setJustifie(data.getJustifie());
 
-                            .policierId(
-                                    controle.getPolicier() != null
-                                            ? controle.getPolicier().getId()
-                                            : null)
+                return repository.save(c);
+        }
 
-                            .justificationId(
-                                    controle.getJustification() != null
-                                            ? controle.getJustification().getId()
-                                            : null)
+        /* ========================= DELETE ========================= */
+        public void delete(UUID id) {
+                repository.deleteById(id);
+        }
 
-                            .controleurId(
-                                    controle.getControleur() != null
-                                            ? controle.getControleur().getId()
-                                            : null)
+        public void findByMatricule(String matricule) {
+                repository.findByMatricule(matricule);
+        }
 
-                            .seanceId(
-                                    controle.getSeance() != null
-                                            ? controle.getSeance().getId()
-                                            : null)
+        public List<Controle> searchByIdentite(
+                        String nom,
+                        String postnom,
+                        String prenom,
+                        LocalDate dateNaissance) {
+                return repository.searchByPolicierIdentite(
+                                nom,
+                                postnom,
+                                prenom,
+                                dateNaissance);
+        }
 
-                            .chefEquipeId(
-                                    controle.getChefEquipe() != null
-                                            ? controle.getChefEquipe().getId()
-                                            : null)
-
-                            .chargeMissionId(
-                                    controle.getChargeMission() != null
-                                            ? controle.getChargeMission().getId()
-                                            : null)
-
-                            .equipeId(
-                                    controle.getEquipe() != null
-                                            ? controle.getEquipe().getId()
-                                            : null)
-
-                            .missionId(
-                                    controle.getMission() != null
-                                            ? controle.getMission().getId()
-                                            : null)
-
-                            // ===================== INFORMATIONS =====================
-
-                            .noms(controle.getNoms())
-                            .present(controle.getPresent())
-                            .justifie(controle.getJustifie())
-                            .observation(controle.getObservation())
-                            .isControle(controle.getIsControle())
-                            .matricule(controle.getMatricule())
-                            .unite(controle.getUnite())
-                            .grade(controle.getGrade())
-                            .sexe(controle.getSexe())
-
-                            // ===================== BIOMETRIE =====================
-
-                            .fingerprint(controle.getFingerprint())
-                            .fingerprint4(controle.getFingerprint4())
-
-                            // ===================== FLAGS =====================
-
-                            .isCmd(controle.getIsCmd())
-                            .isActif(controle.getIsActif())
-                            .isSync(controle.getIsSync())
-                            .versionSync(controle.getVersionSync())
-
-                            // ===================== FILE =====================
-
-                            .qrcode(controle.getQrcode())
-                            .province(controle.getProvince())
-                            .deviceId(controle.getDeviceId())
-                            .pkPhoto(controle.getPkPhoto())
-
-                            // ===================== TIMESTAMPS =====================
-
-                            .syncedAt(controle.getSyncedAt())
-                            .createdAt(controle.getCreatedAt())
-                            .updatedAt(controle.getUpdatedAt())
-
-                            .build();
-
-                    // ===================== PHOTO URL =====================
-
-                    if (controle.getPkPhoto() != null
-                            && !controle.getPkPhoto().isEmpty()) {
-
-                        dto.setPhotoUrl(
-                                "http://localhost:8090/photos/"
-                                        + controle.getPkPhoto()
-                                        + ".jpg");
-                    }
-
-                    return dto;
-                })
-                .collect(java.util.stream.Collectors.toList());
-    }
-
-    /* ========================= UPDATE ========================= */
-    public Controle update(UUID id, Controle data) {
-        Controle c = getById(id);
-        c.setPresent(data.getPresent());
-        c.setJustifie(data.getJustifie());
-
-        return repository.save(c);
-    }
-
-    /* ========================= DELETE ========================= */
-    public void delete(UUID id) {
-        repository.deleteById(id);
-    }
-
-    public void findByMatricule(String matricule) {
-        repository.findByMatricule(matricule);
-    }
-
-    public List<Controle> searchByIdentite(
-            String nom,
-            String postnom,
-            String prenom,
-            LocalDate dateNaissance) {
-        return repository.searchByPolicierIdentite(
-                nom,
-                postnom,
-                prenom,
-                dateNaissance);
-    }
-
-    public Optional<Controle> getByMatricule(String matricule) {
-        return repository.findByMatricule(matricule);
-    }
+        public Optional<Controle> getByMatricule(String matricule) {
+                return repository.findByMatricule(matricule);
+        }
 }
