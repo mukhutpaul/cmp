@@ -93,9 +93,62 @@ public class PolicierService {
         repository.delete(policier);
     }
 
-    public Policier findByMatricule(String matricule) {
-        return repository.findByMatricule(matricule)
+    public PolicierDto findByMatricule(String matricule) {
+
+        Policier p = repository.findByMatricule(matricule)
                 .orElseThrow(() -> new RuntimeException("Policier introuvable"));
+
+        PolicierDto dto = new PolicierDto();
+
+        dto.setId(p.getId());
+        dto.setMatricule(p.getMatricule());
+        dto.setLastname(p.getLastname());
+        dto.setPostname(p.getPostname());
+        dto.setFirstnames(p.getFirstnames());
+        dto.setBirthDate(p.getBirthDate());
+        dto.setGender(p.getGender());
+        dto.setCityBirth(p.getCityBirth());
+        dto.setLieu(p.getLieu());
+        dto.setCountryBirth(p.getCountryBirth());
+        dto.setDateAdded(p.getDateAdded());
+        dto.setRank(p.getRank());
+        dto.setRankNominationActDate(p.getRankNominationActDate());
+        dto.setDateEntryInPolice(p.getDateEntryInPolice());
+        dto.setProfession(p.getProfession());
+        dto.setProfessionStartDate(p.getProfessionStartDate());
+        dto.setMainUnit(p.getMainUnit());
+        dto.setUnit(p.getUnit());
+        dto.setSpouseLastname(p.getSpouseLastname());
+        dto.setSpousePostname(p.getSpousePostname());
+        dto.setSpouseFirstname(p.getSpouseFirstname());
+        dto.setSpouseNationality(p.getSpouseNationality());
+        dto.setSpouseProfession(p.getSpouseProfession());
+        dto.setBloodtype(p.getBloodtype());
+        dto.setDistrictOrigin(p.getDistrictOrigin());
+        dto.setTerritoireOrigin(p.getTerritoireOrigin());
+        dto.setVillageOrigin(p.getVillageOrigin());
+        dto.setAddressStreet(p.getAddressStreet());
+        dto.setAddressCommune(p.getAddressCommune());
+        dto.setTelephone(p.getTelephone());
+        dto.setEmergencyLastname(p.getEmergencyLastname());
+        dto.setEmergencyPostname(p.getEmergencyPostname());
+        dto.setEmergencyFirstname(p.getEmergencyFirstname());
+        dto.setEmergencyRelation(p.getEmergencyRelation());
+        dto.setEmergencyAddressStreet(p.getEmergencyAddressStreet());
+        dto.setEmergencyAddressCommune(p.getEmergencyAddressCommune());
+        dto.setEmergencyTelephone(p.getEmergencyTelephone());
+        dto.setPosition(p.getPosition());
+
+        dto.setPkPhoto(p.getPkPhoto());
+
+        // PHOTO URL
+        if (p.getPkPhoto() != null && !p.getPkPhoto().isEmpty()) {
+
+            dto.setPhotoUrl(
+                    "http://localhost:8090/photos/" + p.getPkPhoto() + ".jpg");
+        }
+
+        return dto;
     }
 
     public Policier findByIdentite(

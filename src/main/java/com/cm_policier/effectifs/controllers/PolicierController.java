@@ -53,7 +53,7 @@ public class PolicierController {
 
     // SEARCH BY MATRICULE
     @GetMapping("/matricule/{matricule}")
-    public Policier getByMatricule(@PathVariable String matricule) {
+    public PolicierDto getByMatricule(@PathVariable String matricule) {
         return service.findByMatricule(matricule);
     }
 
