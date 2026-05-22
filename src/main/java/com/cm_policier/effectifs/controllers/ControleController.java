@@ -1,5 +1,6 @@
 package com.cm_policier.effectifs.controllers;
 
+import com.cm_policier.effectifs.dto.ControleResponseDto;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.service.ControleService;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +8,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ public class ControleController {
 
     /* ========================= READ ALL (PAGINATION) ========================= */
     @GetMapping
-    public List<Controle> getAll() {
+    public List<ControleResponseDto> getAll() {
         return service.getAll();
     }
 

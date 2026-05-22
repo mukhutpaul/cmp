@@ -1,5 +1,6 @@
 package com.cm_policier.effectifs.service;
 
+import com.cm_policier.effectifs.dto.ControleResponseDto;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.repository.ControleRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,9 +46,115 @@ public class ControleService {
                 .orElseThrow(() -> new RuntimeException("Controle introuvable"));
     }
 
-    public List<Controle> getAll() {
-        return repository
-                .findAllByOrderByUpdatedAtDesc();
+    public List<ControleResponseDto> getAll() {
+
+        List<Controle> controles = repository.findAllByOrderByUpdatedAtDesc();
+
+        return controles.stream()
+                .map(controle -> {
+
+                    ControleResponseDto dto = ControleResponseDto.builder()
+
+                            // ===================== IDENTIFIANTS =====================
+
+                            .id(controle.getId())
+                            .uid(controle.getUid())
+
+                            // ===================== RELATIONS =====================
+
+                            .policierId(
+                                    controle.getPolicier() != null
+                                            ? controle.getPolicier().getId()
+                                            : null)
+
+                            .justificationId(
+                                    controle.getJustification() != null
+                                            ? controle.getJustification().getId()
+                                            : null)
+
+                            .controleurId(
+                                    controle.getControleur() != null
+                                            ? controle.getControleur().getId()
+                                            : null)
+
+                            .seanceId(
+                                    controle.getSeance() != null
+                                            ? controle.getSeance().getId()
+                                            : null)
+
+                            .chefEquipeId(
+                                    controle.getChefEquipe() != null
+                                            ? controle.getChefEquipe().getId()
+                                            : null)
+
+                            .chargeMissionId(
+                                    controle.getChargeMission() != null
+                                            ? controle.getChargeMission().getId()
+                                            : null)
+
+                            .equipeId(
+                                    controle.getEquipe() != null
+                                            ? controle.getEquipe().getId()
+                                            : null)
+
+                            .missionId(
+                                    controle.getMission() != null
+                                            ? controle.getMission().getId()
+                                            : null)
+
+                            // ===================== INFORMATIONS =====================
+
+                            .noms(controle.getNoms())
+                            .present(controle.getPresent())
+                            .justifie(controle.getJustifie())
+                            .observation(controle.getObservation())
+                            .isControle(controle.getIsControle())
+                            .matricule(controle.getMatricule())
+                            .unite(controle.getUnite())
+                            .grade(controle.getGrade())
+                            .sexe(controle.getSexe())
+
+                            // ===================== BIOMETRIE =====================
+
+                            .fingerprint(controle.getFingerprint())
+                            .fingerprint4(controle.getFingerprint4())
+
+                            // ===================== FLAGS =====================
+
+                            .isCmd(controle.getIsCmd())
+                            .isActif(controle.getIsActif())
+                            .isSync(controle.getIsSync())
+                            .versionSync(controle.getVersionSync())
+
+                            // ===================== FILE =====================
+
+                            .qrcode(controle.getQrcode())
+                            .province(controle.getProvince())
+                            .deviceId(controle.getDeviceId())
+                            .pkPhoto(controle.getPkPhoto())
+
+                            // ===================== TIMESTAMPS =====================
+
+                            .syncedAt(controle.getSyncedAt())
+                            .createdAt(controle.getCreatedAt())
+                            .updatedAt(controle.getUpdatedAt())
+
+                            .build();
+
+                    // ===================== PHOTO URL =====================
+
+                    if (controle.getPkPhoto() != null
+                            && !controle.getPkPhoto().isEmpty()) {
+
+                        dto.setPhotoUrl(
+                                "http://localhost:8090/photos/"
+                                        + controle.getPkPhoto()
+                                        + ".jpg");
+                    }
+
+                    return dto;
+                })
+                .collect(java.util.stream.Collectors.toList());
     }
 
     /* ========================= UPDATE ========================= */

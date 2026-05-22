@@ -77,9 +77,6 @@ public class Controle {
     @Column(columnDefinition = "TEXT")
     private String fingerprint4;
 
-    @Column(columnDefinition = "TEXT")
-    private String face;
-
     // ===================== FLAGS =====================
 
     private Boolean isCmd = false;
@@ -94,6 +91,8 @@ public class Controle {
     private String province;
     private String deviceId;
 
+    @Column(name = "pk_photo", unique = true)
+    private String pkPhoto;
     // ===================== TIMESTAMPS =====================
 
     private LocalDateTime syncedAt;

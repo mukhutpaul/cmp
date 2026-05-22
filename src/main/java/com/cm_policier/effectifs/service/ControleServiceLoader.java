@@ -117,7 +117,7 @@ public class ControleServiceLoader {
                     .isSync(false)
 
                     // ================= BIOMETRIE =================
-                    .face(null)
+                    .pkPhoto(p.getPkPhoto())
 
                     .build();
 
