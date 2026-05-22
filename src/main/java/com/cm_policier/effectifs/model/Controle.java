@@ -42,6 +42,12 @@ public class Controle {
     @ManyToOne
     private User chargeMission;
 
+    @ManyToOne
+    private Equipe equipe;
+
+    @ManyToOne
+    private Mission mission;
+
     // ===================== INFORMATIONS =====================
 
     private String noms;
@@ -86,7 +92,6 @@ public class Controle {
 
     private String qrcode;
     private String province;
-    private String equipe;
     private String deviceId;
 
     // ===================== TIMESTAMPS =====================

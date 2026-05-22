@@ -34,6 +34,8 @@ public class Equipe {
     @ManyToOne
     private Mission mission;
 
+    private String site;
+
     private Boolean isActive = true;
 
     private LocalDateTime createdAt;
