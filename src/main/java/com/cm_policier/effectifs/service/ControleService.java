@@ -31,8 +31,6 @@ public class ControleService {
         private final DocumentService documentService;
         private final ControleRepository repository;
 
-     
-
         /* ========================= CREATE ========================= */
         public Controle create(Controle controle) {
                 controle.setCreatedAt(java.time.LocalDateTime.now());
@@ -147,62 +145,72 @@ public class ControleService {
 
         public List<Document> uploadDocuments(
 
-            UUID controleId,
-            String title,
-            String description,
-            List<MultipartFile> files
+                        UUID controleId,
+                        String title,
+                        String description,
+                        List<MultipartFile> files
 
-    ) {
+        ) {
 
-        Controle controle = repository.findById(controleId)
-        .orElseThrow(() -> new RuntimeException("Controle introuvable"));
+                Controle controle = repository.findById(controleId)
+                                .orElseThrow(() -> new RuntimeException("Controle introuvable"));
 
-        List<Document> documents = new ArrayList<>();
+                List<Document> documents = new ArrayList<>();
 
-        try {
+                try {
 
-            // 🔥 création auto dossier
-            File folder = new File("C:/bdd/document/");
+                        // 🔥 création auto dossier
+                        File folder = new File("C:/bdd/document/");
 
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
+                        if (!folder.exists()) {
+                                folder.mkdirs();
+                        }
 
-            for (MultipartFile file : files) {
+                        for (MultipartFile file : files) {
 
-                // nom unique
-                String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                                // nom unique
+                                String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
-                Path path = Paths.get("C:/bdd/document/" + fileName);
+                                Path path = Paths.get("C:/bdd/document/" + fileName);
 
-                Files.copy(
-                        file.getInputStream(),
-                        path,
-                        StandardCopyOption.REPLACE_EXISTING);
+                                Files.copy(
+                                                file.getInputStream(),
+                                                path,
+                                                StandardCopyOption.REPLACE_EXISTING);
 
-                // URL accessible
-                String imageUrl = "http://localhost:8090/documents/" + fileName;
+                                // URL accessible
+                                String imageUrl = "http://localhost:8090/documents/" + fileName;
 
-                Document document = Document.builder()
-                        .controle(controle)
-                        .title(title)
-                        .description(description)
-                        .imageUrl(imageUrl)
-                        .build();
+                                Document document = Document.builder()
+                                                .controle(controle)
+                                                .title(title)
+                                                .description(description)
+                                                .imageUrl(imageUrl)
+                                                .build();
 
-                documents.add(
-                        documentService.create(document));
-            }
+                                documents.add(
+                                                documentService.create(document));
+                        }
 
-            // 🔥 automatiquement justifié
-            controle.setJustifie(true);
+                        // 🔥 automatiquement justifié
+                        controle.setJustifie(true);
 
-            repository.save(controle);
+                        repository.save(controle);
 
-            return documents;
+                        return documents;
 
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+                } catch (Exception e) {
+                        throw new RuntimeException(e.getMessage());
+                }
         }
-    }
+
+        public Controle markPresent(UUID id) {
+
+                Controle controle = repository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Controle introuvable"));
+
+                controle.setPresent(true);
+
+                return repository.save(controle);
+        }
 }

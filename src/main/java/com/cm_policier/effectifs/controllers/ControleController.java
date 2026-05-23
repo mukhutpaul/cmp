@@ -106,4 +106,9 @@ public class ControleController {
                         files));
     }
 
+    @PatchMapping("/present")
+    public ResponseEntity<?> markPresent(@RequestParam("id") UUID id) {
+        return ResponseEntity.ok(service.markPresent(id));
+    }
+
 }
