@@ -1,5 +1,6 @@
 package com.cm_policier.effectifs.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +21,7 @@ public class Document {
 
     @ManyToOne
     @JoinColumn(name = "controle_id")
+    @JsonIgnore
     private Controle controle;
 
     private String title;

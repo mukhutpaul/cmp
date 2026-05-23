@@ -2,16 +2,25 @@ package com.cm_policier.effectifs.service;
 
 import com.cm_policier.effectifs.dto.ControleResponseDto;
 import com.cm_policier.effectifs.model.Controle;
+import com.cm_policier.effectifs.model.Document;
 import com.cm_policier.effectifs.util.*;
 import com.cm_policier.effectifs.repository.ControleRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 
@@ -19,7 +28,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ControleService {
 
+        private final DocumentService documentService;
         private final ControleRepository repository;
+
+     
 
         /* ========================= CREATE ========================= */
         public Controle create(Controle controle) {
@@ -107,6 +119,12 @@ public class ControleService {
                 repository.deleteById(id);
         }
 
+        public Controle findById(UUID id) {
+
+                return repository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Controle introuvable"));
+        }
+
         public void findByMatricule(String matricule) {
                 repository.findByMatricule(matricule);
         }
@@ -126,4 +144,65 @@ public class ControleService {
         public Optional<Controle> getByMatricule(String matricule) {
                 return repository.findByMatricule(matricule);
         }
+
+        public List<Document> uploadDocuments(
+
+            UUID controleId,
+            String title,
+            String description,
+            List<MultipartFile> files
+
+    ) {
+
+        Controle controle = repository.findById(controleId)
+        .orElseThrow(() -> new RuntimeException("Controle introuvable"));
+
+        List<Document> documents = new ArrayList<>();
+
+        try {
+
+            // 🔥 création auto dossier
+            File folder = new File("C:/bdd/document/");
+
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+
+            for (MultipartFile file : files) {
+
+                // nom unique
+                String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+                Path path = Paths.get("C:/bdd/document/" + fileName);
+
+                Files.copy(
+                        file.getInputStream(),
+                        path,
+                        StandardCopyOption.REPLACE_EXISTING);
+
+                // URL accessible
+                String imageUrl = "http://localhost:8090/documents/" + fileName;
+
+                Document document = Document.builder()
+                        .controle(controle)
+                        .title(title)
+                        .description(description)
+                        .imageUrl(imageUrl)
+                        .build();
+
+                documents.add(
+                        documentService.create(document));
+            }
+
+            // 🔥 automatiquement justifié
+            controle.setJustifie(true);
+
+            repository.save(controle);
+
+            return documents;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 }
