@@ -136,10 +136,6 @@ public class ControleService {
                                 .orElseThrow(() -> new RuntimeException("Controle introuvable"));
         }
 
-        public void findByMatricule(String matricule) {
-                repository.findByMatricule(matricule);
-        }
-
         public List<Controle> searchByIdentite(
                         String nom,
                         String postnom,
@@ -152,8 +148,69 @@ public class ControleService {
                                 dateNaissance);
         }
 
-        public Optional<Controle> getByMatricule(String matricule) {
-                return repository.findByMatricule(matricule);
+        public ControleResponseDto getByMatricule(String matricule) {
+
+                Controle c = repository.findByMatricule(matricule)
+                                .orElseThrow(() -> new RuntimeException("Controle introuvable"));
+
+                ControleResponseDto dto = ControleResponseDto.builder()
+
+                                .id(c.getId())
+                                .uid(c.getUid())
+
+                                // RELATIONS
+                                .policier(c.getPolicier())
+                                .controleur(c.getControleur())
+                                .chefEquipe(c.getChefEquipe())
+                                .chargeMission(c.getChargeMission())
+                                .seance(c.getSeance())
+                                .equipe(c.getEquipe())
+                                .mission(c.getMission())
+                                .justification(c.getJustification())
+
+                                // INFORMATIONS
+                                .noms(c.getNoms())
+                                .present(c.getPresent())
+                                .justifie(c.getJustifie())
+                                .observation(c.getObservation())
+                                .isControle(c.getIsControle())
+
+                                .matricule(c.getMatricule())
+                                .unite(c.getUnite())
+                                .grade(c.getGrade())
+                                .sexe(c.getSexe())
+
+                                // BIOMETRIE
+                                .fingerprint(c.getFingerprint())
+                                .fingerprint4(c.getFingerprint4())
+
+                                // FLAGS
+                                .isCmd(c.getIsCmd())
+                                .isActif(c.getIsActif())
+                                .isSync(c.getIsSync())
+                                .versionSync(c.getVersionSync())
+
+                                // FILE
+                                .qrcode(c.getQrcode())
+                                .province(c.getProvince())
+                                .deviceId(c.getDeviceId())
+                               // .pkPhoto(c.getPkPhoto() + ".jpg")
+
+                                // TIMESTAMPS
+                                .syncedAt(c.getSyncedAt())
+                                .createdAt(c.getCreatedAt())
+                                .updatedAt(c.getUpdatedAt())
+
+                                .build();
+
+                // PHOTO URL
+                if (c.getPkPhoto() != null
+                                && !c.getPkPhoto().isEmpty()) {
+
+                        dto.setPhotoUrl(c.getPkPhoto() + ".jpg");
+                }
+
+                return dto;
         }
 
         public List<Document> uploadDocuments(

@@ -52,12 +52,12 @@ public class ControleController {
     }
 
     @GetMapping("/matricule/{matricule}")
-    public ResponseEntity<Controle> getByMatricule(@PathVariable String matricule) {
+    public ResponseEntity<ControleResponseDto> getByMatricule(
+            @PathVariable String matricule) {
 
-        Optional<Controle> controle = service.getByMatricule(matricule);
+        ControleResponseDto controle = service.getByMatricule(matricule);
 
-        return controle.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(controle);
     }
 
     /* ========================= UPDATE ========================= */
