@@ -24,106 +24,123 @@ import com.cm_policier.effectifs.repository.UserRepository;
 @Service
 public class ControleServiceLoader {
 
-    @Autowired
-    private PolicierRepository policierRepository;
+        @Autowired
+        private PolicierRepository policierRepository;
 
-    @Autowired
-    private ControleRepository controleRepository;
+        @Autowired
+        private ControleRepository controleRepository;
 
-    @Autowired
-    private DetailEquipeRepository detailEquipeRepository;
+        @Autowired
+        private DetailEquipeRepository detailEquipeRepository;
 
-    @Autowired
-    private EquipeRepository equipeRepository;
+        @Autowired
+        private UserRepository userRepository;
 
-    @Autowired
-    private MissionRepository missionRepository;
+        @Autowired
+        private SeanceRepository seanceRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+        public List<Controle> chargerControle(String unite, Long userId) {
 
-    @Autowired
-    private SeanceRepository seanceRepository;
+                // 1. contrôleur connecté
+                User controleur = userRepository.findById(userId)
+                                .orElseThrow(() -> new RuntimeException("Controleur introuvable"));
 
-    public List<Controle> chargerControle(String unite, Long userId) {
+                // 2. équipe du contrôleur
+                DetailEquipe detailEquipe = detailEquipeRepository.findByUser_Id(userId)
+                                .orElseThrow(() -> new RuntimeException("Equipe introuvable"));
 
-        // 1. contrôleur connecté
-        User controleur = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Controleur introuvable"));
+                Equipe equipe = detailEquipe.getEquipe();
 
-        // 2. équipe du contrôleur
-        DetailEquipe detailEquipe = detailEquipeRepository.findByUser_Id(userId)
-                .orElseThrow(() -> new RuntimeException("Equipe introuvable"));
+                // 3. mission
+                Mission mission = equipe.getMission();
 
-        Equipe equipe = detailEquipe.getEquipe();
+                // 4. chef équipe
+                User chefEquipe = equipe.getUser();
 
-        // 3. mission
-        Mission mission = equipe.getMission();
+                // 5. chargé mission
+                User chefMission = mission.getChargeMission();
 
-        // 4. chef équipe
-        User chefEquipe = equipe.getUser();
+                // 6. policiers unité
+                List<Policier> policiers = policierRepository.findByUnit(unite);
 
-        // 5. chargé mission
-        User chefMission = mission.getChargeMission();
+                // 7. séance active
+                Seance seance = seanceRepository.findByIsActiveTrue()
+                                .orElseThrow(() -> new RuntimeException("Aucune séance active trouvée"));
 
-        // 6. policiers unité
-        List<Policier> policiers = policierRepository.findByUnit(unite);
+                // =========================
+                // RECUPERATION DERNIER UID
+                // =========================
 
-        // 7. séance active
-        Seance seance = seanceRepository.findByIsActiveTrue()
-                .orElseThrow(() -> new RuntimeException("Aucune séance active trouvée"));
+                int sequence = 1;
 
-        List<Controle> controles = new ArrayList<>();
-        int sequence = 1;
+               String dernierUid = controleRepository.findLastUid();
 
-        for (Policier p : policiers) {
+                if (dernierUid != null) {
 
-            String missionCode = mission.getNumero().replace("-", "");
+                        try {
 
-            String uid = String.format(
-                    "%s-CE%d-CTR%d-%06d",
-                    missionCode,
-                    chefEquipe.getId(),
-                    controleur.getId(),
-                    sequence++
-            );
+                                String[] parts = dernierUid.split("-");
 
-            Controle c = Controle.builder()
-                    .uid(uid)
+                                String lastNumber = parts[parts.length - 1];
 
-                    // ================= RELATIONS =================
-                    .policier(p)
-                    .controleur(controleur)
-                    .chefEquipe(chefEquipe)
-                    .chargeMission(chefMission)
-                    .seance(seance)
+                                sequence = Integer.parseInt(lastNumber) + 1;
 
-                    // 🔥 AJOUTS DEMANDÉS
-                    .equipe(equipe)
-                    .mission(mission)
+                        } catch (Exception e) {
 
-                    // ================= INFOS =================
-                    .noms(p.getLastname() + " " + p.getPostname() + " " + p.getFirstnames())
-                    .matricule(p.getMatricule())
-                    .unite(p.getUnit())
-                    .grade(p.getRank())
-                    .sexe(p.getGender())
+                                sequence = 1;
+                        }
+                }
 
-                    // ================= FLAGS =================
-                    .present(false)
-                    .justifie(false)
-                    .isControle(false)
-                    .isActif(false)
-                    .isSync(false)
+                List<Controle> controles = new ArrayList<>();
 
-                    // ================= BIOMETRIE =================
-                    .pkPhoto(p.getPkPhoto())
+                for (Policier p : policiers) {
 
-                    .build();
+                        String missionCode = mission.getNumero().replace("-", "");
 
-            controles.add(c);
+                        String uid = String.format(
+                                        "%s-CE%d-CTR%d-%06d",
+                                        missionCode,
+                                        chefEquipe.getId(),
+                                        controleur.getId(),
+                                        sequence++);
+
+                        Controle c = Controle.builder()
+                                        .uid(uid)
+
+                                        // ================= RELATIONS =================
+                                        .policier(p)
+                                        .controleur(controleur)
+                                        .chefEquipe(chefEquipe)
+                                        .chargeMission(chefMission)
+                                        .seance(seance)
+                                        .equipe(equipe)
+                                        .mission(mission)
+
+                                        // ================= INFOS =================
+                                        .noms(p.getLastname() + " "
+                                                        + p.getPostname() + " "
+                                                        + p.getFirstnames())
+
+                                        .matricule(p.getMatricule())
+                                        .unite(p.getUnit())
+                                        .grade(p.getRank())
+                                        .sexe(p.getGender())
+
+                                        // ================= FLAGS =================
+                                        .present(false)
+                                        .justifie(false)
+                                        .isControle(false)
+                                        .isActif(false)
+                                        .isSync(false)
+
+                                        // ================= BIOMETRIE =================
+                                        .pkPhoto(p.getPkPhoto())
+
+                                        .build();
+
+                        controles.add(c);
+                }
+
+                return controleRepository.saveAll(controles);
         }
-
-        return controleRepository.saveAll(controles);
-    }
 }

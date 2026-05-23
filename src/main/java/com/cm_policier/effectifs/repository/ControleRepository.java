@@ -14,44 +14,56 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ControleRepository extends JpaRepository<Controle, UUID>, ControleRepositoryCustom {
-        @Query("""
-                            SELECT c FROM Controle c
-                            LEFT JOIN c.policier p
-                            WHERE (:search IS NULL OR
-                                  LOWER(c.matricule) LIKE LOWER(CONCAT('%', :search, '%'))
-                                  OR LOWER(c.uid) LIKE LOWER(CONCAT('%', :search, '%'))
-                                  OR LOWER(c.noms) LIKE LOWER(CONCAT('%', :search, '%'))
-                            )
-                        """)
-        Page<Controle> search(String search, Pageable pageable);
+      @Query("""
+                      SELECT c FROM Controle c
+                      LEFT JOIN c.policier p
+                      WHERE (:search IS NULL OR
+                            LOWER(c.matricule) LIKE LOWER(CONCAT('%', :search, '%'))
+                            OR LOWER(c.uid) LIKE LOWER(CONCAT('%', :search, '%'))
+                            OR LOWER(c.noms) LIKE LOWER(CONCAT('%', :search, '%'))
+                      )
+                  """)
+      Page<Controle> search(String search, Pageable pageable);
 
-        @Query("""
-                        SELECT c FROM Controle c
-                        JOIN c.policier p
-                        WHERE
-                        LOWER(p.lastname) LIKE LOWER(CONCAT('%', :lastname, '%'))
-                        AND LOWER(p.postname) LIKE LOWER(CONCAT('%', :postname, '%'))
-                        AND LOWER(p.firstnames) LIKE LOWER(CONCAT('%', :firstname, '%'))
-                        AND p.birthDate = :birthDate
-                        """)
-        List<Controle> searchByPolicierIdentite(
-                        @Param("lastname") String lastname,
-                        @Param("postname") String postname,
-                        @Param("firstname") String firstname,
-                        @Param("birthDate") LocalDate birthDate);
+      @Query("""
+                  SELECT c FROM Controle c
+                  JOIN c.policier p
+                  WHERE
+                  LOWER(p.lastname) LIKE LOWER(CONCAT('%', :lastname, '%'))
+                  AND LOWER(p.postname) LIKE LOWER(CONCAT('%', :postname, '%'))
+                  AND LOWER(p.firstnames) LIKE LOWER(CONCAT('%', :firstname, '%'))
+                  AND p.birthDate = :birthDate
+                  """)
+      List<Controle> searchByPolicierIdentite(
+                  @Param("lastname") String lastname,
+                  @Param("postname") String postname,
+                  @Param("firstname") String firstname,
+                  @Param("birthDate") LocalDate birthDate);
 
-        long count();
+      long count();
 
-        long countByPresentTrue();
+      long countByPresentTrue();
 
-        long countByJustifieTrue();
+      long countByJustifieTrue();
 
-        long countByJustifieFalse();
-        
+      long countByJustifieFalse();
 
-        long countByPresentFalseAndJustifieFalse();
+      long countByPresentFalseAndJustifieFalse();
 
-        List<Controle> findAllByOrderByUpdatedAtDesc();
+      List<Controle> findAllByOrderByUpdatedAtDesc();
 
-        Optional<Controle> findByMatricule(String matricule);
+      Optional<Controle> findByMatricule(String matricule);
+
+      Optional<Controle> findTopByOrderByIdDesc();
+
+      @Query(value = """
+                      SELECT uid
+                      FROM controle
+                      ORDER BY CAST(
+                          SPLIT_PART(uid, '-', 4)
+                          AS INTEGER
+                      ) DESC
+                      LIMIT 1
+                  """, nativeQuery = true)
+      String findLastUid();
 }
