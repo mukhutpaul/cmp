@@ -136,16 +136,81 @@ public class ControleService {
                                 .orElseThrow(() -> new RuntimeException("Controle introuvable"));
         }
 
-        public List<Controle> searchByIdentite(
+        public List<ControleResponseDto> searchByIdentite(
                         String nom,
                         String postnom,
                         String prenom,
                         LocalDate dateNaissance) {
-                return repository.searchByPolicierIdentite(
+
+                List<Controle> controles = repository.searchByPolicierIdentite(
                                 nom,
                                 postnom,
                                 prenom,
                                 dateNaissance);
+
+                return controles.stream().map(c -> {
+
+                        ControleResponseDto dto = ControleResponseDto.builder()
+
+                                        .id(c.getId())
+                                        .uid(c.getUid())
+
+                                        // RELATIONS
+                                        .policier(c.getPolicier())
+                                        .controleur(c.getControleur())
+                                        .chefEquipe(c.getChefEquipe())
+                                        .chargeMission(c.getChargeMission())
+                                        .seance(c.getSeance())
+                                        .equipe(c.getEquipe())
+                                        .mission(c.getMission())
+                                        .justification(c.getJustification())
+
+                                        // INFORMATIONS
+                                        .noms(c.getNoms())
+                                        .present(c.getPresent())
+                                        .justifie(c.getJustifie())
+                                        .observation(c.getObservation())
+                                        .isControle(c.getIsControle())
+
+                                        .matricule(c.getMatricule())
+                                        .unite(c.getUnite())
+                                        .grade(c.getGrade())
+                                        .sexe(c.getSexe())
+
+                                        // BIOMETRIE
+                                        .fingerprint(c.getFingerprint())
+                                        .fingerprint4(c.getFingerprint4())
+
+                                        // FLAGS
+                                        .isCmd(c.getIsCmd())
+                                        .isActif(c.getIsActif())
+                                        .isSync(c.getIsSync())
+                                        .versionSync(c.getVersionSync())
+
+                                        // FILE
+                                        .qrcode(c.getQrcode())
+                                        .province(c.getProvince())
+                                        .deviceId(c.getDeviceId())
+                                        .pkPhoto(c.getPkPhoto())
+
+                                        // TIMESTAMPS
+                                        .syncedAt(c.getSyncedAt())
+                                        .createdAt(c.getCreatedAt())
+                                        .updatedAt(c.getUpdatedAt())
+
+                                        .build();
+
+                        // PHOTO
+                        if (c.getPkPhoto() != null
+                                        && !c.getPkPhoto().isEmpty()) {
+
+                                dto.setPhotoUrl(
+                                                c.getPkPhoto() + ".jpg");
+                        }
+
+                        return dto;
+
+                }).toList();
         }
 
         public ControleResponseDto getByMatricule(String matricule) {
@@ -194,7 +259,7 @@ public class ControleService {
                                 .qrcode(c.getQrcode())
                                 .province(c.getProvince())
                                 .deviceId(c.getDeviceId())
-                               // .pkPhoto(c.getPkPhoto() + ".jpg")
+                                // .pkPhoto(c.getPkPhoto() + ".jpg")
 
                                 // TIMESTAMPS
                                 .syncedAt(c.getSyncedAt())
