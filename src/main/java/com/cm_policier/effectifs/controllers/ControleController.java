@@ -73,10 +73,14 @@ public class ControleController {
     }
 
     @GetMapping("/search/identite")
-    public List<Controle> searchByIdentite(
+    public List<ControleResponseDto> searchByIdentite(
+
             @RequestParam(required = false) String nom,
+
             @RequestParam(required = false) String postnom,
+
             @RequestParam(required = false) String prenom,
+
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateNaissance) {
 
         return service.searchByIdentite(
