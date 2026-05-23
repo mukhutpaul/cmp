@@ -1,6 +1,7 @@
 package com.cm_policier.effectifs.service;
 
 import com.cm_policier.effectifs.dto.ControleResponseDto;
+import com.cm_policier.effectifs.dto.DocumentResponseDto;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;
 import com.cm_policier.effectifs.util.*;
@@ -8,6 +9,7 @@ import com.cm_policier.effectifs.repository.ControleRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -60,10 +62,20 @@ public class ControleService {
 
         public List<ControleResponseDto> getAll() {
 
-                List<Controle> controles = repository.findAllByOrderByUpdatedAtDesc();
+                return repository.findAllByOrderByUpdatedAtDesc()
+                                .stream()
+                                .map(controle -> {
 
-                return controles.stream()
-                                .map((Controle controle) -> {
+                                        List<Document> docs = controle.getDocuments();
+
+                                        List<DocumentResponseDto> documents = docs.stream()
+                                                        .map(doc -> DocumentResponseDto.builder()
+                                                                        .id(doc.getId())
+                                                                        .title(doc.getTitle())
+                                                                        .description(doc.getDescription())
+                                                                        .imageUrl(doc.getImageUrl())
+                                                                        .build())
+                                                        .collect(Collectors.toList());
                                         return ControleResponseDto.builder()
                                                         .id(controle.getId())
                                                         .uid(controle.getUid())
@@ -98,6 +110,7 @@ public class ControleService {
                                                         .syncedAt(controle.getSyncedAt())
                                                         .createdAt(controle.getCreatedAt())
                                                         .updatedAt(controle.getUpdatedAt())
+                                                        .documents(documents)
                                                         .build();
                                 })
                                 .collect(Collectors.toList());

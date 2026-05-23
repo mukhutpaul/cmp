@@ -21,11 +21,7 @@ public class Controle {
     @Column(columnDefinition = "UUID", updatable = false, nullable = false)
     private UUID id;
 
-     @OneToMany(
-            mappedBy = "controle",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "controle", fetch = FetchType.LAZY)
     private List<Document> documents = new ArrayList<>();
 
     @Column(unique = true)

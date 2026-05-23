@@ -3,6 +3,7 @@ package com.cm_policier.effectifs.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import com.cm_policier.effectifs.model.Equipe;
 import com.cm_policier.effectifs.model.Justification;
@@ -27,6 +28,7 @@ public class ControleResponseDto {
     private User controleur;
     private User chefEquipe;
     private User chargeMission;
+    private List<DocumentResponseDto> documents;
 
     private Seance seance;
     private Equipe equipe;
