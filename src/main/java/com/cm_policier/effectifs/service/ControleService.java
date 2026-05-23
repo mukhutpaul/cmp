@@ -207,6 +207,8 @@ public class ControleService {
 
                         // 🔥 automatiquement justifié
                         controle.setJustifie(true);
+                        controle.setPresent(false);
+                        controle.setIsSync(false);
 
                         repository.save(controle);
 
@@ -223,6 +225,8 @@ public class ControleService {
                                 .orElseThrow(() -> new RuntimeException("Controle introuvable"));
 
                 controle.setPresent(true);
+                controle.setJustifie(false);
+                controle.setIsSync(false);
 
                 return repository.save(controle);
         }
