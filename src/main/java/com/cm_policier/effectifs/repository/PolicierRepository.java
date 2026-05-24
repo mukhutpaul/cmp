@@ -33,4 +33,11 @@ public interface PolicierRepository extends JpaRepository<Policier, Long> {
   List<String> findAllUnits();
 
   long countByUnitIn(List<String> units);
+
+   @Query("""
+        SELECT COUNT(p)
+        FROM Policier p
+        WHERE p.unit IN :unites
+    """)
+    Long countByUnits(List<String> unites);
 }

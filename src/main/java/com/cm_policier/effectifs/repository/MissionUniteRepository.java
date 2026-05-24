@@ -10,4 +10,5 @@ public interface MissionUniteRepository extends JpaRepository<MissionUnite, Long
     boolean existsByMissionIdAndUniteId(Long missionId, Long uniteId);
       boolean existsByUnite_IdAndIsActiveTrue(Long uniteId);
        List<MissionUnite> findByMissionId(Long missionId);
+      List<MissionUnite> findByMissionIdAndIsActiveTrue(Long missionId);
 }

@@ -75,4 +75,14 @@ public interface ControleRepository extends JpaRepository<Controle, UUID>, Contr
                       LIMIT 1
                   """, nativeQuery = true)
       String findLastUid();
+
+    List<Controle> findByMissionId(Long missionId);
+
+    Long countByMissionId(Long missionId);
+
+    Long countByMissionIdAndPresentTrue(Long missionId);
+
+    Long countByMissionIdAndJustifieTrue(Long missionId);
+
+    Long countByMissionIdAndPresentFalseAndJustifieFalse(Long missionId);
 }
