@@ -1,5 +1,6 @@
 package com.cm_policier.effectifs.service;
 
+import com.cm_policier.effectifs.config.buildPhotoUrl;
 import com.cm_policier.effectifs.dto.ControleResponseDto;
 import com.cm_policier.effectifs.dto.DocumentResponseDto;
 import com.cm_policier.effectifs.model.Controle;
@@ -191,8 +192,7 @@ public class ControleService {
                                         .qrcode(c.getQrcode())
                                         .province(c.getProvince())
                                         .deviceId(c.getDeviceId())
-                                        .pkPhoto(c.getPkPhoto())
-
+                                        .photoUrl(buildPhotoUrl.buildPhotoUrls(c.getPkPhoto()))
                                         // TIMESTAMPS
                                         .syncedAt(c.getSyncedAt())
                                         .createdAt(c.getCreatedAt())
@@ -200,13 +200,6 @@ public class ControleService {
 
                                         .build();
 
-                        // PHOTO
-                        if (c.getPkPhoto() != null
-                                        && !c.getPkPhoto().isEmpty()) {
-
-                                dto.setPhotoUrl(
-                                                c.getPkPhoto() + ".jpg");
-                        }
 
                         return dto;
 
@@ -259,7 +252,7 @@ public class ControleService {
                                 .qrcode(c.getQrcode())
                                 .province(c.getProvince())
                                 .deviceId(c.getDeviceId())
-                                // .pkPhoto(c.getPkPhoto() + ".jpg")
+                                .photoUrl(buildPhotoUrl.buildPhotoUrls(c.getPkPhoto()))
 
                                 // TIMESTAMPS
                                 .syncedAt(c.getSyncedAt())
