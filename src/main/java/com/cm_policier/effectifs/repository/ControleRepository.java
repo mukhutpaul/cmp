@@ -1,6 +1,7 @@
 package com.cm_policier.effectifs.repository;
 
 import com.cm_policier.effectifs.model.Controle;
+import com.cm_policier.effectifs.model.Equipe;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -55,6 +56,14 @@ public interface ControleRepository extends JpaRepository<Controle, UUID>, Contr
       Optional<Controle> findByMatricule(String matricule);
 
       Optional<Controle> findTopByOrderByIdDesc();
+
+      long countByEquipe(Equipe equipe);
+
+      long countByEquipeAndPresentTrue(Equipe equipe);
+
+      long countByEquipeAndJustifieTrue(Equipe equipe);
+
+      long countByEquipeAndPresentFalseAndJustifieFalse(Equipe equipe);
 
       @Query(value = """
                       SELECT uid

@@ -31,4 +31,6 @@ public interface PolicierRepository extends JpaRepository<Policier, Long> {
 
   @Query("SELECT DISTINCT p.unit FROM Policier p WHERE p.unit IS NOT NULL")
   List<String> findAllUnits();
+
+  long countByUnitIn(List<String> units);
 }
