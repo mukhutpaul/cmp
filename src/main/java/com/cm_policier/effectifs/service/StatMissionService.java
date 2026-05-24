@@ -36,6 +36,13 @@ public class StatMissionService {
                     .map(mu -> mu.getUnite().getName())
                     .toList();
 
+            long totalUnites = missionUniteRepository
+                    .findByMissionIdAndIsActiveTrue(mission.getId())
+                    .stream()
+                    .map(mu -> mu.getUnite().getName())
+                    .distinct()
+                    .count();
+
             // total policiers
             Long totalPoliciers = policierRepository.countByUnits(unites);
 
@@ -49,10 +56,10 @@ public class StatMissionService {
             Long justifies = controleRepository.countByMissionIdAndJustifieTrue(mission.getId());
 
             // non justifiés
-            Long nonJustifies = controleRepository.countByMissionIdAndPresentFalseAndJustifieFalse(
-                    mission.getId());
-            Long totalEquipes = equipeRepository.countByMissionId(
-                mission.getId());
+            Long nonJustifies = controleRepository.countByMissionIdAndPresentFalseAndJustifieFalse(mission.getId());
+
+            // équipes
+            Long totalEquipes = equipeRepository.countByMissionId(mission.getId());
 
             return new StatMissionDto(
                     mission.getId(),
@@ -63,8 +70,9 @@ public class StatMissionService {
                     presents,
                     justifies,
                     nonJustifies,
-                    totalEquipes
-                );
+                    totalEquipes,
+                    totalUnites // ✅ AJOUT ICI
+            );
 
         }).toList();
     }
