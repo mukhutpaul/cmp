@@ -14,5 +14,6 @@ public interface EquipeUniteRepository extends JpaRepository<EquipeUnite, Long> 
 
   List<EquipeUnite> findByEquipeId(Long equipeId);
    List<EquipeUnite> findByEquipe(Equipe equipe);
-   
+
+
 }
