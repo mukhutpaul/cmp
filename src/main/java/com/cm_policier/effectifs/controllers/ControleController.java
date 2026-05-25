@@ -121,55 +121,76 @@ public class ControleController {
     @PatchMapping("/{id}/invalidate")
     public ResponseEntity<?> invalidateControle(@PathVariable UUID id) {
 
-        Controle controle = service.findById(id);
+        try {
 
-        if (controle == null) {
-            throw new RuntimeException("Contrôle introuvable");
-        }
+            Controle controle = service.findById(id);
 
-        // =========================
-        // SUPPRESSION DES DOCUMENTS
-        // =========================
-
-        List<Document> documents = documentRepository.findByControle(controle);
-
-        for (Document doc : documents) {
-
-            try {
-
-                if (doc.getImageUrl() != null && !doc.getImageUrl().isBlank()) {
-
-                    Path path = Paths.get("C:/bdd/document/", doc.getImageUrl());
-
-                    Files.deleteIfExists(path);
-                }
-
-            } catch (Exception e) {
-
-                System.out.println("Erreur suppression fichier : " + e.getMessage());
+            if (controle == null) {
+                return ResponseEntity.badRequest()
+                        .body("Contrôle introuvable");
             }
+
+            // =========================
+            // RECUP DOCUMENTS
+            // =========================
+
+            List<Document> documents = documentRepository.findByControle(controle);
+
+            // =========================
+            // DELETE PHOTOS
+            // =========================
+
+            for (Document doc : documents) {
+
+                try {
+
+                    if (doc.getImageUrl() != null &&
+                            !doc.getImageUrl().isBlank()) {
+
+                        Path path = Paths.get(
+                                "C:/bdd/document/",
+                                doc.getImageUrl());
+
+                        Files.deleteIfExists(path);
+                    }
+
+                } catch (Exception e) {
+
+                    System.out.println(
+                            "Erreur suppression fichier : "
+                                    + e.getMessage());
+                }
+            }
+
+            // =========================
+            // DELETE DOCUMENTS DATABASE
+            // =========================
+
+            documentRepository.deleteAll(documents);
+
+            // =========================
+            // INVALIDATION
+            // =========================
+
+            controle.setPresent(false);
+            controle.setJustifie(false);
+            controle.setIsSync(false);
+
+            controle.setObservation("Contrôle invalidé");
+
+            controle.setUpdatedAt(LocalDateTime.now());
+
+            service.create(controle);
+
+            return ResponseEntity.ok(
+                    "Contrôle invalidé avec succès");
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return ResponseEntity.internalServerError()
+                    .body(e.getMessage());
         }
-
-        // =========================
-        // DELETE DOCUMENTS BDD
-        // =========================
-
-        documentRepository.deleteByControle(controle);
-
-        // =========================
-        // INVALIDATION CONTROLE
-        // =========================
-
-        controle.setPresent(false);
-        controle.setJustifie(false);
-        controle.setIsSync(false);
-
-        controle.setObservation("Contrôle invalidé");
-
-        controle.setUpdatedAt(LocalDateTime.now());
-
-        service.create(controle);
-
-        return ResponseEntity.ok("Contrôle invalidé avec succès");
     }
 }

@@ -10,7 +10,7 @@ import com.cm_policier.effectifs.model.Document;
 
 public interface DocumentRepository extends JpaRepository<Document, UUID> {
 
-     List<Document> findByControle(Controle controle);
+      List<Document> findByControle(Controle controle);
 
     void deleteByControle(Controle controle);
 }
