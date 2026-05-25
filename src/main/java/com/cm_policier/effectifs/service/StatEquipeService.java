@@ -15,66 +15,65 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StatEquipeService {
 
-    private final EquipeRepository equipeRepository;
-    private final EquipeUniteRepository equipeUniteRepository;
-    private final PolicierRepository policierRepository;
-    private final ControleRepository controleRepository;
+        private final EquipeRepository equipeRepository;
+        private final EquipeUniteRepository equipeUniteRepository;
+        private final PolicierRepository policierRepository;
+        private final ControleRepository controleRepository;
 
-    public List<StatEquipeDto> getStats() {
+        public List<StatEquipeDto> getStats() {
 
-        List<Equipe> equipes =
-                equipeRepository.findAll();
+                List<Equipe> equipes = equipeRepository.findAll();
 
-        return equipes.stream().map(equipe -> {
+                return equipes.stream().map(equipe -> {
 
-            // unités équipe
-            List<String> unites =
-                    equipeUniteRepository
-                            .findByEquipeId(
-                                    equipe.getId())
-                            .stream()
-                            .map(eu -> eu.getUnite().getName())
-                            .toList();
+                        // unités équipe
+                        List<String> unites = equipeUniteRepository
+                                        .findByEquipeId(
+                                                        equipe.getId())
+                                        .stream()
+                                        .map(eu -> eu.getUnite().getName())
+                                        .toList();
+                        long totalUnites = equipeUniteRepository
+                                        .findByEquipeId(equipe.getId())
+                                        .stream()
+                                        .map(mu -> mu.getUnite().getName())
+                                        .distinct()
+                                        .count();
 
-            // total policiers
-            Long totalPoliciers =
-                    policierRepository.countByUnits(unites);
+                        // total policiers
+                        Long totalPoliciers = policierRepository.countByUnits(unites);
 
-            // total contrôles
-            Long totalControles =
-                    controleRepository.countByEquipeId(
-                            equipe.getId());
+                        // total contrôles
+                        Long totalControles = controleRepository.countByEquipeId(
+                                        equipe.getId());
 
-            // présents
-            Long presents =
-                    controleRepository
-                            .countByEquipeIdAndPresentTrue(
-                                    equipe.getId());
+                        // présents
+                        Long presents = controleRepository
+                                        .countByEquipeIdAndPresentTrue(
+                                                        equipe.getId());
 
-            // justifiés
-            Long justifies =
-                    controleRepository
-                            .countByEquipeIdAndJustifieTrue(
-                                    equipe.getId());
+                        // justifiés
+                        Long justifies = controleRepository
+                                        .countByEquipeIdAndJustifieTrue(
+                                                        equipe.getId());
 
-            // non justifiés
-            Long nonJustifies =
-                    controleRepository
-                            .countByEquipeIdAndPresentFalseAndJustifieFalse(
-                                    equipe.getId());
+                        // non justifiés
+                        Long nonJustifies = controleRepository
+                                        .countByEquipeIdAndPresentFalseAndJustifieFalse(
+                                                        equipe.getId());
 
-            return new StatEquipeDto(
-                    equipe.getId(),
-                    equipe.getUser().getUsername(),
-                    equipe.getMission().getNumero(),
-                    equipe.getMission().getZone(),
-                    totalPoliciers,
-                    totalControles,
-                    presents,
-                    justifies,
-                    nonJustifies
-            );
+                        return new StatEquipeDto(
+                                        equipe.getId(),
+                                        equipe.getUser().getUsername(),
+                                        equipe.getMission().getNumero(),
+                                        equipe.getMission().getZone(),
+                                        totalPoliciers,
+                                        totalControles,
+                                        presents,
+                                        justifies,
+                                        nonJustifies,
+                                        totalUnites);
 
-        }).toList();
-    }
+                }).toList();
+        }
 }

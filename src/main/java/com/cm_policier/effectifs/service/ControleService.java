@@ -200,7 +200,6 @@ public class ControleService {
 
                                         .build();
 
-
                         return dto;
 
                 }).toList();
@@ -307,8 +306,8 @@ public class ControleService {
                                                 StandardCopyOption.REPLACE_EXISTING);
 
                                 // URL accessible
-                                String imageUrl = "http://localhost:8090/documents/" + fileName;
-
+                                // String imageUrl = "http://localhost:8090/documents/" + fileName;
+                                String imageUrl = fileName;
                                 Document document = Document.builder()
                                                 .controle(controle)
                                                 .title(title)

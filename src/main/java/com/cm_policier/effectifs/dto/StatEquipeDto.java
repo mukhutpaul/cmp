@@ -1,6 +1,5 @@
 package com.cm_policier.effectifs.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -25,4 +24,6 @@ public class StatEquipeDto {
     private Long justifies;
 
     private Long nonJustifies;
+
+    private Long totalUnites;
 }
