@@ -6,6 +6,6 @@ public class PhotoUtil {
         if (pkPhoto == null || pkPhoto.isBlank() || pkPhoto.equals("null")) {
             return null;
         }
-        return "http://localhost:8090/photos/" + pkPhoto + ".jpg";
+        return "photos/" + pkPhoto + ".jpg";
     }
 }

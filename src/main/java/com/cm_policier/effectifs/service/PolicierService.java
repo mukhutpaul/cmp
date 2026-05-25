@@ -52,7 +52,7 @@ public class PolicierService {
             if (p.getPkPhoto() != null && !p.getPkPhoto().isEmpty()) {
 
                 dto.setPhotoUrl(
-                        "http://localhost:8090/photos/" + p.getPkPhoto() + ".jpg");
+                        "photos/" + p.getPkPhoto() + ".jpg");
             }
 
             return dto;
@@ -145,7 +145,7 @@ public class PolicierService {
         if (p.getPkPhoto() != null && !p.getPkPhoto().isEmpty()) {
 
             dto.setPhotoUrl(
-                    "http://localhost:8090/photos/" + p.getPkPhoto() + ".jpg");
+                    "photos/" + p.getPkPhoto() + ".jpg");
         }
 
         return dto;
