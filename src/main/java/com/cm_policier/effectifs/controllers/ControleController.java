@@ -3,6 +3,7 @@ package com.cm_policier.effectifs.controllers;
 import com.cm_policier.effectifs.dto.ControleResponseDto;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;
+import com.cm_policier.effectifs.repository.DocumentRepository;
 import com.cm_policier.effectifs.service.ControleService;
 import com.cm_policier.effectifs.service.DocumentService;
 
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +34,7 @@ public class ControleController {
 
     private final ControleService service;
     private final DocumentService documentService;
+    private final DocumentRepository documentRepository;
 
     /* ========================= CREATE ========================= */
     @PostMapping
@@ -115,4 +118,58 @@ public class ControleController {
         return ResponseEntity.ok(service.markPresent(id));
     }
 
+    @PatchMapping("/{id}/invalidate")
+    public ResponseEntity<?> invalidateControle(@PathVariable UUID id) {
+
+        Controle controle = service.findById(id);
+
+        if (controle == null) {
+            throw new RuntimeException("Contrôle introuvable");
+        }
+
+        // =========================
+        // SUPPRESSION DES DOCUMENTS
+        // =========================
+
+        List<Document> documents = documentRepository.findByControle(controle);
+
+        for (Document doc : documents) {
+
+            try {
+
+                if (doc.getImageUrl() != null && !doc.getImageUrl().isBlank()) {
+
+                    Path path = Paths.get("C:/bdd/document/", doc.getImageUrl());
+
+                    Files.deleteIfExists(path);
+                }
+
+            } catch (Exception e) {
+
+                System.out.println("Erreur suppression fichier : " + e.getMessage());
+            }
+        }
+
+        // =========================
+        // DELETE DOCUMENTS BDD
+        // =========================
+
+        documentRepository.deleteByControle(controle);
+
+        // =========================
+        // INVALIDATION CONTROLE
+        // =========================
+
+        controle.setPresent(false);
+        controle.setJustifie(false);
+        controle.setIsSync(false);
+
+        controle.setObservation("Contrôle invalidé");
+
+        controle.setUpdatedAt(LocalDateTime.now());
+
+        service.create(controle);
+
+        return ResponseEntity.ok("Contrôle invalidé avec succès");
+    }
 }
