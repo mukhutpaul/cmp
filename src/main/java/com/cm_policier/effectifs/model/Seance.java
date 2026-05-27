@@ -30,4 +30,18 @@ public class Seance {
     private Mission mission;
 
     private Boolean isActive = false;
+
+    private Integer versionSync = 1;
+
+    private LocalDateTime syncedAt;
+
+    private LocalDateTime updatedAt;
+
+    private Boolean isSynchronized = false;
+
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

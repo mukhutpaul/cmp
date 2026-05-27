@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -35,4 +36,6 @@ public class Session {
     private Boolean isSynchronized = false;
 
     private Boolean isActive = false;
+     private Integer versionSync = 1;
+
 }

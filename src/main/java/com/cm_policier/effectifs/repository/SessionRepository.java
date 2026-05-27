@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.cm_policier.effectifs.model.Session;
 
@@ -17,4 +18,11 @@ public interface SessionRepository extends JpaRepository<Session, UUID> {
 
     // 🔵 session active par séance
     Optional<Session> findBySeance_IdAndIsActiveTrue(UUID seanceId);
+
+    @Query("""
+            SELECT COUNT(s)
+            FROM Session s
+            WHERE s.isSynchronized = false
+            """)
+    Long countUnsynchronized();
 }

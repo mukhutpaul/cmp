@@ -1,0 +1,80 @@
+package com.cm_policier.effectifs.service;
+
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import com.cm_policier.effectifs.dto.SyncStatsDto;
+import com.cm_policier.effectifs.repository.ControleRepository;
+import com.cm_policier.effectifs.repository.DocumentRepository;
+import com.cm_policier.effectifs.repository.SeanceRepository;
+import com.cm_policier.effectifs.repository.SessionRepository;
+
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class SyncStatsService {
+
+    private final SessionRepository sessionRepo;
+    private final SeanceRepository seanceRepo;
+    private final ControleRepository controleRepo;
+    private final DocumentRepository documentRepo;
+
+    public SyncStatsDto stats(
+            UUID seanceId,
+            Boolean seanceActive
+    ){
+
+        Long sessions =
+                sessionRepo.countUnsynchronized();
+
+        Long seances =
+                seanceRepo.countUnsynchronized();
+
+        Long presence =
+                controleRepo.countPresenceToSync(
+                        seanceId
+                );
+
+        Long absence = 0L;
+
+        Long documents = 0L;
+
+        Long fichiers = 0L;
+
+        if(!seanceActive){
+
+            absence =
+                    controleRepo.countAbsenceToSync(
+                            seanceId
+                    );
+
+            documents =
+                    documentRepo.countDocumentsToSync(
+                            seanceId
+                    );
+
+            fichiers = documents;
+        }
+
+        Long total =
+                sessions
+                + seances
+                + presence
+                + absence
+                + documents
+                + fichiers;
+
+        return SyncStatsDto.builder()
+                .sessions(sessions)
+                .seances(seances)
+                .controlesPresence(presence)
+                .controlesAbsence(absence)
+                .documents(documents)
+                .fichiers(fichiers)
+                .total(total)
+                .seanceActive(seanceActive)
+                .build();
+    }
+}

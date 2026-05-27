@@ -98,12 +98,16 @@ public class Controle {
 
     @Column(name = "pk_photo", unique = true)
     private String pkPhoto;
+    private LocalDateTime lastModified;
     // ===================== TIMESTAMPS =====================
 
     private LocalDateTime syncedAt;
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+    @Enumerated(EnumType.STRING)
+    private SyncStatus syncStatus = SyncStatus.PENDING;
+    private Boolean deleted = false;
 
     // ===================== LIFECYCLE =====================
 
@@ -111,10 +115,15 @@ public class Controle {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.lastModified = LocalDateTime.now();
     }
 
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+        this.lastModified = LocalDateTime.now();
     }
+
+
 }
+
