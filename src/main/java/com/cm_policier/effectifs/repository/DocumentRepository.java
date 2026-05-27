@@ -34,5 +34,4 @@ public interface DocumentRepository extends JpaRepository<Document, UUID> {
       """)
   Long countDocumentsToSync(UUID seanceId);
 
-  Optional<Document> findByFileHash(String fileHash);
 }

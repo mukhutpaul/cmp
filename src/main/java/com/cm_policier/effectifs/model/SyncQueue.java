@@ -3,19 +3,25 @@ package com.cm_policier.effectifs.model;
 import java.util.UUID;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 class SyncQueue {
 
-   UUID id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
 
-   String entityType;
+    UUID id;
 
-   UUID entityId;
+    String entityType;
 
-   Integer retryCount;
+    UUID entityId;
 
-   String errorMessage;
+    Integer retryCount;
 
-   Boolean synced;
+    String errorMessage;
+
+    Boolean synced;
 }

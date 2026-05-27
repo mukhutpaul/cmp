@@ -296,7 +296,7 @@ public class ControleService {
                         for (MultipartFile file : files) {
 
                                 // nom unique
-                                String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                                String fileName = controle.getUid() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
 
                                 Path path = Paths.get("C:/bdd/document/" + fileName);
 
