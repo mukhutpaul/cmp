@@ -14,6 +14,7 @@ public class SyncStatsDto {
     private Long seances;
 
     private Long controlesPresence;
+     private Long controlesJustifies;
 
     private Long controlesAbsence;
 

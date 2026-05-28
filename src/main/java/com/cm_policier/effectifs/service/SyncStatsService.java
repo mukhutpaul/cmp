@@ -32,6 +32,9 @@ public class SyncStatsService {
         Long seances =
                 seanceRepo.countUnsynchronized();
 
+        Long justifies =
+        controleRepo.countJustifie(seanceId);
+
         Long presence =
                 controleRepo.countPresenceToSync(
                         seanceId
@@ -64,12 +67,14 @@ public class SyncStatsService {
                 + presence
                 + absence
                 + documents
-                + fichiers;
+                + fichiers
+                + justifies;
 
         return SyncStatsDto.builder()
                 .sessions(sessions)
                 .seances(seances)
                 .controlesPresence(presence)
+                .controlesJustifies(justifies)
                 .controlesAbsence(absence)
                 .documents(documents)
                 .fichiers(fichiers)

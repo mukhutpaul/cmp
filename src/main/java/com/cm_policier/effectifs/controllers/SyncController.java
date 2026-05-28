@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api_pc_central/sync")
+@RequestMapping("api/api_pc_central/sync")
 @RequiredArgsConstructor
 public class SyncController {
 
