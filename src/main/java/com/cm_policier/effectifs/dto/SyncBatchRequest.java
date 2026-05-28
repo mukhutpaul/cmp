@@ -17,8 +17,6 @@ public class SyncBatchRequest {
 
     private String serverAddress;
 
-    private String deviceId;
-
     private UUID seanceId;
 
     private List<SessionDto> sessions;

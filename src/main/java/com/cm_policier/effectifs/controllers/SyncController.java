@@ -22,59 +22,42 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SyncController {
 
-    private final SyncStatsService statsService;
-    private final SyncBatchService syncBatchService;
-
-    // =========================
-    // STATS
-    // =========================
-    @GetMapping("/stats/{seanceId}")
-    public SyncStatsDto stats(
-            @PathVariable UUID seanceId,
-            @RequestParam Boolean active
-    ) {
-        return statsService.stats(seanceId, active);
-    }
-
-    // =========================
-    // SYNC BATCH
-    // =========================
-    @PostMapping(
-            value = "/batch",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    public ResponseEntity<SyncBatchResponse> syncBatch(
-
-            @RequestPart("data")
-            SyncBatchRequest dto,
-
-            @RequestPart(value = "files", required = false)
-            List<MultipartFile> files
-
-    ) {
+        private final SyncStatsService statsService;
+        private final SyncBatchService syncBatchService;
 
         // =========================
-        // VALIDATION DTO
+        // STATS
         // =========================
-        if (dto == null) {
-            return ResponseEntity.badRequest()
-                    .body(SyncBatchResponse.builder()
-                            .status("ERROR")
-                            .build());
+        @GetMapping("/stats/{seanceId}")
+        public SyncStatsDto stats(
+                        @PathVariable UUID seanceId,
+                        @RequestParam Boolean active) {
+                return statsService.stats(seanceId, active);
         }
 
         // =========================
-        // SAFE FILES (ANTI NULL)
+        // SYNC BATCH
         // =========================
-        List<MultipartFile> safeFiles =
-                (files == null) ? new ArrayList<>() : files;
+        @PostMapping(value = "/batch", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        public ResponseEntity<SyncBatchResponse> syncBatch(
 
-        // =========================
-        // CALL SERVICE CORRECT
-        // =========================
-        SyncBatchResponse response =
-                syncBatchService.process(dto, safeFiles);
+                        @RequestPart("data") SyncBatchRequest dto,
 
-        return ResponseEntity.ok(response);
-    }
+                        @RequestPart(value = "files", required = false) List<MultipartFile> files
+
+        ) {
+
+                if (dto == null) {
+                        return ResponseEntity.badRequest()
+                                        .body(SyncBatchResponse.builder()
+                                                        .status("ERROR")
+                                                        .build());
+                }
+
+                List<MultipartFile> safeFiles = (files != null) ? files : new ArrayList<>();
+
+                SyncBatchResponse response = syncBatchService.process(dto, safeFiles);
+
+                return ResponseEntity.ok(response);
+        }
 }
