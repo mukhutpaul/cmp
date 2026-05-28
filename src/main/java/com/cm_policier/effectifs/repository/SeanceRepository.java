@@ -22,7 +22,7 @@ public interface SeanceRepository extends JpaRepository<Seance, UUID> {
     @Query("""
             SELECT COUNT(s)
             FROM Seance s
-            WHERE s.isSynchronized = false
+            WHERE s.isSynchronized = false 
             """)
     Long countUnsynchronized();
 }

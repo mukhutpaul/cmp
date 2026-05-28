@@ -9,16 +9,13 @@ import com.cm_policier.effectifs.service.DocumentService;
 
 import lombok.RequiredArgsConstructor;
 
-import java.io.File;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,7 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ControleController {
 
     private final ControleService service;
-    private final DocumentService documentService;
     private final DocumentRepository documentRepository;
 
     /* ========================= CREATE ========================= */
