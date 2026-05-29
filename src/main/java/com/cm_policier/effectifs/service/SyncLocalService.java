@@ -44,7 +44,8 @@ public class SyncLocalService {
 
         SyncPayload payload = buildPayload(seances, sessions, controles, documents);
 
-        RemoteSyncClient.sendToCentral(payload);
+        RemoteSyncClient e = new RemoteSyncClient(controleRepository, seanceRepository, sessionRepository, documentRepository);
+        e.sendToCentral(payload);
     }
 
     private SyncPayload buildPayload(

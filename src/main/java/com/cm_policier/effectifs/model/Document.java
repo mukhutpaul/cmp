@@ -32,8 +32,10 @@ public class Document {
 
     private String imageUrl;
 
-    private Boolean IsSync=false;
+    private Boolean isSync=false;
     private LocalDateTime syncedAt;
+
+
 
     
 }

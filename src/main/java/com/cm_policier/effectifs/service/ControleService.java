@@ -350,14 +350,23 @@ public class ControleService {
         public List<Controle> collectControles(List<Seance> seances) {
 
                 return repository.findAll().stream()
-                                .filter(c -> {
+                                .filter(controle -> {
 
-                                        if (c.getSeance().getIsActive()) {
-                                                return Boolean.TRUE.equals(c.getPresent())
-                                                                && Boolean.FALSE.equals(c.getIsSync());
+                                        Seance seance = controle.getSeance();
+
+                                        if (seance == null) {
+                                                return false;
                                         }
 
-                                        return Boolean.FALSE.equals(c.getIsSync());
+                                        // Séance active
+                                        if (Boolean.TRUE.equals(seance.getIsActive())) {
+
+                                                return Boolean.TRUE.equals(controle.getPresent())
+                                                                && Boolean.FALSE.equals(controle.getIsSync());
+                                        }
+
+                                        // Séance fermée
+                                        return Boolean.FALSE.equals(controle.getIsSync());
 
                                 })
                                 .toList();

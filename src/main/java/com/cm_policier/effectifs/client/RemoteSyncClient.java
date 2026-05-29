@@ -3,7 +3,13 @@ package com.cm_policier.effectifs.client;
 import com.cm_policier.effectifs.dto.SyncBatchRequest;
 import com.cm_policier.effectifs.dto.SyncBatchResponse;
 import com.cm_policier.effectifs.dto.SyncPayload;
+import com.cm_policier.effectifs.repository.ControleRepository;
+import com.cm_policier.effectifs.repository.DocumentRepository;
+import com.cm_policier.effectifs.repository.SeanceRepository;
+import com.cm_policier.effectifs.repository.SessionRepository;
 
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -15,109 +21,120 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class RemoteSyncClient {
+    private final ControleRepository controleRepository;
+    private final SeanceRepository seanceRepository;
+    private final SessionRepository sessionRepository;
+    private final DocumentRepository documentRepository;
 
-    private final RestTemplate restTemplate;
-    private final String serverUrl;
+  
+  public  void sendToCentral(SyncPayload payload) {
 
-    public RemoteSyncClient(
-            RestTemplate restTemplate,
-            @Value("${sync.server.url}") String serverUrl) {
-        this.restTemplate = restTemplate;
-        this.serverUrl = serverUrl;
-    }
+    try {
 
-    public SyncBatchResponse push(
-            SyncBatchRequest payload,
-            List<MultipartFile> files) {
+        RestTemplate restTemplate = new RestTemplate();
 
-        try {
+        ResponseEntity<String> response =
+                restTemplate.postForEntity(
+                        "http://10.107.53.164:8090/api/sync/import",
+                        payload,
+                        String.class
+                );
 
-            // =========================
-            // BODY MULTIPART
-            // =========================
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        if (response.getStatusCode().is2xxSuccessful()) {
 
-            // =========================
-            // JSON DATA
-            // =========================
-            HttpHeaders jsonHeaders = new HttpHeaders();
-            jsonHeaders.setContentType(MediaType.APPLICATION_JSON);
+            markAsSynced(payload);
 
-            HttpEntity<SyncBatchRequest> jsonPart = new HttpEntity<>(payload, jsonHeaders);
+            System.out.println("✅ Synchronisation réussie");
+        } else {
 
-            body.add("data", jsonPart);
-
-            // =========================
-            // FILES
-            // =========================
-            if (files != null && !files.isEmpty()) {
-
-                for (MultipartFile file : files) {
-
-                    ByteArrayResource resource = new ByteArrayResource(file.getBytes()) {
-
-                        @Override
-                        public String getFilename() {
-                            return file.getOriginalFilename();
-                        }
-                    };
-
-                    HttpHeaders fileHeaders = new HttpHeaders();
-
-                    fileHeaders.setContentType(
-                            MediaType.APPLICATION_OCTET_STREAM);
-
-                    HttpEntity<ByteArrayResource> filePart = new HttpEntity<>(resource, fileHeaders);
-
-                    body.add("files", filePart);
-                }
-            }
-
-            // =========================
-            // GLOBAL HEADERS
-            // =========================
-            HttpHeaders headers = new HttpHeaders();
-
-            headers.setContentType(
-                    MediaType.MULTIPART_FORM_DATA);
-
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-            // =========================
-            // REQUEST
-            // =========================
-            ResponseEntity<SyncBatchResponse> response = restTemplate.exchange(
-                    serverUrl,
-                    HttpMethod.POST,
-                    requestEntity,
-                    SyncBatchResponse.class);
-
-            log.info("SYNC SUCCESS : {}", response.getBody());
-
-            return response.getBody();
-
-        } catch (Exception e) {
-
-            log.error("SYNC ERROR", e);
-
-            throw new RuntimeException(
-                    "Erreur lors de la synchronisation",
-                    e);
+            System.err.println(
+                    "❌ Echec synchronisation : "
+                            + response.getStatusCode());
         }
+
+    } catch (Exception e) {
+
+        System.err.println("❌ Erreur connexion serveur central");
+
+        e.printStackTrace();
     }
+}
 
-    public static void sendToCentral(SyncPayload payload) {
+@Transactional
+public void markAsSynced(SyncPayload payload) {
 
-        RestTemplate rest = new RestTemplate();
+    // =========================
+    // CONTROLES
+    // =========================
+    payload.getControles().forEach(controle -> {
 
-        rest.postForObject(
-                "http://10.107.53.164:8090/api/sync/import",
-                payload,
-                String.class);
-    }
+        controleRepository.findById(controle.getId())
+                .ifPresent(entity -> {
+
+                    entity.setIsSync(true);
+
+                    Integer version =
+                            entity.getVersionSync() == null
+                                    ? 1
+                                    : entity.getVersionSync();
+
+                    entity.setVersionSync(version + 1);
+
+                    entity.setSyncedAt(LocalDateTime.now());
+
+                    controleRepository.save(entity);
+                });
+    });
+
+    // =========================
+    // SEANCES
+    // =========================
+    payload.getSeances().forEach(seance -> {
+
+        seanceRepository.findById(seance.getId())
+                .ifPresent(entity -> {
+
+                    entity.setIsSynchronized(true);
+                    entity.setDateFin(LocalDateTime.now());
+
+                    seanceRepository.save(entity);
+                });
+    });
+
+    // =========================
+    // SESSIONS
+    // =========================
+    payload.getSessions().forEach(session -> {
+
+        sessionRepository.findById(session.getId())
+                .ifPresent(entity -> {
+
+                    // optionnel mais recommandé
+                    entity.setIsSynchronized(true);
+
+                    sessionRepository.save(entity);
+                });
+    });
+
+    // =========================
+    // DOCUMENTS
+    // =========================
+    payload.getDocuments().forEach(doc -> {
+
+        documentRepository.findById(doc.getId())
+                .ifPresent(entity -> {
+
+                    entity.setIsSync(true);
+
+                    documentRepository.save(entity);
+                });
+    });
+}
 }
