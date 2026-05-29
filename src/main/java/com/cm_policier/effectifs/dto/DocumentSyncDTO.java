@@ -15,5 +15,5 @@ public class DocumentSyncDTO {
     private UUID id;
     private UUID controleId;
     private String title;
-    private String imageBase64;
+    private String imageUrl;
 }
