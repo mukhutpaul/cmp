@@ -16,8 +16,8 @@ import java.util.UUID;
 public class Document {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "UUID")
+    //@GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "UUID", updatable = false, nullable = false)
     private UUID id;
 
     @ManyToOne

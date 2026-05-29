@@ -15,7 +15,7 @@ import lombok.*;
 public class Seance {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    //@GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "UUID", updatable = false, nullable = false)
     private UUID id;
 
