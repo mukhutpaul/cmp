@@ -44,8 +44,7 @@ public class SyncLocalService {
 
         SyncPayload payload = buildPayload(seances, sessions, controles, documents);
 
-        RemoteSyncClient e = new RemoteSyncClient(controleRepository, seanceRepository, sessionRepository,
-                documentRepository);
+        RemoteSyncClient e = new RemoteSyncClient(controleRepository, seanceRepository, sessionRepository, documentRepository);
         e.sendToCentral(payload);
     }
 
@@ -163,17 +162,7 @@ public class SyncLocalService {
                     byte[] imageBytes = java.util.Base64.getDecoder()
                             .decode(doc.getImageBase64());
 
-                    // récupérer le contrôle
-                    Controle controle = controleRepository
-                            .findById(doc.getControleId())
-                            .orElse(null);
-
-                    if (controle == null || controle.getUid() == null) {
-                        System.err.println("Controle introuvable ou UID null : " + doc.getId());
-                        return;
-                    }
-
-                    String fileName = controle.getUid() + "_" + doc.getId() + ".jpg";
+                    String fileName = doc.getId() + ".jpg";
 
                     java.nio.file.Path path = java.nio.file.Paths.get(
                             "C:/bdd/document/" + fileName);
@@ -192,7 +181,8 @@ public class SyncLocalService {
                     entity.setTitle(doc.getTitle());
                     entity.setImageUrl(fileName);
 
-                    entity.setControle(controle);
+                    controleRepository.findById(doc.getControleId())
+                            .ifPresent(entity::setControle);
 
                     documentRepository.save(entity);
 
