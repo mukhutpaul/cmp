@@ -19,6 +19,6 @@ public class SyncBatchEngine {
 
         SyncPayload payload = syncService.buildSyncPayload();
 
-        //remoteSyncClient.push(payload);
+        remoteSyncClient.push(payload);
     }
 }
