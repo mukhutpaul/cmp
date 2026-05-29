@@ -116,7 +116,7 @@ public class RemoteSyncClient {
         RestTemplate rest = new RestTemplate();
 
         rest.postForObject(
-                "http://10.107.53.164:8090/sync/import",
+                "http://10.107.53.164:8090/api/sync/import",
                 payload,
                 String.class);
     }
