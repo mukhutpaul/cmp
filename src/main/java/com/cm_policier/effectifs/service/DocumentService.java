@@ -1,12 +1,22 @@
 package com.cm_policier.effectifs.service;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cm_policier.effectifs.dto.DocumentSyncDTO;
+import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;
 import com.cm_policier.effectifs.repository.DocumentRepository;
+
 
 @Service
 public class DocumentService {
@@ -41,4 +51,41 @@ public class DocumentService {
     public void delete(UUID id) {
         repository.deleteById(id);
     }
+
+    public List<DocumentSyncDTO> collectDocuments(List<Controle> controles) {
+
+        List<Document> docs = repository.findAll().stream()
+                .filter(d -> !d.getControle().getSeance().getIsActive())
+                .toList();
+
+        return docs.stream()
+                .map((Document d) -> new DocumentSyncDTO(
+                        d.getId(),
+                        d.getControle().getId(),
+                        d.getTitle(),
+                        encodeFile(d.getImageUrl())))
+                .collect(Collectors.toList());
+    }
+
+    public String encodeFile(String fileName) {
+        try {
+            Path path = Paths.get("C:/bdd/document/" + fileName);
+            byte[] bytes = Files.readAllBytes(path);
+            return Base64.getEncoder().encodeToString(bytes);
+        } catch (Exception e) {
+            throw new RuntimeException("Image error");
+        }
+    }
+
+    public void saveImage(String base64, String fileName) throws IOException {
+
+        byte[] bytes = Base64.getDecoder().decode(base64);
+
+        Path path = Paths.get("C:/bdd/document/" + fileName);
+
+        Files.createDirectories(path.getParent());
+
+        Files.write(path, bytes);
+    }
+
 }

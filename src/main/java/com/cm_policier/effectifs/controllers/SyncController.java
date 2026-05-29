@@ -2,8 +2,10 @@ package com.cm_policier.effectifs.controllers;
 
 import com.cm_policier.effectifs.dto.SyncBatchRequest;
 import com.cm_policier.effectifs.dto.SyncBatchResponse;
+import com.cm_policier.effectifs.dto.SyncPayload;
 import com.cm_policier.effectifs.dto.SyncStatsDto;
 import com.cm_policier.effectifs.service.SyncBatchService;
+import com.cm_policier.effectifs.service.SyncLocalService;
 import com.cm_policier.effectifs.service.SyncStatsService;
 
 import lombok.RequiredArgsConstructor;
@@ -59,5 +61,23 @@ public class SyncController {
                 SyncBatchResponse response = syncBatchService.process(dto, safeFiles);
 
                 return ResponseEntity.ok(response);
+        }
+
+        private final SyncLocalService syncLocalService;
+
+        @PostMapping("/run")
+        public ResponseEntity<String> runSync() {
+                syncLocalService.executeSync();
+                return ResponseEntity.ok("SYNC STARTED");
+        }
+
+        private final SyncLocalService syncService;
+
+        @PostMapping("/sync/import")
+        public ResponseEntity<?> importSync(@RequestBody SyncPayload payload) {
+
+                syncService.process(payload);
+
+                return ResponseEntity.ok("SYNC OK");
         }
 }

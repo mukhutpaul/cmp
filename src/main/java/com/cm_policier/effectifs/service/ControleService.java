@@ -5,6 +5,7 @@ import com.cm_policier.effectifs.dto.ControleResponseDto;
 import com.cm_policier.effectifs.dto.DocumentResponseDto;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;
+import com.cm_policier.effectifs.model.Seance;
 import com.cm_policier.effectifs.util.*;
 import com.cm_policier.effectifs.repository.ControleRepository;
 import lombok.RequiredArgsConstructor;
@@ -296,7 +297,8 @@ public class ControleService {
                         for (MultipartFile file : files) {
 
                                 // nom unique
-                                String fileName = controle.getUid() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+                                String fileName = controle.getUid() + "_" + UUID.randomUUID() + "_"
+                                                + file.getOriginalFilename();
 
                                 Path path = Paths.get("C:/bdd/document/" + fileName);
 
@@ -343,5 +345,21 @@ public class ControleService {
                 controle.setIsSync(false);
 
                 return repository.save(controle);
+        }
+
+        public List<Controle> collectControles(List<Seance> seances) {
+
+                return repository.findAll().stream()
+                                .filter(c -> {
+
+                                        if (c.getSeance().getIsActive()) {
+                                                return Boolean.TRUE.equals(c.getPresent())
+                                                                && Boolean.FALSE.equals(c.getIsSync());
+                                        }
+
+                                        return Boolean.FALSE.equals(c.getIsSync());
+
+                                })
+                                .toList();
         }
 }

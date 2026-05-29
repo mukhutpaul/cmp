@@ -192,22 +192,22 @@ public class AuthController {
     // =========================
     // LOGOUT MOBILE
     // =========================
-    @PostMapping("/mobile/logout/{userId}")
-    public ResponseEntity<?> logout(@PathVariable Long userId) {
+    // @PostMapping("/mobile/logout/{userId}")
+    // public ResponseEntity<?> logout(@PathVariable Long userId) {
 
-        try {
+    //     try {
 
-            Session session = sessionService.closeActiveSessionByUser(userId);
+    //         Session session = sessionService.closeActiveSessionByUser(userId);
 
-            return ResponseEntity.ok(
-                    new ApiResponse<>(true, "Session fermée", session));
+    //         return ResponseEntity.ok(
+    //                 new ApiResponse<>(true, "Session fermée", session));
 
-        } catch (RuntimeException e) {
+    //     } catch (RuntimeException e) {
 
-            return ResponseEntity.status(400).body(
-                    new ApiResponse<>(false, "Erreur fermeture session", e.getMessage()));
-        }
-    }
+    //         return ResponseEntity.status(400).body(
+    //                 new ApiResponse<>(false, "Erreur fermeture session", e.getMessage()));
+    //     }
+    // }
 
     // =========================
     // DELETE USER

@@ -2,6 +2,7 @@ package com.cm_policier.effectifs.client;
 
 import com.cm_policier.effectifs.dto.SyncBatchRequest;
 import com.cm_policier.effectifs.dto.SyncBatchResponse;
+import com.cm_policier.effectifs.dto.SyncPayload;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,24 +26,21 @@ public class RemoteSyncClient {
 
     public RemoteSyncClient(
             RestTemplate restTemplate,
-            @Value("${sync.server.url}") String serverUrl
-    ) {
+            @Value("${sync.server.url}") String serverUrl) {
         this.restTemplate = restTemplate;
         this.serverUrl = serverUrl;
     }
 
     public SyncBatchResponse push(
             SyncBatchRequest payload,
-            List<MultipartFile> files
-    ) {
+            List<MultipartFile> files) {
 
         try {
 
             // =========================
             // BODY MULTIPART
             // =========================
-            MultiValueMap<String, Object> body =
-                    new LinkedMultiValueMap<>();
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 
             // =========================
             // JSON DATA
@@ -50,8 +48,7 @@ public class RemoteSyncClient {
             HttpHeaders jsonHeaders = new HttpHeaders();
             jsonHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-            HttpEntity<SyncBatchRequest> jsonPart =
-                    new HttpEntity<>(payload, jsonHeaders);
+            HttpEntity<SyncBatchRequest> jsonPart = new HttpEntity<>(payload, jsonHeaders);
 
             body.add("data", jsonPart);
 
@@ -62,23 +59,20 @@ public class RemoteSyncClient {
 
                 for (MultipartFile file : files) {
 
-                    ByteArrayResource resource =
-                            new ByteArrayResource(file.getBytes()) {
+                    ByteArrayResource resource = new ByteArrayResource(file.getBytes()) {
 
-                                @Override
-                                public String getFilename() {
-                                    return file.getOriginalFilename();
-                                }
-                            };
+                        @Override
+                        public String getFilename() {
+                            return file.getOriginalFilename();
+                        }
+                    };
 
                     HttpHeaders fileHeaders = new HttpHeaders();
 
                     fileHeaders.setContentType(
-                            MediaType.APPLICATION_OCTET_STREAM
-                    );
+                            MediaType.APPLICATION_OCTET_STREAM);
 
-                    HttpEntity<ByteArrayResource> filePart =
-                            new HttpEntity<>(resource, fileHeaders);
+                    HttpEntity<ByteArrayResource> filePart = new HttpEntity<>(resource, fileHeaders);
 
                     body.add("files", filePart);
                 }
@@ -90,22 +84,18 @@ public class RemoteSyncClient {
             HttpHeaders headers = new HttpHeaders();
 
             headers.setContentType(
-                    MediaType.MULTIPART_FORM_DATA
-            );
+                    MediaType.MULTIPART_FORM_DATA);
 
-            HttpEntity<MultiValueMap<String, Object>> requestEntity =
-                    new HttpEntity<>(body, headers);
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
             // =========================
             // REQUEST
             // =========================
-            ResponseEntity<SyncBatchResponse> response =
-                    restTemplate.exchange(
-                            serverUrl,
-                            HttpMethod.POST,
-                            requestEntity,
-                            SyncBatchResponse.class
-                    );
+            ResponseEntity<SyncBatchResponse> response = restTemplate.exchange(
+                    serverUrl,
+                    HttpMethod.POST,
+                    requestEntity,
+                    SyncBatchResponse.class);
 
             log.info("SYNC SUCCESS : {}", response.getBody());
 
@@ -117,8 +107,17 @@ public class RemoteSyncClient {
 
             throw new RuntimeException(
                     "Erreur lors de la synchronisation",
-                    e
-            );
+                    e);
         }
+    }
+
+    public static void sendToCentral(SyncPayload payload) {
+
+        RestTemplate rest = new RestTemplate();
+
+        rest.postForObject(
+                "http://10.107.53.164:8080/sync/import",
+                payload,
+                String.class);
     }
 }

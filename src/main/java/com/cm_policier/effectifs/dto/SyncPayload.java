@@ -21,5 +21,5 @@ public class SyncPayload {
     private List<Controle> controles;
     private List<Controle> absences;
 
-    private List<Document> documents;
+    private List<DocumentSyncDTO> documents;
 }

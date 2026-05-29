@@ -2,7 +2,9 @@ package com.cm_policier.effectifs.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,15 +66,12 @@ public class SessionService {
     /**
      * 🔴 CLOSE SESSION BY USER
      */
-    public Session closeActiveSessionByUser(Long userId) {
+   public List<Session> collectSessions(List<Seance> seances) {
 
-        Session session = sessionRepository
-                .findByControleur_IdAndIsActiveTrue(userId)
-                .orElseThrow(() -> new RuntimeException("Aucune session active"));
-
-        session.setIsActive(false);
-        session.setHeureFin(LocalTime.now());
-
-        return sessionRepository.save(session);
-    }
+    return sessionRepository.findAll().stream()
+        .filter(s -> seances.stream()
+            .anyMatch(seance -> seance.getId().equals(s.getSeance().getId()))
+        )
+        .collect(Collectors.toList());
+}
 }

@@ -123,9 +123,17 @@ public class SeanceService {
         s.setIsActive(false);
 
         // date réelle de fin
+
+        
         s.setDateFin(LocalDateTime.now());
 
         return seanceRepository.save(s);
+    }
+
+    public List<Seance> collectSeances() {
+        return seanceRepository.findAll().stream()
+                .filter(s -> s.getIsActive() || !s.getIsSynchronized())
+                .toList();
     }
 
 }
