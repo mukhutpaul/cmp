@@ -44,8 +44,7 @@ public class SyncLocalService {
 
         SyncPayload payload = buildPayload(seances, sessions, controles, documents);
 
-        RemoteSyncClient e = new RemoteSyncClient(controleRepository, seanceRepository, sessionRepository,
-                documentRepository);
+        RemoteSyncClient e = new RemoteSyncClient(controleRepository, seanceRepository, sessionRepository, documentRepository);
         e.sendToCentral(payload);
     }
 
@@ -151,64 +150,52 @@ public class SyncLocalService {
 
                 try {
 
-                    // =========================
-                    // 1. récupérer le contrôle
-                    // =========================
-                    Controle controle = controleRepository
-                            .findById(doc.getControleId())
-                            .orElse(null);
+                    if (doc.getImageBase64() == null
+                            || doc.getImageBase64().isBlank()) {
 
-                    if (controle == null) {
-                        System.err.println("Controle introuvable : " + doc.getId());
+                        System.err.println(
+                                "Document sans image : " + doc.getId());
+
                         return;
                     }
 
-                    // =========================
-                    // 2. chemin source (PC local)
-                    // =========================
-                    java.nio.file.Path sourcePath = java.nio.file.Paths.get(
-                            "C:/bdd/document/" + doc.getImageUrl());
+                    byte[] imageBytes = java.util.Base64.getDecoder()
+                            .decode(doc.getImageBase64());
 
-                    if (!java.nio.file.Files.exists(sourcePath)) {
-                        System.err.println("Fichier introuvable : " + sourcePath);
-                        return;
-                    }
+                    String fileName = doc.getId() + ".jpg";
 
-                    // =========================
-                    // 3. chemin destination (server)
-                    // =========================
-                    java.nio.file.Path targetPath = java.nio.file.Paths.get(
-                            "C:/bdd/document/" + doc.getImageUrl());
+                    java.nio.file.Path path = java.nio.file.Paths.get(
+                            "C:/bdd/document/" + fileName);
 
-                    java.nio.file.Files.createDirectories(targetPath.getParent());
+                    java.nio.file.Files.createDirectories(path.getParent());
 
-                    // =========================
-                    // 4. copie fichier
-                    // =========================
-                    java.nio.file.Files.copy(
-                            sourcePath,
-                            targetPath,
-                            java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    java.nio.file.Files.write(
+                            path,
+                            imageBytes,
+                            java.nio.file.StandardOpenOption.CREATE,
+                            java.nio.file.StandardOpenOption.TRUNCATE_EXISTING);
 
-                    // =========================
-                    // 5. save DB
-                    // =========================
                     Document entity = new Document();
 
                     entity.setId(doc.getId());
                     entity.setTitle(doc.getTitle());
-                    entity.setImageUrl(doc.getImageUrl()); // JUSTE NOM + EXTENSION
-                    entity.setControle(controle);
+                    entity.setImageUrl(path.toString());
+
+                    controleRepository.findById(doc.getControleId())
+                            .ifPresent(entity::setControle);
 
                     documentRepository.save(entity);
 
                 } catch (Exception e) {
 
-                    System.err.println("Erreur document : " + doc.getId());
+                    System.err.println(
+                            "Erreur document : " + doc.getId());
+
                     e.printStackTrace();
                 }
             });
         }
+
         System.out.println("✅ SYNC COMPLETED SUCCESSFULLY");
     }
 }
