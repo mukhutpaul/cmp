@@ -1,6 +1,5 @@
 package com.cm_policier.effectifs.controllers;
 
-
 import com.cm_policier.effectifs.dto.ControleStatsDto;
 import com.cm_policier.effectifs.service.ControleStatsService;
 import lombok.RequiredArgsConstructor;
@@ -16,5 +15,10 @@ public class ControleStatsController {
     @GetMapping("/stats/today")
     public ControleStatsDto getTodayStats() {
         return controleStatsService.getTodayStats();
+    }
+
+    @GetMapping("/stats")
+    public ControleStatsDto getStats() {
+        return controleStatsService.getStats();
     }
 }

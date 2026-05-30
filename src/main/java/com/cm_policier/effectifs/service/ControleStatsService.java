@@ -75,4 +75,69 @@ public class ControleStatsService {
                 .statsParUnite(statsParUnite)
                 .build();
     }
+
+    public ControleStatsDto getStats() {
+
+    List<Controle> controles = controleRepository.findAll();
+
+    long totalControles = controles.size();
+
+    long totalPresent = controles.stream()
+            .filter(c -> Boolean.TRUE.equals(c.getPresent()))
+            .count();
+
+    long totalJustifie = controles.stream()
+            .filter(c -> Boolean.TRUE.equals(c.getJustifie()))
+            .count();
+
+    long totalHommesPresent = controles.stream()
+            .filter(c ->
+                    "M".equalsIgnoreCase(c.getSexe())
+                            && Boolean.TRUE.equals(c.getPresent()))
+            .count();
+
+    long totalFemmesPresent = controles.stream()
+            .filter(c ->
+                    "F".equalsIgnoreCase(c.getSexe())
+                            && Boolean.TRUE.equals(c.getPresent()))
+            .count();
+
+    long totalHommesJustifies = controles.stream()
+            .filter(c ->
+                    "M".equalsIgnoreCase(c.getSexe())
+                            && Boolean.TRUE.equals(c.getJustifie()))
+            .count();
+
+    long totalFemmesJustifies = controles.stream()
+            .filter(c ->
+                    "F".equalsIgnoreCase(c.getSexe())
+                            && Boolean.TRUE.equals(c.getJustifie()))
+            .count();
+
+    long totalGlobal = controles.stream()
+            .filter(c ->
+                    Boolean.TRUE.equals(c.getPresent())
+                            || Boolean.TRUE.equals(c.getJustifie()))
+            .count();
+
+    Map<String, Long> statsParUnite = controles.stream()
+            .filter(c -> c.getUnite() != null && !c.getUnite().isBlank())
+            .collect(Collectors.groupingBy(
+                    Controle::getUnite,
+                    Collectors.counting()
+            ));
+
+    return ControleStatsDto.builder()
+            .totalControles(totalControles)
+            .totalPresent(totalPresent)
+            .totalJustifie(totalJustifie)
+            .totalHommesPresent(totalHommesPresent)
+            .totalFemmesPresent(totalFemmesPresent)
+            .totalHommesJustifies(totalHommesJustifies)
+            .totalFemmesJustifies(totalFemmesJustifies)
+            .totalGlobalPresentEtJustifie(totalGlobal)
+            .totalUnites(statsParUnite.size())
+            .statsParUnite(statsParUnite)
+            .build();
+}
 }
