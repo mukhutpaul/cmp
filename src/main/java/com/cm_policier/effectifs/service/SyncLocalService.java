@@ -44,7 +44,8 @@ public class SyncLocalService {
 
         SyncPayload payload = buildPayload(seances, sessions, controles, documents);
 
-        RemoteSyncClient e = new RemoteSyncClient(controleRepository, seanceRepository, sessionRepository, documentRepository);
+        RemoteSyncClient e = new RemoteSyncClient(controleRepository, seanceRepository, sessionRepository,
+                documentRepository);
         e.sendToCentral(payload);
     }
 
@@ -150,15 +151,17 @@ public class SyncLocalService {
 
                 try {
 
-                    if (doc.getImageBase64() == null
-                            || doc.getImageBase64().isBlank()) {
-
-                        System.err.println(
-                                "Document sans image : " + doc.getId());
-
+                    // =========================
+                    // 1. validation image
+                    // =========================
+                    if (doc.getImageBase64() == null || doc.getImageBase64().isBlank()) {
+                        System.err.println("Document sans image : " + doc.getId());
                         return;
                     }
 
+                    // =========================
+                    // 2. decode image
+                    // =========================
                     byte[] imageBytes = java.util.Base64.getDecoder()
                             .decode(doc.getImageBase64());
 
@@ -175,27 +178,35 @@ public class SyncLocalService {
                             java.nio.file.StandardOpenOption.CREATE,
                             java.nio.file.StandardOpenOption.TRUNCATE_EXISTING);
 
-                    Document entity = new Document();
+                    // =========================
+                    // 3. UPSERT SAFE (IMPORTANT)
+                    // =========================
+                    Document entity = documentRepository.findById(doc.getId())
+                            .orElseGet(Document::new);
 
                     entity.setId(doc.getId());
                     entity.setTitle(doc.getTitle());
-                    entity.setImageUrl(path.toString());
 
-                    controleRepository.findById(doc.getControleId())
-                            .ifPresent(entity::setControle);
+                    // ⚠️ ON STOCKE JUSTE LE NOM DU FICHIER
+                    entity.setImageUrl(fileName);
+
+                    // =========================
+                    // 4. controle (optionnel mais safe)
+                    // =========================
+                    if (doc.getControleId() != null) {
+                        controleRepository.findById(doc.getControleId())
+                                .ifPresent(entity::setControle);
+                    }
 
                     documentRepository.save(entity);
 
                 } catch (Exception e) {
 
-                    System.err.println(
-                            "Erreur document : " + doc.getId());
-
+                    System.err.println("Erreur document : " + doc.getId());
                     e.printStackTrace();
                 }
             });
         }
-
         System.out.println("✅ SYNC COMPLETED SUCCESSFULLY");
     }
 }
