@@ -31,6 +31,7 @@ public interface DocumentRepository extends JpaRepository<Document, UUID> {
       FROM Document d
       WHERE d.controle.seance.id = :seanceId
       AND d.controle.seance.isActive = false
+      AND d.isSync=false
       """)
   Long countDocumentsToSync(UUID seanceId);
 

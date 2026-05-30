@@ -20,7 +20,6 @@ public class SyncStatsDto {
 
     private Long documents;
 
-    private Long fichiers;
 
     private Long total;
 

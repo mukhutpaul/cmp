@@ -140,6 +140,7 @@ public interface ControleRepository extends JpaRepository<Controle, UUID>, Contr
           WHERE c.seance.id = :seanceId
           AND c.justifie = true
           AND c.seance.isActive = false
+          AND c.isSync = false
       """)
   Long countJustifie(UUID seanceId);
 

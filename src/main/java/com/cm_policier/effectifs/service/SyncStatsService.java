@@ -48,7 +48,6 @@ public class SyncStatsService {
             + presence
             + absence
             + documents
-            + fichiers
             + justifies;
 
     return SyncStatsDto.builder()
@@ -58,7 +57,6 @@ public class SyncStatsService {
             .controlesJustifies(justifies)
             .controlesAbsence(absence)
             .documents(documents)
-            .fichiers(fichiers)
             .total(total)
             .seanceActive(seanceActive)
             .build();
