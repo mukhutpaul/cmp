@@ -1,5 +1,6 @@
 package com.cm_policier.effectifs.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -103,6 +104,22 @@ public class SyncLocalService {
 
             payload.getControles().forEach(controle -> {
 
+                System.out.println("=================================");
+                System.out.println("Controle ID = " + controle.getId());
+
+                if (controle.getDocuments() != null) {
+                    System.out.println("Nb documents = " + controle.getDocuments().size());
+
+                    controle.getDocuments().forEach(doc -> {
+                        System.out.println("Document ID = " + doc.getId());
+                    });
+                } else {
+                    System.out.println("Documents = null");
+                }
+
+                // ❗ IMPORTANT : empêcher Hibernate de tenter de merger les documents
+                controle.setDocuments(new ArrayList<>());
+
                 controle.setIsSync(true);
 
                 controleRepository.findById(controle.getId())
@@ -141,7 +158,6 @@ public class SyncLocalService {
                         });
             });
         }
-
         // =========================
         // 4. DOCUMENTS + IMAGES
         // =========================

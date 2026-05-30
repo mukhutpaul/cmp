@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Getter
 @Setter
@@ -22,6 +24,7 @@ public class Controle {
     private UUID id;
 
     @OneToMany(mappedBy = "controle", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Document> documents = new ArrayList<>();
 
     @Column(unique = true)
