@@ -4,6 +4,7 @@ import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Equipe;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -141,4 +142,10 @@ public interface ControleRepository extends JpaRepository<Controle, UUID>, Contr
           AND c.seance.isActive = false
       """)
   Long countJustifie(UUID seanceId);
+
+   @Query("""
+        SELECT c FROM Controle c
+        WHERE c.updatedAt BETWEEN :start AND :end
+    """)
+    List<Controle> findByUpdatedAtToday(LocalDateTime start, LocalDateTime end);
 }

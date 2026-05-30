@@ -15,6 +15,8 @@ public interface SeanceRepository extends JpaRepository<Seance, UUID> {
 
     List<Seance> findByChefEquipeId(Long chefId);
 
+    Optional<Seance> findFirstByOrderByIdAsc();
+
     Optional<Seance> findByIsActiveTrue();
 
     Optional<Seance> findFirstByIsActiveTrueAndDateFinIsNull();

@@ -10,7 +10,6 @@ import com.cm_policier.effectifs.repository.DocumentRepository;
 import com.cm_policier.effectifs.repository.SeanceRepository;
 import com.cm_policier.effectifs.repository.SessionRepository;
 
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,65 +20,47 @@ public class SyncStatsService {
     private final ControleRepository controleRepo;
     private final DocumentRepository documentRepo;
 
-    public SyncStatsDto stats(
-            UUID seanceId,
-            Boolean seanceActive
-    ){
+    public SyncStatsDto stats() {
 
-        Long sessions =
-                sessionRepo.countUnsynchronized();
+    var seance = seanceRepo.findFirstByOrderByIdAsc()
+            .orElseThrow(() -> new RuntimeException("Aucune séance trouvée"));
 
-        Long seances =
-                seanceRepo.countUnsynchronized();
+    boolean seanceActive = Boolean.TRUE.equals(seance.getIsActive());
 
-        Long justifies =
-        controleRepo.countJustifie(seanceId);
+    Long sessions = sessionRepo.countUnsynchronized();
+    Long seances = seanceRepo.countUnsynchronized();
 
-        Long presence =
-                controleRepo.countPresenceToSync(
-                        seanceId
-                );
+    Long justifies = controleRepo.countJustifie(seance.getId());
+    Long presence = controleRepo.countPresenceToSync(seance.getId());
 
-        Long absence = 0L;
+    Long absence = 0L;
+    Long documents = 0L;
+    Long fichiers = 0L;
 
-        Long documents = 0L;
-
-        Long fichiers = 0L;
-
-        if(!seanceActive){
-
-            absence =
-                    controleRepo.countAbsenceToSync(
-                            seanceId
-                    );
-
-            documents =
-                    documentRepo.countDocumentsToSync(
-                            seanceId
-                    );
-
-            fichiers = documents;
-        }
-
-        Long total =
-                sessions
-                + seances
-                + presence
-                + absence
-                + documents
-                + fichiers
-                + justifies;
-
-        return SyncStatsDto.builder()
-                .sessions(sessions)
-                .seances(seances)
-                .controlesPresence(presence)
-                .controlesJustifies(justifies)
-                .controlesAbsence(absence)
-                .documents(documents)
-                .fichiers(fichiers)
-                .total(total)
-                .seanceActive(seanceActive)
-                .build();
+    if (!seanceActive) {
+        absence = controleRepo.countAbsenceToSync(seance.getId());
+        documents = documentRepo.countDocumentsToSync(seance.getId());
+        fichiers = documents;
     }
+
+    Long total = sessions
+            + seances
+            + presence
+            + absence
+            + documents
+            + fichiers
+            + justifies;
+
+    return SyncStatsDto.builder()
+            .sessions(sessions)
+            .seances(seances)
+            .controlesPresence(presence)
+            .controlesJustifies(justifies)
+            .controlesAbsence(absence)
+            .documents(documents)
+            .fichiers(fichiers)
+            .total(total)
+            .seanceActive(seanceActive)
+            .build();
+}
 }

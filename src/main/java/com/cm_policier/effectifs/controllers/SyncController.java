@@ -30,11 +30,9 @@ public class SyncController {
         // =========================
         // STATS
         // =========================
-        @GetMapping("/stats/{seanceId}")
-        public SyncStatsDto stats(
-                        @PathVariable UUID seanceId,
-                        @RequestParam Boolean active) {
-                return statsService.stats(seanceId, active);
+        @GetMapping("/stats")
+        public SyncStatsDto stats() {
+                return statsService.stats();
         }
 
         // =========================
