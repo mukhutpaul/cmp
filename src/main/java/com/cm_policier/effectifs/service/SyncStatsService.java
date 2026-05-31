@@ -35,12 +35,11 @@ public class SyncStatsService {
 
     Long absence = 0L;
     Long documents = 0L;
-    Long fichiers = 0L;
+   
 
     if (!seanceActive) {
         absence = controleRepo.countAbsenceToSync(seance.getId());
         documents = documentRepo.countDocumentsToSync(seance.getId());
-        fichiers = documents;
     }
 
     Long total = sessions
