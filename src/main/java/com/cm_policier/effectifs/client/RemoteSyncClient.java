@@ -102,8 +102,6 @@ public void markAsSynced(SyncPayload payload) {
                 .ifPresent(entity -> {
 
                     entity.setIsSynchronized(true);
-                    entity.setDateFin(LocalDateTime.now());
-
                     seanceRepository.save(entity);
                 });
     });
