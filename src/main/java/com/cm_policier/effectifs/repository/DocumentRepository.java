@@ -26,13 +26,13 @@ public interface DocumentRepository extends JpaRepository<Document, UUID> {
       """)
   List<Document> findReadyForSync(Pageable pageable);
 
-  @Query("""
-      SELECT COUNT(d)
-      FROM Document d
-      WHERE d.controle.seance.id = :seanceId
-      AND d.controle.seance.isActive = false
-      AND d.isSync = false
-      """)
-  Long countDocumentsToSync(UUID seanceId);
+ @Query("""
+    SELECT COUNT(d)
+    FROM Document d
+    WHERE d.controle.seance.id = :seanceId
+    AND d.controle.seance.isActive = false
+    AND (d.isSync = false OR d.isSync IS NULL)
+""")
+Long countDocumentsToSync(UUID seanceId);
 
 }
