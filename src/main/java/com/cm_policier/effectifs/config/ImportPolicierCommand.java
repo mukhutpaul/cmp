@@ -3,6 +3,7 @@ package com.cm_policier.effectifs.config;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.cm_policier.effectifs.model.Policier;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@Order(1)
 @RequiredArgsConstructor
 public class ImportPolicierCommand implements CommandLineRunner {
 
