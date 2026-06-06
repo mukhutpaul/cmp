@@ -16,7 +16,7 @@ public class PcSyncClient {
     private final RestTemplate restTemplate;
     private final ObjectMapper mapper;
 
-    private static final String BASE_URL = "http://10.167.61.164:8090";
+    private static final String BASE_URL = "http://10.204.175.164:8090";
 
     public SyncResponseDTO sync(PcSyncLoginDTO request) {
 

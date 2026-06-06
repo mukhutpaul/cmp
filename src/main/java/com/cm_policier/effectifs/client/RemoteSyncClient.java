@@ -11,18 +11,11 @@ import com.cm_policier.effectifs.repository.SessionRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 @Service
 @Slf4j
@@ -42,7 +35,7 @@ public class RemoteSyncClient {
 
         ResponseEntity<String> response =
                 restTemplate.postForEntity(
-                        "http://10.167.61.164:8090/api/sync/import",
+                        "http://10.204.175.164:8090/api/sync/import",
                         payload,
                         String.class
                 );
