@@ -109,6 +109,7 @@ public class PcLocalSyncService {
             }
 
             equipe.setIsActive(incoming.getIsActive());
+            equipe.setSite(incoming.getSite());
 
             if (incoming.getMission() != null
                     && incoming.getMission().getId() != null) {
