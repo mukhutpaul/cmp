@@ -12,6 +12,7 @@ public interface EquipeRepository extends JpaRepository<Equipe, Long> {
     Optional<Equipe> findByUser(User user);
 
      Long countByMissionId(Long missionId);
+  
     
     
 }

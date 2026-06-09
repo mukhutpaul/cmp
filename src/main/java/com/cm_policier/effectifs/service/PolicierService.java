@@ -4,21 +4,30 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
 import com.cm_policier.effectifs.dto.PolicierDto;
+import com.cm_policier.effectifs.model.Equipe;
 import com.cm_policier.effectifs.model.Policier;
+import com.cm_policier.effectifs.model.User;
+import com.cm_policier.effectifs.repository.EquipeRepository;
+import com.cm_policier.effectifs.repository.EquipeUniteRepository;
 import com.cm_policier.effectifs.repository.PolicierRepository;
-
+import com.cm_policier.effectifs.repository.UserRepository;
 import java.util.List;
-import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
 public class PolicierService {
 
     private final PolicierRepository repository;
+    private final UserRepository userRepository;
+    private final EquipeRepository equipeRepository;
+    private final EquipeUniteRepository equipeUniteRepository;
 
     // CREATE
     public Policier create(Policier policier) {
@@ -30,9 +39,33 @@ public class PolicierService {
         return repository.save(policier);
     }
 
-    public List<PolicierDto> getPoliciers() {
+     public List<PolicierDto> getPoliciers() {
 
-        List<Policier> policiers = repository.findAll();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        List<Policier> policiers;
+
+        if ("CHEF_EQUIPE".equals(user.getProfile().getName())) {
+
+            Equipe equipe = equipeRepository
+                    .findByUser(user)
+                    .orElseThrow(() -> new RuntimeException("Equipe introuvable"));
+
+            List<String> unites = equipeUniteRepository
+                    .findByEquipe(equipe)
+                    .stream()
+                    .map(eu -> eu.getUnite().getName()) // ⚠️ ou getCode() selon ton entity Unite
+                    .toList();
+
+            policiers = repository.findByUnitIn(unites);
+
+        } else {
+            policiers = repository.findAll();
+        }
 
         return policiers.stream().map(p -> {
 
@@ -50,15 +83,14 @@ public class PolicierService {
             dto.setPkPhoto(p.getPkPhoto());
 
             if (p.getPkPhoto() != null && !p.getPkPhoto().isEmpty()) {
-
-                dto.setPhotoUrl(
-                        "photos/" + p.getPkPhoto() + ".jpg");
+                dto.setPhotoUrl("photos/" + p.getPkPhoto() + ".jpg");
             }
 
             return dto;
 
         }).toList();
     }
+
 
     // READ ONE
     public Policier findById(Long id) {

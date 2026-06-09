@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import com.cm_policier.effectifs.model.Policier;
+import com.cm_policier.effectifs.model.Unite;
 
 @Repository
 public interface PolicierRepository extends JpaRepository<Policier, Long> {
@@ -40,4 +41,6 @@ public interface PolicierRepository extends JpaRepository<Policier, Long> {
         WHERE p.unit IN :unites
     """)
     Long countByUnits(List<String> unites);
+
+    List<Policier> findByUnitIn(List<String> units);
 }
