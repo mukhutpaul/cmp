@@ -1,6 +1,5 @@
 package com.cm_policier.effectifs.service;
 
-
 import com.cm_policier.effectifs.dto.ControleStatsDto;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.repository.ControleRepository;
@@ -15,129 +14,167 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ControleStatsService {
 
-    private final ControleRepository controleRepository;
+        private final ControleRepository controleRepository;
 
-    public ControleStatsDto getTodayStats() {
+        public ControleStatsDto getTodayStats() {
 
-        LocalDate today = LocalDate.now();
-        LocalDateTime start = today.atStartOfDay();
-        LocalDateTime end = today.plusDays(1).atStartOfDay();
+                LocalDate today = LocalDate.now();
+                LocalDateTime start = today.atStartOfDay();
+                LocalDateTime end = today.plusDays(1).atStartOfDay();
 
-        List<Controle> controles = controleRepository.findByUpdatedAtToday(start, end);
+                List<Controle> controles = controleRepository.findByUpdatedAtToday(start, end);
 
-        long totalControles = controles.size();
+                long totalControles = controles.size();
 
-        long totalPresent = controles.stream()
-                .filter(c -> Boolean.TRUE.equals(c.getPresent()))
-                .count();
+                long totalPresent = controles.stream()
+                                .filter(c -> Boolean.TRUE.equals(c.getPresent()))
+                                .count();
 
-        long totalJustifie = controles.stream()
-                .filter(c -> Boolean.TRUE.equals(c.getJustifie()))
-                .count();
+                long totalJustifie = controles.stream()
+                                .filter(c -> Boolean.TRUE.equals(c.getJustifie()))
+                                .count();
 
-        long totalHommesPresent = controles.stream()
-                .filter(c -> "M".equalsIgnoreCase(c.getSexe()) && Boolean.TRUE.equals(c.getPresent()))
-                .count();
+                long totalHommesPresent = controles.stream()
+                                .filter(c -> "M".equalsIgnoreCase(c.getSexe()) && Boolean.TRUE.equals(c.getPresent()))
+                                .count();
 
-        long totalFemmesPresent = controles.stream()
-                .filter(c -> "F".equalsIgnoreCase(c.getSexe()) && Boolean.TRUE.equals(c.getPresent()))
-                .count();
+                long totalFemmesPresent = controles.stream()
+                                .filter(c -> "F".equalsIgnoreCase(c.getSexe()) && Boolean.TRUE.equals(c.getPresent()))
+                                .count();
 
-        long totalHommesJustifies = controles.stream()
-                .filter(c -> "M".equalsIgnoreCase(c.getSexe()) && Boolean.TRUE.equals(c.getJustifie()))
-                .count();
+                long totalHommesJustifies = controles.stream()
+                                .filter(c -> "M".equalsIgnoreCase(c.getSexe()) && Boolean.TRUE.equals(c.getJustifie()))
+                                .count();
 
-        long totalFemmesJustifies = controles.stream()
-                .filter(c -> "F".equalsIgnoreCase(c.getSexe()) && Boolean.TRUE.equals(c.getJustifie()))
-                .count();
+                long totalFemmesJustifies = controles.stream()
+                                .filter(c -> "F".equalsIgnoreCase(c.getSexe()) && Boolean.TRUE.equals(c.getJustifie()))
+                                .count();
 
-        long totalGlobal = controles.stream()
-                .filter(c -> Boolean.TRUE.equals(c.getPresent()) || Boolean.TRUE.equals(c.getJustifie()))
-                .count();
+                long totalGlobal = controles.stream()
+                                .filter(c -> Boolean.TRUE.equals(c.getPresent())
+                                                || Boolean.TRUE.equals(c.getJustifie()))
+                                .count();
 
-        Map<String, Long> statsParUnite = controles.stream()
-                .filter(c -> c.getUnite() != null)
-                .collect(Collectors.groupingBy(
-                        Controle::getUnite,
-                        Collectors.counting()
-                ));
+                // 🔥 TOTAL PAR UNITE
+                Map<String, Long> statsParUnite = controles.stream()
+                                .filter(c -> c.getUnite() != null)
+                                .collect(Collectors.groupingBy(
+                                                Controle::getUnite,
+                                                Collectors.counting()));
 
-        return ControleStatsDto.builder()
-                .totalControles(totalControles)
-                .totalPresent(totalPresent)
-                .totalJustifie(totalJustifie)
-                .totalHommesPresent(totalHommesPresent)
-                .totalFemmesPresent(totalFemmesPresent)
-                .totalHommesJustifies(totalHommesJustifies)
-                .totalFemmesJustifies(totalFemmesJustifies)
-                .totalGlobalPresentEtJustifie(totalGlobal)
-                .totalUnites(statsParUnite.keySet().size())
-                .statsParUnite(statsParUnite)
-                .build();
-    }
+                // 🔥 PRESENT + JUSTIFIE PAR UNITE
+                Map<String, Long> presentEtJustifieParUnite = controles.stream()
+                                .filter(c -> c.getUnite() != null)
+                                .filter(c -> Boolean.TRUE.equals(c.getPresent())
+                                                || Boolean.TRUE.equals(c.getJustifie()))
+                                .collect(Collectors.groupingBy(
+                                                Controle::getUnite,
+                                                Collectors.counting()));
 
-    public ControleStatsDto getStats() {
+                // 🔥 RESTE A CONTROLER PAR UNITE = TOTAL - (PRESENT + JUSTIFIE)
+                Map<String, Long> resteParUnite = new java.util.HashMap<>();
 
-    List<Controle> controles = controleRepository.findAll();
+                for (String unite : statsParUnite.keySet()) {
 
-    long totalControles = controles.size();
+                        long total = statsParUnite.getOrDefault(unite, 0L);
 
-    long totalPresent = controles.stream()
-            .filter(c -> Boolean.TRUE.equals(c.getPresent()))
-            .count();
+                        long ok = presentEtJustifieParUnite.getOrDefault(unite, 0L);
 
-    long totalJustifie = controles.stream()
-            .filter(c -> Boolean.TRUE.equals(c.getJustifie()))
-            .count();
+                        resteParUnite.put(unite, total - ok);
+                }
 
-    long totalHommesPresent = controles.stream()
-            .filter(c ->
-                    "M".equalsIgnoreCase(c.getSexe())
-                            && Boolean.TRUE.equals(c.getPresent()))
-            .count();
+                return ControleStatsDto.builder()
+                                .totalControles(totalControles)
+                                .totalPresent(totalPresent)
+                                .totalJustifie(totalJustifie)
+                                .totalHommesPresent(totalHommesPresent)
+                                .totalFemmesPresent(totalFemmesPresent)
+                                .totalHommesJustifies(totalHommesJustifies)
+                                .totalFemmesJustifies(totalFemmesJustifies)
+                                .totalGlobalPresentEtJustifie(totalGlobal)
+                                .totalUnites(statsParUnite.keySet().size())
+                                .statsParUnite(resteParUnite)
+                                .resteParUnite(resteParUnite) // 🔥 AJOUT ICI
+                                .build();
+        }
 
-    long totalFemmesPresent = controles.stream()
-            .filter(c ->
-                    "F".equalsIgnoreCase(c.getSexe())
-                            && Boolean.TRUE.equals(c.getPresent()))
-            .count();
+        public ControleStatsDto getStats() {
 
-    long totalHommesJustifies = controles.stream()
-            .filter(c ->
-                    "M".equalsIgnoreCase(c.getSexe())
-                            && Boolean.TRUE.equals(c.getJustifie()))
-            .count();
+                List<Controle> controles = controleRepository.findAll();
 
-    long totalFemmesJustifies = controles.stream()
-            .filter(c ->
-                    "F".equalsIgnoreCase(c.getSexe())
-                            && Boolean.TRUE.equals(c.getJustifie()))
-            .count();
+                long totalControles = controles.size();
 
-    long totalGlobal = controles.stream()
-            .filter(c ->
-                    Boolean.TRUE.equals(c.getPresent())
-                            || Boolean.TRUE.equals(c.getJustifie()))
-            .count();
+                long totalPresent = controles.stream()
+                                .filter(c -> Boolean.TRUE.equals(c.getPresent()))
+                                .count();
 
-    Map<String, Long> statsParUnite = controles.stream()
-            .filter(c -> c.getUnite() != null && !c.getUnite().isBlank())
-            .collect(Collectors.groupingBy(
-                    Controle::getUnite,
-                    Collectors.counting()
-            ));
+                long totalJustifie = controles.stream()
+                                .filter(c -> Boolean.TRUE.equals(c.getJustifie()))
+                                .count();
 
-    return ControleStatsDto.builder()
-            .totalControles(totalControles)
-            .totalPresent(totalPresent)
-            .totalJustifie(totalJustifie)
-            .totalHommesPresent(totalHommesPresent)
-            .totalFemmesPresent(totalFemmesPresent)
-            .totalHommesJustifies(totalHommesJustifies)
-            .totalFemmesJustifies(totalFemmesJustifies)
-            .totalGlobalPresentEtJustifie(totalGlobal)
-            .totalUnites(statsParUnite.size())
-            .statsParUnite(statsParUnite)
-            .build();
-}
+                long totalHommesPresent = controles.stream()
+                                .filter(c -> "M".equalsIgnoreCase(c.getSexe())
+                                                && Boolean.TRUE.equals(c.getPresent()))
+                                .count();
+
+                long totalFemmesPresent = controles.stream()
+                                .filter(c -> "F".equalsIgnoreCase(c.getSexe())
+                                                && Boolean.TRUE.equals(c.getPresent()))
+                                .count();
+
+                long totalHommesJustifies = controles.stream()
+                                .filter(c -> "M".equalsIgnoreCase(c.getSexe())
+                                                && Boolean.TRUE.equals(c.getJustifie()))
+                                .count();
+
+                long totalFemmesJustifies = controles.stream()
+                                .filter(c -> "F".equalsIgnoreCase(c.getSexe())
+                                                && Boolean.TRUE.equals(c.getJustifie()))
+                                .count();
+
+                long totalGlobal = controles.stream()
+                                .filter(c -> Boolean.TRUE.equals(c.getPresent())
+                                                || Boolean.TRUE.equals(c.getJustifie()))
+                                .count();
+
+                Map<String, Long> statsParUnite = controles.stream()
+                                .filter(c -> c.getUnite() != null && !c.getUnite().isBlank())
+                                .collect(Collectors.groupingBy(
+                                                Controle::getUnite,
+                                                Collectors.counting()));
+
+                // 🔥 PRESENT + JUSTIFIE PAR UNITE
+                Map<String, Long> presentEtJustifieParUnite = controles.stream()
+                                .filter(c -> c.getUnite() != null)
+                                .filter(c -> Boolean.TRUE.equals(c.getPresent())
+                                                || Boolean.TRUE.equals(c.getJustifie()))
+                                .collect(Collectors.groupingBy(
+                                                Controle::getUnite,
+                                                Collectors.counting()));
+
+                // 🔥 RESTE A CONTROLER PAR UNITE = TOTAL - (PRESENT + JUSTIFIE)
+                Map<String, Long> resteParUnite = new java.util.HashMap<>();
+
+                for (String unite : statsParUnite.keySet()) {
+
+                        long total = statsParUnite.getOrDefault(unite, 0L);
+
+                        long ok = presentEtJustifieParUnite.getOrDefault(unite, 0L);
+
+                        resteParUnite.put(unite, total - ok);
+                }
+
+                return ControleStatsDto.builder()
+                                .totalControles(totalControles)
+                                .totalPresent(totalPresent)
+                                .totalJustifie(totalJustifie)
+                                .totalHommesPresent(totalHommesPresent)
+                                .totalFemmesPresent(totalFemmesPresent)
+                                .totalHommesJustifies(totalHommesJustifies)
+                                .totalFemmesJustifies(totalFemmesJustifies)
+                                .totalGlobalPresentEtJustifie(totalGlobal)
+                                .totalUnites(statsParUnite.size())
+                                .statsParUnite(resteParUnite)
+                                .build();
+        }
 }

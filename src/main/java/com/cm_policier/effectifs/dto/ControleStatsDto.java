@@ -27,4 +27,5 @@ public class ControleStatsDto {
     private long totalUnites;
 
     private Map<String, Long> statsParUnite;
+    private Map<String, Long> resteParUnite;
 }
