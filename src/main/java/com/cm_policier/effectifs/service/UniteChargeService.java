@@ -19,7 +19,7 @@ import com.cm_policier.effectifs.repository.MissionRepository;
 import com.cm_policier.effectifs.repository.MissionUniteRepository;
 import com.cm_policier.effectifs.repository.UniteRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
-import com.cm_policier.effectifs.util.getCurrentUser;
+import com.cm_policier.effectifs.util.CurrentUserUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,7 +39,8 @@ public class UniteChargeService {
 
         @Autowired
         private LogUserService logUserService;
-        User user = getCurrentUser.getCurrentUser();
+        @Autowired
+        private UserService userService;
 
         public void chargerUnite(ChargerUniteRequest req) {
 
@@ -151,9 +152,11 @@ public class UniteChargeService {
                                 + missionUnite.getMission().getZone());
                 uniteRepository.save(unite);
 
-                logUserService.saveLog(user, "Affectation de l'unité à :"+
-                equipeUnite.getEquipe().getUser().getUsername()+"-"+
-                missionUnite.getMission().getZone()+" "+detailUnite.getUser().getUsername());
+                String username = CurrentUserUtil.getCurrentUsername();
+                User users = userService.findByUsername(username);
+                logUserService.saveLog(users, "Affectation de l'unité "+equipeUnite.getUnite().getName()+" à :" +
+                                equipeUnite.getEquipe().getUser().getUsername() + "-" +
+                                missionUnite.getMission().getZone() + " " + detailUnite.getUser().getUsername());
 
         }
 }

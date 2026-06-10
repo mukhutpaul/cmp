@@ -19,7 +19,8 @@ import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.DocumentRepository;
-import com.cm_policier.effectifs.util.getCurrentUser;
+import com.cm_policier.effectifs.util.CurrentUserUtil;
+
 
 @Service
 public class DocumentService {
@@ -29,9 +30,11 @@ public class DocumentService {
 
     @Autowired
     private LogUserService logUserService;
-    User user = getCurrentUser.getCurrentUser();
+    @Autowired UserService userService;
 
     public Document create(Document document) {
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
         logUserService.saveLog(user, "Création document:" + document.getTitle());
         return repository.save(document);
 

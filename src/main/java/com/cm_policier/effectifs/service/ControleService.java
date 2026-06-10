@@ -33,8 +33,7 @@ public class ControleService {
         private final DocumentService documentService;
         private final ControleRepository repository;
         private final LogUserService logUserService;
-
-        User user = getCurrentUser.getCurrentUser();
+        private final UserService userService;
 
         /* ========================= CREATE ========================= */
         public Controle create(Controle controle) {
@@ -64,8 +63,7 @@ public class ControleService {
         }
 
         public List<ControleResponseDto> getAll() {
-                 logUserService.saveLog(user, "Voir les contrôles");
-
+             
                 return repository.findAllByOrderByUpdatedAtDesc()
                                 .stream()
                                 .map(controle -> {
@@ -80,7 +78,7 @@ public class ControleService {
                                                                         .imageUrl(doc.getImageUrl())
                                                                         .build())
                                                         .collect(Collectors.toList());
-                                       
+
                                         return ControleResponseDto.builder()
                                                         .id(controle.getId())
                                                         .uid(controle.getUid())
@@ -119,8 +117,7 @@ public class ControleService {
                                                         .build();
                                 })
                                 .collect(Collectors.toList());
-        
-        
+
         }
 
         /* ========================= UPDATE ========================= */
@@ -272,7 +269,9 @@ public class ControleService {
 
                         dto.setPhotoUrl(c.getPkPhoto() + ".jpg");
                 }
-                logUserService.saveLog(user, "Recherche par matricule:"+dto.getMatricule());
+                String username = CurrentUserUtil.getCurrentUsername();
+                User user = userService.findByUsername(username);
+                logUserService.saveLog(user, "Recherche Ctr par matricule:" + dto.getMatricule());
 
                 return dto;
         }
@@ -333,7 +332,9 @@ public class ControleService {
                         controle.setIsSync(false);
 
                         repository.save(controle);
-                        logUserService.saveLog(user, "Justification du policier:"+controle.getNoms());
+                        String username = CurrentUserUtil.getCurrentUsername();
+                        User user = userService.findByUsername(username);
+                        logUserService.saveLog(user, "Justification du policier:" + controle.getNoms());
 
                         return documents;
 
@@ -350,7 +351,9 @@ public class ControleService {
                 controle.setPresent(true);
                 controle.setJustifie(false);
                 controle.setIsSync(false);
-                logUserService.saveLog(user, "Contôle du Policier:"+controle.getNoms() );
+                String username = CurrentUserUtil.getCurrentUsername();
+                User user = userService.findByUsername(username);
+                logUserService.saveLog(user, "Contôle du Policier:" + controle.getNoms());
 
                 return repository.save(controle);
         }

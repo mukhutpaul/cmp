@@ -17,12 +17,10 @@ import com.cm_policier.effectifs.model.Seance;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.ControleRepository;
 import com.cm_policier.effectifs.repository.DetailEquipeRepository;
-import com.cm_policier.effectifs.repository.EquipeRepository;
-import com.cm_policier.effectifs.repository.MissionRepository;
 import com.cm_policier.effectifs.repository.PolicierRepository;
 import com.cm_policier.effectifs.repository.SeanceRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
-import com.cm_policier.effectifs.util.getCurrentUser;
+import com.cm_policier.effectifs.util.CurrentUserUtil;
 
 @Service
 public class ControleServiceLoader {
@@ -44,8 +42,9 @@ public class ControleServiceLoader {
 
         @Autowired
         private LogUserService logUserService;
-        
-        User user = getCurrentUser.getCurrentUser();
+
+        @Autowired
+        private UserService userService;
 
         public List<Controle> chargerControle(String unite, Long userId) {
 
@@ -81,7 +80,7 @@ public class ControleServiceLoader {
 
                 int sequence = 1;
 
-               String dernierUid = controleRepository.findLastUid();
+                String dernierUid = controleRepository.findLastUid();
 
                 if (dernierUid != null) {
 
@@ -147,10 +146,11 @@ public class ControleServiceLoader {
                                         .build();
 
                         controles.add(c);
-                        logUserService.saveLog(user, "Chargement policiers de l'unité "+c.getUnite()+" au contrôle");
+                        String username = CurrentUserUtil.getCurrentUsername();
+                        User user = userService.findByUsername(username);
+                        logUserService.saveLog(user,
+                                        "Chargement policiers de l'unité " + c.getUnite() + " au contrôle");
                 }
-
-            
 
                 return controleRepository.saveAll(controles);
         }

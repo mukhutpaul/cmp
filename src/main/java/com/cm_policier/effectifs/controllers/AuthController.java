@@ -2,9 +2,14 @@ package com.cm_policier.effectifs.controllers;
 
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
 import com.cm_policier.effectifs.dto.ApiResponse;
 import com.cm_policier.effectifs.dto.MobileLoginRequest;
 import com.cm_policier.effectifs.dto.PcSyncLoginDTO;
@@ -20,7 +25,7 @@ import com.cm_policier.effectifs.service.PcSyncClient;
 import com.cm_policier.effectifs.service.SeanceService;
 import com.cm_policier.effectifs.service.SessionService;
 import com.cm_policier.effectifs.service.UserService;
-import com.cm_policier.effectifs.util.getCurrentUser;
+import com.cm_policier.effectifs.util.CurrentUserUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +35,7 @@ import lombok.RequiredArgsConstructor;
         RequestMethod.GET,
         RequestMethod.POST,
         RequestMethod.PUT,
+        RequestMethod.PATCH,
         RequestMethod.DELETE
 })
 @RequiredArgsConstructor
@@ -47,9 +53,7 @@ public class AuthController {
     private final PcSyncClient pcSyncClient;
     private final PcLocalSyncService pcLocalSyncService;
 
-    private  LogUserService logUserService;
-
-    User user = getCurrentUser.getCurrentUser();
+    private final LogUserService logUserService;
 
     // =========================
     // REGISTER
@@ -57,9 +61,12 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
         try {
+            String username = CurrentUserUtil.getCurrentUsername();
+            User users = userService.findByUsername(username);
+            logUserService.saveLog(users, "Ajout " + user.getUsername());
             User savedUser = userService.register(user);
             savedUser.setPassword(null);
-
+            
             return ResponseEntity.ok(Map.of(
                     "message", "User created successfully",
                     "user", savedUser));
@@ -80,7 +87,6 @@ public class AuthController {
         try {
             String username = request.get("username");
             String password = request.get("password");
-
             User user = userService.login(username, password);
 
             String token = jwtUtil.generateToken(user.getUsername());
@@ -127,7 +133,9 @@ public class AuthController {
             System.out.println("SAVE LOCAL DB");
 
             pcLocalSyncService.saveSyncData(response); // ✔️ ICI CORRECTION
-            logUserService.saveLog(user,"Connexion distante de "+dto.getUsername());
+            String usernames = CurrentUserUtil.getCurrentUsername();
+            User users = userService.findByUsername(usernames);
+            logUserService.saveLog(users, "Connexion distante de " + dto.getUsername());
 
             return ResponseEntity.ok(response);
 
@@ -182,8 +190,6 @@ public class AuthController {
                     "seance", seanceActive,
                     "session", session,
                     "unites", unites);
-             logUserService.saveLog(user,"Connexion du contrôleur "+user.getUsername());
-
             return ResponseEntity.ok(
                     new ApiResponse<>(true, "Connexion réussie", payload));
 
@@ -200,18 +206,18 @@ public class AuthController {
     // @PostMapping("/mobile/logout/{userId}")
     // public ResponseEntity<?> logout(@PathVariable Long userId) {
 
-    //     try {
+    // try {
 
-    //         Session session = sessionService.closeActiveSessionByUser(userId);
+    // Session session = sessionService.closeActiveSessionByUser(userId);
 
-    //         return ResponseEntity.ok(
-    //                 new ApiResponse<>(true, "Session fermée", session));
+    // return ResponseEntity.ok(
+    // new ApiResponse<>(true, "Session fermée", session));
 
-    //     } catch (RuntimeException e) {
+    // } catch (RuntimeException e) {
 
-    //         return ResponseEntity.status(400).body(
-    //                 new ApiResponse<>(false, "Erreur fermeture session", e.getMessage()));
-    //     }
+    // return ResponseEntity.status(400).body(
+    // new ApiResponse<>(false, "Erreur fermeture session", e.getMessage()));
+    // }
     // }
 
     // =========================

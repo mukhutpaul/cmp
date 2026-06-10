@@ -5,15 +5,11 @@ import com.cm_policier.effectifs.model.Equipe;
 import com.cm_policier.effectifs.model.EquipeUnite;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.*;
-import com.cm_policier.effectifs.util.getCurrentUser;
-
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,7 +26,7 @@ public class DashboardService {
 
     @Autowired
     private LogUserService logUserService;
-    User user = getCurrentUser.getCurrentUser();
+    
 
     public DashboardStatsDTO getStats(String profile, Long userId) {
 

@@ -16,7 +16,8 @@ import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.MissionRepository;
 import com.cm_policier.effectifs.repository.SeanceRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
-import com.cm_policier.effectifs.util.getCurrentUser;
+import com.cm_policier.effectifs.util.CurrentUserUtil;
+
 
 @Service
 public class SeanceService {
@@ -30,9 +31,9 @@ public class SeanceService {
     private MissionRepository missionRepository;
     @Autowired
     private  LogUserService logUserService;
+    @Autowired
+    private UserService userService;
 
-
-    User user = getCurrentUser.getCurrentUser();
 
     public Seance create(SeanceRequest request) {
 
@@ -88,6 +89,8 @@ public class SeanceService {
         }
 
         seanceRepository.deleteById(id);
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
         logUserService.saveLog(user, "Suppression de la séance");
     }
 
@@ -112,6 +115,8 @@ public class SeanceService {
 
         s.setIsActive(true);
         s.setDateSeance(LocalDateTime.now());
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
         logUserService.saveLog(user, "Activation de la séance");
 
         return seanceRepository.save(s);
@@ -137,6 +142,8 @@ public class SeanceService {
 
         
         s.setDateFin(LocalDateTime.now());
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
         logUserService.saveLog(user, "Clôture de la séance");
 
         return seanceRepository.save(s);

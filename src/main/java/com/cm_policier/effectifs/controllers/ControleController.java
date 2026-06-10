@@ -6,12 +6,10 @@ import com.cm_policier.effectifs.model.Document;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.DocumentRepository;
 import com.cm_policier.effectifs.service.ControleService;
-import com.cm_policier.effectifs.service.DocumentService;
 import com.cm_policier.effectifs.service.LogUserService;
-import com.cm_policier.effectifs.util.getCurrentUser;
-
+import com.cm_policier.effectifs.service.UserService;
+import com.cm_policier.effectifs.util.CurrentUserUtil;
 import lombok.RequiredArgsConstructor;
-
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,10 +32,9 @@ public class ControleController {
 
     private final ControleService service;
     private final DocumentRepository documentRepository;
+    private final UserService userService;
 
-    private  LogUserService logUserService;
-
-    User user = getCurrentUser.getCurrentUser();
+    private LogUserService logUserService;
 
     /* ========================= CREATE ========================= */
     @PostMapping
@@ -123,9 +120,8 @@ public class ControleController {
 
     @PatchMapping("/{id}/invalidate")
     public ResponseEntity<?> invalidateControle(@PathVariable UUID id) {
-
+       
         try {
-
             Controle controle = service.findById(id);
 
             if (controle == null) {
@@ -180,11 +176,11 @@ public class ControleController {
             controle.setIsSync(false);
 
             controle.setObservation("Contrôle invalidé");
-
             controle.setUpdatedAt(LocalDateTime.now());
 
             service.create(controle);
-            logUserService.saveLog(user, "Invalidation ctr de :"+controle.getMatricule()+" "+controle.getNoms());
+
+           
 
             return ResponseEntity.ok(
                     "Contrôle invalidé avec succès");

@@ -4,7 +4,7 @@ import com.cm_policier.effectifs.model.DetailUnite;
 import com.cm_policier.effectifs.model.Unite;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.DetailUniteRepository;
-import com.cm_policier.effectifs.util.getCurrentUser;
+import com.cm_policier.effectifs.util.CurrentUserUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,11 +20,15 @@ public class DetailUniteService {
     private final DetailUniteRepository repository;
      @Autowired
     private LogUserService logUserService;
+    @Autowired
+    private UserService userService;
 
-    User user = getCurrentUser.getCurrentUser();
+  
 
     public DetailUnite create(DetailUnite d) {
         d.setIsActive(true);
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
         logUserService.saveLog(user, "Ajout unité au contrôleur:"+d.getUser().getUsername());
         return repository.save(d);
     }
@@ -60,6 +64,9 @@ public class DetailUniteService {
                         "DetailUnite introuvable"));
 
         repository.delete(d);
+        
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
          logUserService.saveLog(user, "Suppression unité du contrôleur:"+id);
     }
 

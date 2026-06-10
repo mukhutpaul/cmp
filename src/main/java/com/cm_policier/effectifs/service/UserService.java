@@ -15,7 +15,8 @@ import com.cm_policier.effectifs.repository.DetailEquipeRepository;
 import com.cm_policier.effectifs.repository.DetailUniteRepository;
 import com.cm_policier.effectifs.repository.ProfileRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
-import com.cm_policier.effectifs.util.getCurrentUser;
+import com.cm_policier.effectifs.util.CurrentUserUtil;
+
 
 @Service
 public class UserService {
@@ -37,8 +38,9 @@ public class UserService {
 
     @Autowired
     private LogUserService logUserService;
+
     
-    User user = getCurrentUser.getCurrentUser();
+  
 
     // =========================
     // REGISTER
@@ -82,6 +84,8 @@ public class UserService {
             System.out.println("EMAIL: " + u.getEmail());
         }
 
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = findByUsername(username);
         logUserService.saveLog(user, "Vue users");
 
         return users;
@@ -139,6 +143,8 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         userRepository.delete(users);
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = findByUsername(username);
         logUserService.saveLog(user, "Suppression user"+users.getUsername());
     }
 
@@ -170,5 +176,10 @@ public class UserService {
 
         return userRepository.findAllByIds(ids);
     }
+
+    public User findByUsername(String username) {
+    return userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+}
 
 }

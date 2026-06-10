@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.cm_policier.effectifs.model.Mission;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.MissionRepository;
-import com.cm_policier.effectifs.util.getCurrentUser;
+import com.cm_policier.effectifs.util.CurrentUserUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,10 +18,12 @@ public class MissionService {
 
     private final LogUserService logUserService;
 
-    User user = getCurrentUser.getCurrentUser();
+    private final UserService userService;
 
     public Mission create(Mission mission) {
         mission.setIsActive(false);
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
         logUserService.saveLog(user, "Création mission:"+mission.getZone());
         return missionRepository.save(mission);
     }
@@ -69,6 +71,8 @@ public class MissionService {
         }
 
         missionRepository.delete(mission);
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
         logUserService.saveLog(user, "Suppression mission:"+mission.getZone());
     }
 
@@ -84,6 +88,8 @@ public class MissionService {
         mission.setIsActive(true);
         mission.setDateDebut(LocalDateTime.now());
         mission.setDateFin(null); // reset sécurité
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
         logUserService.saveLog(user, "Activation mission:"+mission.getZone());
         return missionRepository.save(mission);
     }
@@ -99,7 +105,9 @@ public class MissionService {
 
         mission.setIsActive(false);
         mission.setDateFin(LocalDateTime.now());
-         logUserService.saveLog(user, "Fermeture de la mission:"+mission.getZone());
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
+        logUserService.saveLog(user, "Fermeture de la mission:"+mission.getZone());
 
         return missionRepository.save(mission);
     }

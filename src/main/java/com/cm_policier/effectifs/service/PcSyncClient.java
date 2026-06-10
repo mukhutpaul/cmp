@@ -4,7 +4,7 @@ import com.cm_policier.effectifs.dto.ApiResponse;
 import com.cm_policier.effectifs.dto.PcSyncLoginDTO;
 import com.cm_policier.effectifs.dto.SyncResponseDTO;
 import com.cm_policier.effectifs.model.User;
-import com.cm_policier.effectifs.util.getCurrentUser;
+import com.cm_policier.effectifs.util.CurrentUserUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +19,8 @@ public class PcSyncClient {
     private final ObjectMapper mapper;
 
     private final LogUserService logUserService;
+    private final UserService userService;
 
-    User user = getCurrentUser.getCurrentUser();
 
     private static final String BASE_URL = "http://10.204.175.164:8090";
 
@@ -35,6 +35,8 @@ public class PcSyncClient {
             throw new RuntimeException("Erreur sync: réponse vide");
         }
 
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
         logUserService.saveLog(user, "Téléversement des données Pc");
 
         return mapper.convertValue(

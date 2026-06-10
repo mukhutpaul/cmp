@@ -13,7 +13,7 @@ import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.EquipeRepository;
 import com.cm_policier.effectifs.repository.EquipeUniteRepository;
 import com.cm_policier.effectifs.repository.UniteRepository;
-import com.cm_policier.effectifs.util.getCurrentUser;
+import com.cm_policier.effectifs.util.CurrentUserUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +26,7 @@ public class EquipeUniteService {
     private final UniteRepository uniteRepository;
     private final LogUserService logUserService;
 
-    User user = getCurrentUser.getCurrentUser();
+    private final UserService userService;
 
     // CREATE
     public EquipeUnite create(Long equipeId, Long uniteId) {
@@ -42,7 +42,8 @@ public class EquipeUniteService {
                 .unite(unite)
                 .isActive(true)
                 .build();
-        
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
         logUserService.saveLog(user, "Affectation unité:"+eu.getUnite()+" à l'équipe: "+eu.getEquipe().getUser().getUsername());
 
         return repository.save(eu);

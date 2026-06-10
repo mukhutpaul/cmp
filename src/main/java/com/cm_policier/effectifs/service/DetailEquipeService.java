@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.cm_policier.effectifs.model.DetailEquipe;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.DetailEquipeRepository;
-import com.cm_policier.effectifs.util.getCurrentUser;
+import com.cm_policier.effectifs.util.CurrentUserUtil;
 
 @Service
 public class DetailEquipeService {
@@ -16,10 +16,27 @@ public class DetailEquipeService {
     private DetailEquipeRepository repository;
     @Autowired
     private LogUserService logUserService;
-    User user = getCurrentUser.getCurrentUser();
+    @Autowired
+    private UserService userService;
 
     public DetailEquipe create(DetailEquipe detail) {
-        logUserService.saveLog(user, "Ajout contrôleur:"+detail.getUser().getUsername()+" Dans l'équipe:"+detail.getEquipe().getUser().getUsername());
+
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
+
+        String userAjoute = (detail.getUser() != null)
+                ? detail.getUser().getUsername()
+                : "UNKNOWN_USER";
+
+        String equipeUser = (detail.getEquipe() != null && detail.getEquipe().getUser() != null)
+                ? detail.getEquipe().getUser().getUsername()
+                : "UNKNOWN_EQUIPE_USER";
+
+        logUserService.saveLog(
+                user,
+                "Ajout contrôleur: " + userAjoute +
+                        " dans l'équipe: " + equipeUser);
+
         return repository.save(detail);
     }
 
@@ -44,12 +61,13 @@ public class DetailEquipeService {
 
     public void delete(Long id) {
         repository.deleteById(id);
-        logUserService.saveLog(user, "Suppression contôleur équipe:"+id);
+        String username = CurrentUserUtil.getCurrentUsername();
+        User user = userService.findByUsername(username);
+        logUserService.saveLog(user, "Suppression contôleur équipe:" + id);
     }
 
-     public List<DetailEquipe> findByEquipe(Long equipeId) {
+    public List<DetailEquipe> findByEquipe(Long equipeId) {
         return repository.findByEquipeId(equipeId);
     }
 
- 
 }

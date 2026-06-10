@@ -4,8 +4,7 @@ import com.cm_policier.effectifs.dto.ControleStatsDto;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.ControleRepository;
-import com.cm_policier.effectifs.util.getCurrentUser;
-
+import com.cm_policier.effectifs.util.CurrentUserUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,10 @@ public class ControleStatsService {
         @Autowired
         private LogUserService logUserService;
 
-        User user = getCurrentUser.getCurrentUser();
+        @Autowired
+        private UserService userService;
+
+       
 
         public ControleStatsDto getTodayStats() {
 
@@ -90,6 +92,8 @@ public class ControleStatsService {
 
                         resteParUnite.put(unite, total - ok);
                 }
+                String username = CurrentUserUtil.getCurrentUsername();
+                User user = userService.findByUsername(username);
                 logUserService.saveLog(user, "Vue statistiques journalières du controle");
 
                 return ControleStatsDto.builder()
@@ -173,6 +177,8 @@ public class ControleStatsService {
                         resteParUnite.put(unite, total - ok);
                 }
 
+                String username = CurrentUserUtil.getCurrentUsername();
+                User user = userService.findByUsername(username);
                 logUserService.saveLog(user, "Vue statistiques Générales du controle");
 
                 return ControleStatsDto.builder()
