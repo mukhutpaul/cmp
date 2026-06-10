@@ -64,6 +64,7 @@ public class ControleService {
         }
 
         public List<ControleResponseDto> getAll() {
+                 logUserService.saveLog(user, "Voir les contrôles");
 
                 return repository.findAllByOrderByUpdatedAtDesc()
                                 .stream()
@@ -79,7 +80,7 @@ public class ControleService {
                                                                         .imageUrl(doc.getImageUrl())
                                                                         .build())
                                                         .collect(Collectors.toList());
-                                        logUserService.saveLog(user, "Voir les contrôles");
+                                       
                                         return ControleResponseDto.builder()
                                                         .id(controle.getId())
                                                         .uid(controle.getUid())
@@ -118,7 +119,7 @@ public class ControleService {
                                                         .build();
                                 })
                                 .collect(Collectors.toList());
-
+        
         
         }
 

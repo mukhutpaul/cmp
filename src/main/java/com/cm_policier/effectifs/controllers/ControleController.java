@@ -3,9 +3,12 @@ package com.cm_policier.effectifs.controllers;
 import com.cm_policier.effectifs.dto.ControleResponseDto;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;
+import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.DocumentRepository;
 import com.cm_policier.effectifs.service.ControleService;
 import com.cm_policier.effectifs.service.DocumentService;
+import com.cm_policier.effectifs.service.LogUserService;
+import com.cm_policier.effectifs.util.getCurrentUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +34,10 @@ public class ControleController {
 
     private final ControleService service;
     private final DocumentRepository documentRepository;
+
+    private  LogUserService logUserService;
+
+    User user = getCurrentUser.getCurrentUser();
 
     /* ========================= CREATE ========================= */
     @PostMapping
@@ -177,6 +184,7 @@ public class ControleController {
             controle.setUpdatedAt(LocalDateTime.now());
 
             service.create(controle);
+            logUserService.saveLog(user, "Invalidation ctr de :"+controle.getMatricule()+" "+controle.getNoms());
 
             return ResponseEntity.ok(
                     "Contrôle invalidé avec succès");

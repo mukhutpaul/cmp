@@ -15,30 +15,35 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LogUserService {
 
+        private final LogUserRepository logUserRepository;
 
-    private final LogUserRepository logUserRepository;
+        public void saveLog(User user, String action) {
 
-    public void saveLog(User user, String action) {
+                LogUser log = LogUser.builder()
+                                .user(user)
+                                .action(action)
+                                .build();
 
-        LogUser log = LogUser.builder()
-                .user(user)
-                .action(action)
-                .build();
+                logUserRepository.save(log);
+        }
 
-        logUserRepository.save(log);
-    }
+        public List<LogUserResponse> getAllLogs() {
 
-   public List<LogUserResponse> getAllLogs() {
-    return logUserRepository.findAll(
-            Sort.by(Sort.Direction.DESC, "createdAt"))
-            .stream()
-            .map(log -> LogUserResponse.builder()
-                    .id(log.getId())
-                    .username(log.getUser().getUsername())
-                    .noms(log.getUser().getNoms())
-                    .action(log.getAction())
-                    .createdAt(log.getCreatedAt())
-                    .build())
-            .toList();
-}
+                return logUserRepository.findAll(
+                                Sort.by(Sort.Direction.DESC, "createdAt"))
+                                .stream()
+                                .map(log -> {
+
+                                        var user = log.getUser();
+
+                                        return LogUserResponse.builder()
+                                                        .id(log.getId())
+                                                        .username(user != null ? user.getUsername() : "-")
+                                                        .noms(user != null ? user.getNoms() : "-")
+                                                        .action(log.getAction())
+                                                        .createdAt(log.getCreatedAt())
+                                                        .build();
+                                })
+                                .toList();
+        }
 }
