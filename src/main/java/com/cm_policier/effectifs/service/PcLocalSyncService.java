@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import com.cm_policier.effectifs.dto.SyncResponseDTO;
 import com.cm_policier.effectifs.model.*;
 import com.cm_policier.effectifs.repository.*;
-import com.cm_policier.effectifs.util.CurrentUserUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -23,8 +22,6 @@ public class PcLocalSyncService {
     private final EquipeUniteRepository equipeUniteRepository;
     private final MissionUniteRepository missionUniteRepository;
 
-    private final LogUserService logUserService;
-    private final UserService userService;
 
     @Transactional
     public void saveSyncData(SyncResponseDTO data) {
@@ -347,8 +344,6 @@ public class PcLocalSyncService {
         }
 
         System.out.println("SYNC OK CLEAN ✔");
-        String username = CurrentUserUtil.getCurrentUsername();
-        User user = userService.findByUsername(username);
-        logUserService.saveLog(user, "Téléversement des donées équipes");
+        
     }
 }
