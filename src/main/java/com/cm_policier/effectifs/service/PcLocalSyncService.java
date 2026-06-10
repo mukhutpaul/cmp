@@ -24,7 +24,7 @@ public class PcLocalSyncService {
     private final MissionUniteRepository missionUniteRepository;
 
     private final LogUserService logUserService;
-    private UserService userService;
+    private final UserService userService;
 
     @Transactional
     public void saveSyncData(SyncResponseDTO data) {
