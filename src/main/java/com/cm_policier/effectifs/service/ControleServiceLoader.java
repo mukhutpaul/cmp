@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.cm_policier.effectifs.model.Controle;
@@ -20,6 +22,7 @@ import com.cm_policier.effectifs.repository.MissionRepository;
 import com.cm_policier.effectifs.repository.PolicierRepository;
 import com.cm_policier.effectifs.repository.SeanceRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
+import com.cm_policier.effectifs.util.getCurrentUser;
 
 @Service
 public class ControleServiceLoader {
@@ -38,6 +41,11 @@ public class ControleServiceLoader {
 
         @Autowired
         private SeanceRepository seanceRepository;
+
+        @Autowired
+        private LogUserService logUserService;
+        
+        User user = getCurrentUser.getCurrentUser();
 
         public List<Controle> chargerControle(String unite, Long userId) {
 
@@ -139,7 +147,10 @@ public class ControleServiceLoader {
                                         .build();
 
                         controles.add(c);
+                        logUserService.saveLog(user, "Chargement policiers de l'unité "+c.getUnite()+" au contrôle");
                 }
+
+            
 
                 return controleRepository.saveAll(controles);
         }

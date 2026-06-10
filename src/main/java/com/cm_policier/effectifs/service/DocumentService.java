@@ -10,13 +10,16 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.cm_policier.effectifs.dto.DocumentSyncDTO;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;
+import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.DocumentRepository;
-
+import com.cm_policier.effectifs.util.getCurrentUser;
 
 @Service
 public class DocumentService {
@@ -24,8 +27,14 @@ public class DocumentService {
     @Autowired
     private DocumentRepository repository;
 
+    @Autowired
+    private LogUserService logUserService;
+    User user = getCurrentUser.getCurrentUser();
+
     public Document create(Document document) {
+        logUserService.saveLog(user, "Création document:" + document.getTitle());
         return repository.save(document);
+
     }
 
     public List<Document> getAll() {

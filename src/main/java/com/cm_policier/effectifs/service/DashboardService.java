@@ -3,14 +3,17 @@ package com.cm_policier.effectifs.service;
 import com.cm_policier.effectifs.dto.DashboardStatsDTO;
 import com.cm_policier.effectifs.model.Equipe;
 import com.cm_policier.effectifs.model.EquipeUnite;
-import com.cm_policier.effectifs.model.Unite;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.*;
+import com.cm_policier.effectifs.util.getCurrentUser;
 
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,6 +27,10 @@ public class DashboardService {
     private final ControleRepository controleRepository;
     private final UserRepository userRepository;
     private final EquipeUniteRepository equipeUniteRepository;
+
+    @Autowired
+    private LogUserService logUserService;
+    User user = getCurrentUser.getCurrentUser();
 
     public DashboardStatsDTO getStats(String profile, Long userId) {
 
@@ -63,7 +70,7 @@ public class DashboardService {
 
             // 🔹 MISSION
             long totalMissions = equipe.getMission() != null ? 1 : 0;
-
+            logUserService.saveLog(user, "Vue dashbord");
             return DashboardStatsDTO.builder()
                     .totalPoliciers(totalPoliciers)
                     .totalUnites(totalUnites)

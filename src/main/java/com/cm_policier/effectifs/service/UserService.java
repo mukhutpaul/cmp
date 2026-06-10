@@ -2,14 +2,10 @@ package com.cm_policier.effectifs.service;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-
 import com.cm_policier.effectifs.dto.UpdateUserRequest;
 import com.cm_policier.effectifs.model.DetailEquipe;
 import com.cm_policier.effectifs.model.DetailUnite;
@@ -19,6 +15,7 @@ import com.cm_policier.effectifs.repository.DetailEquipeRepository;
 import com.cm_policier.effectifs.repository.DetailUniteRepository;
 import com.cm_policier.effectifs.repository.ProfileRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
+import com.cm_policier.effectifs.util.getCurrentUser;
 
 @Service
 public class UserService {
@@ -37,6 +34,11 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private LogUserService logUserService;
+    
+    User user = getCurrentUser.getCurrentUser();
 
     // =========================
     // REGISTER
@@ -57,6 +59,8 @@ public class UserService {
             throw new RuntimeException("Invalid password");
         }
 
+         logUserService.saveLog(user, "Connexion local du user:"+user.getUsername());
+      
         return user;
     }
 
@@ -77,6 +81,8 @@ public class UserService {
             System.out.println("PASSWORD: " + u.getPassword());
             System.out.println("EMAIL: " + u.getEmail());
         }
+
+        logUserService.saveLog(user, "Vue users");
 
         return users;
     }
@@ -129,10 +135,11 @@ public class UserService {
     // DELETE USER
     // =========================
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id)
+        User users = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        userRepository.delete(user);
+        userRepository.delete(users);
+        logUserService.saveLog(user, "Suppression user"+users.getUsername());
     }
 
     public User findById(Long id) {

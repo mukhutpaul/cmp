@@ -2,13 +2,11 @@ package com.cm_policier.effectifs.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import com.cm_policier.effectifs.model.Mission;
+import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.MissionRepository;
+import com.cm_policier.effectifs.util.getCurrentUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,8 +16,13 @@ public class MissionService {
 
     private final MissionRepository missionRepository;
 
+    private final LogUserService logUserService;
+
+    User user = getCurrentUser.getCurrentUser();
+
     public Mission create(Mission mission) {
         mission.setIsActive(false);
+        logUserService.saveLog(user, "Création mission:"+mission.getZone());
         return missionRepository.save(mission);
     }
 
@@ -66,6 +69,7 @@ public class MissionService {
         }
 
         missionRepository.delete(mission);
+        logUserService.saveLog(user, "Suppression mission:"+mission.getZone());
     }
 
     public Mission startMission(Long id) {
@@ -80,7 +84,7 @@ public class MissionService {
         mission.setIsActive(true);
         mission.setDateDebut(LocalDateTime.now());
         mission.setDateFin(null); // reset sécurité
-
+        logUserService.saveLog(user, "Activation mission:"+mission.getZone());
         return missionRepository.save(mission);
     }
 
@@ -95,6 +99,7 @@ public class MissionService {
 
         mission.setIsActive(false);
         mission.setDateFin(LocalDateTime.now());
+         logUserService.saveLog(user, "Fermeture de la mission:"+mission.getZone());
 
         return missionRepository.save(mission);
     }

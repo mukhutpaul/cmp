@@ -2,9 +2,7 @@ package com.cm_policier.effectifs.service;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
-
 import com.cm_policier.effectifs.client.RemoteSyncClient;
 import com.cm_policier.effectifs.dto.DocumentSyncDTO;
 import com.cm_policier.effectifs.dto.SyncPayload;
@@ -12,10 +10,12 @@ import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;
 import com.cm_policier.effectifs.model.Seance;
 import com.cm_policier.effectifs.model.Session;
+import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.ControleRepository;
 import com.cm_policier.effectifs.repository.DocumentRepository;
 import com.cm_policier.effectifs.repository.SeanceRepository;
 import com.cm_policier.effectifs.repository.SessionRepository;
+import com.cm_policier.effectifs.util.getCurrentUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +32,10 @@ public class SyncLocalService {
     private final SessionService sessionService;
     private final ControleService controleService;
     private final DocumentService documentService;
+
+    private final LogUserService logUserService;
+
+    User user = getCurrentUser.getCurrentUser();
 
     public void executeSync() {
 
@@ -223,6 +227,7 @@ public class SyncLocalService {
                 }
             });
         }
+        logUserService.saveLog(user, "Synchronisation des données du contrôle");
         System.out.println("✅ SYNC COMPLETED SUCCESSFULLY");
     }
 }

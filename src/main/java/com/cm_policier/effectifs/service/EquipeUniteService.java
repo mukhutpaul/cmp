@@ -2,14 +2,18 @@ package com.cm_policier.effectifs.service;
 
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.cm_policier.effectifs.model.Equipe;
 import com.cm_policier.effectifs.model.EquipeUnite;
 import com.cm_policier.effectifs.model.Unite;
+import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.EquipeRepository;
 import com.cm_policier.effectifs.repository.EquipeUniteRepository;
 import com.cm_policier.effectifs.repository.UniteRepository;
+import com.cm_policier.effectifs.util.getCurrentUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +24,9 @@ public class EquipeUniteService {
     private final EquipeUniteRepository repository;
     private final EquipeRepository equipeRepository;
     private final UniteRepository uniteRepository;
+    private final LogUserService logUserService;
+
+    User user = getCurrentUser.getCurrentUser();
 
     // CREATE
     public EquipeUnite create(Long equipeId, Long uniteId) {
@@ -35,6 +42,8 @@ public class EquipeUniteService {
                 .unite(unite)
                 .isActive(true)
                 .build();
+        
+        logUserService.saveLog(user, "Affectation unité:"+eu.getUnite()+" à l'équipe: "+eu.getEquipe().getUser().getUsername());
 
         return repository.save(eu);
     }

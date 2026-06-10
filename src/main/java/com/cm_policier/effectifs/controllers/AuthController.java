@@ -2,12 +2,9 @@ package com.cm_policier.effectifs.controllers;
 
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.cm_policier.effectifs.dto.ApiResponse;
 import com.cm_policier.effectifs.dto.MobileLoginRequest;
 import com.cm_policier.effectifs.dto.PcSyncLoginDTO;
@@ -17,11 +14,13 @@ import com.cm_policier.effectifs.model.Seance;
 import com.cm_policier.effectifs.model.Session;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.security.JwtUtil;
+import com.cm_policier.effectifs.service.LogUserService;
 import com.cm_policier.effectifs.service.PcLocalSyncService;
 import com.cm_policier.effectifs.service.PcSyncClient;
 import com.cm_policier.effectifs.service.SeanceService;
 import com.cm_policier.effectifs.service.SessionService;
 import com.cm_policier.effectifs.service.UserService;
+import com.cm_policier.effectifs.util.getCurrentUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,6 +46,10 @@ public class AuthController {
 
     private final PcSyncClient pcSyncClient;
     private final PcLocalSyncService pcLocalSyncService;
+
+    private  LogUserService logUserService;
+
+    User user = getCurrentUser.getCurrentUser();
 
     // =========================
     // REGISTER
@@ -124,6 +127,7 @@ public class AuthController {
             System.out.println("SAVE LOCAL DB");
 
             pcLocalSyncService.saveSyncData(response); // ✔️ ICI CORRECTION
+            logUserService.saveLog(user,"Connexion distante de "+dto.getUsername());
 
             return ResponseEntity.ok(response);
 
@@ -178,6 +182,7 @@ public class AuthController {
                     "seance", seanceActive,
                     "session", session,
                     "unites", unites);
+             logUserService.saveLog(user,"Connexion du contrôleur "+user.getUsername());
 
             return ResponseEntity.ok(
                     new ApiResponse<>(true, "Connexion réussie", payload));

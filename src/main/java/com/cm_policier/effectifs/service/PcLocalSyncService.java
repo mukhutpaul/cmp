@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.cm_policier.effectifs.dto.SyncResponseDTO;
 import com.cm_policier.effectifs.model.*;
 import com.cm_policier.effectifs.repository.*;
+import com.cm_policier.effectifs.util.getCurrentUser;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,9 @@ public class PcLocalSyncService {
     private final DetailEquipeRepository detailEquipeRepository;
     private final EquipeUniteRepository equipeUniteRepository;
     private final MissionUniteRepository missionUniteRepository;
+
+    private final LogUserService logUserService;
+    User user = getCurrentUser.getCurrentUser();
 
     @Transactional
     public void saveSyncData(SyncResponseDTO data) {
@@ -253,8 +257,8 @@ public class PcLocalSyncService {
         }
 
         // ================= MISSION UNITE =================
-           System.out.println("MISSIONS SIZE = " 
-        + data.getMissionUnites().size());
+        System.out.println("MISSIONS SIZE = "
+                + data.getMissionUnites().size());
         if (data.getMissionUnites() != null) {
 
             for (MissionUnite incoming : data.getMissionUnites()) {
@@ -297,8 +301,8 @@ public class PcLocalSyncService {
         }
 
         // ================= DETAIL UNITE =================
-        System.out.println("DETAIL UNITES SIZE = " 
-        + data.getDetailUnites().size());
+        System.out.println("DETAIL UNITES SIZE = "
+                + data.getDetailUnites().size());
         if (data.getDetailUnites() != null) {
 
             for (DetailUnite incoming : data.getDetailUnites()) {
@@ -344,6 +348,6 @@ public class PcLocalSyncService {
         }
 
         System.out.println("SYNC OK CLEAN ✔");
+        logUserService.saveLog(user, "Téléversement des donées équipes");
     }
 }
-

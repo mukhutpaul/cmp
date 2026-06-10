@@ -2,8 +2,12 @@ package com.cm_policier.effectifs.service;
 
 import com.cm_policier.effectifs.dto.ControleStatsDto;
 import com.cm_policier.effectifs.model.Controle;
+import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.ControleRepository;
+import com.cm_policier.effectifs.util.getCurrentUser;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
@@ -15,6 +19,10 @@ import java.util.stream.Collectors;
 public class ControleStatsService {
 
         private final ControleRepository controleRepository;
+        @Autowired
+        private LogUserService logUserService;
+
+        User user = getCurrentUser.getCurrentUser();
 
         public ControleStatsDto getTodayStats() {
 
@@ -82,6 +90,7 @@ public class ControleStatsService {
 
                         resteParUnite.put(unite, total - ok);
                 }
+                logUserService.saveLog(user, "Vue statistiques journalières du controle");
 
                 return ControleStatsDto.builder()
                                 .totalControles(totalControles)
@@ -163,6 +172,8 @@ public class ControleStatsService {
 
                         resteParUnite.put(unite, total - ok);
                 }
+
+                logUserService.saveLog(user, "Vue statistiques Générales du controle");
 
                 return ControleStatsDto.builder()
                                 .totalControles(totalControles)

@@ -6,20 +6,18 @@ import com.cm_policier.effectifs.dto.DocumentResponseDto;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;
 import com.cm_policier.effectifs.model.Seance;
+import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.util.*;
 import com.cm_policier.effectifs.repository.ControleRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,6 +32,9 @@ public class ControleService {
 
         private final DocumentService documentService;
         private final ControleRepository repository;
+        private final LogUserService logUserService;
+
+        User user = getCurrentUser.getCurrentUser();
 
         /* ========================= CREATE ========================= */
         public Controle create(Controle controle) {
@@ -78,6 +79,7 @@ public class ControleService {
                                                                         .imageUrl(doc.getImageUrl())
                                                                         .build())
                                                         .collect(Collectors.toList());
+                                        logUserService.saveLog(user, "Voir les contrôles");
                                         return ControleResponseDto.builder()
                                                         .id(controle.getId())
                                                         .uid(controle.getUid())
@@ -116,6 +118,8 @@ public class ControleService {
                                                         .build();
                                 })
                                 .collect(Collectors.toList());
+
+        
         }
 
         /* ========================= UPDATE ========================= */
@@ -267,6 +271,7 @@ public class ControleService {
 
                         dto.setPhotoUrl(c.getPkPhoto() + ".jpg");
                 }
+                logUserService.saveLog(user, "Recherche par matricule:"+dto.getMatricule());
 
                 return dto;
         }
@@ -327,6 +332,7 @@ public class ControleService {
                         controle.setIsSync(false);
 
                         repository.save(controle);
+                        logUserService.saveLog(user, "Justification du policier:"+controle.getNoms());
 
                         return documents;
 
@@ -343,6 +349,7 @@ public class ControleService {
                 controle.setPresent(true);
                 controle.setJustifie(false);
                 controle.setIsSync(false);
+                logUserService.saveLog(user, "Contôle du Policier:"+controle.getNoms() );
 
                 return repository.save(controle);
         }

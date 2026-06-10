@@ -1,11 +1,12 @@
 package com.cm_policier.effectifs.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.cm_policier.effectifs.dto.SeanceRequest;
@@ -15,6 +16,7 @@ import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.MissionRepository;
 import com.cm_policier.effectifs.repository.SeanceRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
+import com.cm_policier.effectifs.util.getCurrentUser;
 
 @Service
 public class SeanceService {
@@ -26,6 +28,11 @@ public class SeanceService {
 
     @Autowired
     private MissionRepository missionRepository;
+    @Autowired
+    private  LogUserService logUserService;
+
+
+    User user = getCurrentUser.getCurrentUser();
 
     public Seance create(SeanceRequest request) {
 
@@ -42,6 +49,8 @@ public class SeanceService {
         s.setDateSeance(LocalDateTime.now());
         s.setDateFin(null);
         s.setIsActive(false);
+
+        logUserService.saveLog(user, "Création de la séance");
 
         return seanceRepository.save(s);
     }
@@ -79,6 +88,7 @@ public class SeanceService {
         }
 
         seanceRepository.deleteById(id);
+        logUserService.saveLog(user, "Suppression de la séance");
     }
 
     public List<Seance> getByMission(Long missionId) {
@@ -102,6 +112,7 @@ public class SeanceService {
 
         s.setIsActive(true);
         s.setDateSeance(LocalDateTime.now());
+        logUserService.saveLog(user, "Activation de la séance");
 
         return seanceRepository.save(s);
     }
@@ -126,6 +137,7 @@ public class SeanceService {
 
         
         s.setDateFin(LocalDateTime.now());
+        logUserService.saveLog(user, "Clôture de la séance");
 
         return seanceRepository.save(s);
     }
