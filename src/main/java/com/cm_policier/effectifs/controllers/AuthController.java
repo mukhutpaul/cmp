@@ -112,10 +112,7 @@ public class AuthController {
     // =========================
     @PostMapping("/login-distant")
     public ResponseEntity<?> loginDistant(@RequestBody Map<String, String> request) {
-        String usernames = CurrentUserUtil.getCurrentUsername();
-        User users = userService.findByUsername(usernames);
-        logUserService.saveLog(users, "Connexion distante de");
-
+        
         try {
 
             System.out.println("LOGIN DISTANT START");
