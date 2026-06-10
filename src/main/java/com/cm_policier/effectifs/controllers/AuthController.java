@@ -66,7 +66,7 @@ public class AuthController {
             logUserService.saveLog(users, "Ajout " + user.getUsername());
             User savedUser = userService.register(user);
             savedUser.setPassword(null);
-            
+
             return ResponseEntity.ok(Map.of(
                     "message", "User created successfully",
                     "user", savedUser));
@@ -112,6 +112,9 @@ public class AuthController {
     // =========================
     @PostMapping("/login-distant")
     public ResponseEntity<?> loginDistant(@RequestBody Map<String, String> request) {
+        String usernames = CurrentUserUtil.getCurrentUsername();
+        User users = userService.findByUsername(usernames);
+        logUserService.saveLog(users, "Connexion distante de");
 
         try {
 
@@ -133,9 +136,6 @@ public class AuthController {
             System.out.println("SAVE LOCAL DB");
 
             pcLocalSyncService.saveSyncData(response); // ✔️ ICI CORRECTION
-            String usernames = CurrentUserUtil.getCurrentUsername();
-            User users = userService.findByUsername(usernames);
-            logUserService.saveLog(users, "Connexion distante de " + dto.getUsername());
 
             return ResponseEntity.ok(response);
 
