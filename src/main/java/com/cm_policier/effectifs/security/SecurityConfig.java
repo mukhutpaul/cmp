@@ -48,6 +48,7 @@ public class SecurityConfig {
                                 "/api/auth/mobile/login",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
+                                "/api/sync/import",
                                 "/swagger-ui.html")
                         .permitAll()
                         .requestMatchers("/api/logs/**").authenticated()
