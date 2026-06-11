@@ -8,9 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,9 +28,19 @@ public class JwtFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getServletPath();
+
+        // Routes publiques
+        if (path.equals("/api/auth/login")
+                || path.equals("/api/auth/login-distant")
+                || path.equals("/api/auth/mobile/login")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
 
-        // Aucun token
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -48,32 +55,19 @@ public class JwtFilter extends OncePerRequestFilter {
             if (username != null
                     && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                UserDetails userDetails =
-                        userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities());
 
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authToken);
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-
-        } catch (ExpiredJwtException e) {
-
-            System.out.println("JWT expiré : " + e.getMessage());
-            SecurityContextHolder.clearContext();
-
-        } catch (JwtException e) {
-
-            System.out.println("JWT invalide : " + e.getMessage());
-            SecurityContextHolder.clearContext();
 
         } catch (Exception e) {
 
-            System.out.println("Erreur JWT : " + e.getMessage());
+            System.out.println("JWT ignoré : " + e.getMessage());
             SecurityContextHolder.clearContext();
         }
 
