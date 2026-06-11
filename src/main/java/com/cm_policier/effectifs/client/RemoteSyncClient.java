@@ -37,7 +37,7 @@ public class RemoteSyncClient {
 
         ResponseEntity<String> response =
                 restTemplate.postForEntity(
-                        "http://10.204.175.164:8090/api/sync/import",
+                        "http://10.101.153.164:8090/api/sync/import",
                         payload,
                         String.class
                 );
