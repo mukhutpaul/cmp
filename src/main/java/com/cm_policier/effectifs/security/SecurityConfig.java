@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/api/pc/sync",
                                 "/api/auth/login-distant",
+                                "/api/auth/mobile/login",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html")
