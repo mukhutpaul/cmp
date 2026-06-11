@@ -227,9 +227,9 @@ public class SyncLocalService {
                 }
             });
         }
-        String username = CurrentUserUtil.getCurrentUsername();
-        User user = userService.findByUsername(username);
-        logUserService.saveLog(user, "Synchronisation des données du contrôle");
+        // String username = CurrentUserUtil.getCurrentUsername();
+        // User user = userService.findByUsername(username);
+        // logUserService.saveLog(user, "Synchronisation des données du contrôle");
         System.out.println("✅ SYNC COMPLETED SUCCESSFULLY");
     }
 }
