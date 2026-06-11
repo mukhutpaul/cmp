@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 
-
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -26,108 +25,105 @@ public class RemoteSyncClient {
     private final SessionRepository sessionRepository;
     private final DocumentRepository documentRepository;
 
-    
+    public void sendToCentral(SyncPayload payload) {
 
-  
-  public  void sendToCentral(SyncPayload payload) {
+        try {
 
-    try {
+            RestTemplate restTemplate = new RestTemplate();
 
-        RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.postForEntity(
+                    "http://10.101.153.164:8090/api/sync/import",
+                    payload,
+                    String.class);
 
-        ResponseEntity<String> response =
-                restTemplate.postForEntity(
-                        "http://10.101.153.164:8090/api/sync/import",
-                        payload,
-                        String.class
-                );
+            if (response.getStatusCode().is2xxSuccessful()) {
 
-        if (response.getStatusCode().is2xxSuccessful()) {
+                markAsSynced(payload);
 
-            markAsSynced(payload);
+                System.out.println("✅ Synchronisation réussie");
 
-            System.out.println("✅ Synchronisation réussie");
-        } else {
+            } else {
 
-            System.err.println(
-                    "❌ Echec synchronisation : "
-                            + response.getStatusCode());
+                throw new RuntimeException(
+                        "Echec synchronisation : "
+                                + response.getStatusCode());
+            }
+
+        } catch (Exception e) {
+
+            System.err.println("❌ Erreur connexion serveur central");
+
+            throw new RuntimeException(
+                    "Impossible de joindre le serveur central",
+                    e);
         }
-
-    } catch (Exception e) {
-
-        System.err.println("❌ Erreur connexion serveur central");
-
-        e.printStackTrace();
     }
-}
 
-@Transactional
-public void markAsSynced(SyncPayload payload) {
+    @Transactional
+    public void markAsSynced(SyncPayload payload) {
 
-    // =========================
-    // CONTROLES
-    // =========================
-    payload.getControles().forEach(controle -> {
+        // =========================
+        // CONTROLES
+        // =========================
+        payload.getControles().forEach(controle -> {
 
-        controleRepository.findById(controle.getId())
-                .ifPresent(entity -> {
+            controleRepository.findById(controle.getId())
+                    .ifPresent(entity -> {
 
-                    entity.setIsSync(true);
+                        entity.setIsSync(true);
 
-                    Integer version =
-                            entity.getVersionSync() == null
-                                    ? 1
-                                    : entity.getVersionSync();
+                        Integer version = entity.getVersionSync() == null
+                                ? 1
+                                : entity.getVersionSync();
 
-                    entity.setVersionSync(version + 1);
+                        entity.setVersionSync(version + 1);
 
-                    entity.setSyncedAt(LocalDateTime.now());
+                        entity.setSyncedAt(LocalDateTime.now());
 
-                    controleRepository.save(entity);
-                });
-    });
+                        controleRepository.save(entity);
+                    });
+        });
 
-    // =========================
-    // SEANCES
-    // =========================
-    payload.getSeances().forEach(seance -> {
+        // =========================
+        // SEANCES
+        // =========================
+        payload.getSeances().forEach(seance -> {
 
-        seanceRepository.findById(seance.getId())
-                .ifPresent(entity -> {
+            seanceRepository.findById(seance.getId())
+                    .ifPresent(entity -> {
 
-                    entity.setIsSynchronized(true);
-                    seanceRepository.save(entity);
-                });
-    });
+                        entity.setIsSynchronized(true);
+                        seanceRepository.save(entity);
+                    });
+        });
 
-    // =========================
-    // SESSIONS
-    // =========================
-    payload.getSessions().forEach(session -> {
+        // =========================
+        // SESSIONS
+        // =========================
+        payload.getSessions().forEach(session -> {
 
-        sessionRepository.findById(session.getId())
-                .ifPresent(entity -> {
+            sessionRepository.findById(session.getId())
+                    .ifPresent(entity -> {
 
-                    // optionnel mais recommandé
-                    entity.setIsSynchronized(true);
+                        // optionnel mais recommandé
+                        entity.setIsSynchronized(true);
 
-                    sessionRepository.save(entity);
-                });
-    });
+                        sessionRepository.save(entity);
+                    });
+        });
 
-    // =========================
-    // DOCUMENTS
-    // =========================
-    payload.getDocuments().forEach(doc -> {
+        // =========================
+        // DOCUMENTS
+        // =========================
+        payload.getDocuments().forEach(doc -> {
 
-        documentRepository.findById(doc.getId())
-                .ifPresent(entity -> {
+            documentRepository.findById(doc.getId())
+                    .ifPresent(entity -> {
 
-                    entity.setIsSync(true);
+                        entity.setIsSync(true);
 
-                    documentRepository.save(entity);
-                });
-    });
-}
+                        documentRepository.save(entity);
+                    });
+        });
+    }
 }
