@@ -10,13 +10,10 @@ import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;
 import com.cm_policier.effectifs.model.Seance;
 import com.cm_policier.effectifs.model.Session;
-import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.ControleRepository;
 import com.cm_policier.effectifs.repository.DocumentRepository;
 import com.cm_policier.effectifs.repository.SeanceRepository;
 import com.cm_policier.effectifs.repository.SessionRepository;
-import com.cm_policier.effectifs.util.CurrentUserUtil;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -33,9 +30,7 @@ public class SyncLocalService {
     private final ControleService controleService;
     private final DocumentService documentService;
 
-    private final LogUserService logUserService;
 
-    private final UserService userService;
 
     public void executeSync() {
 
@@ -227,9 +222,6 @@ public class SyncLocalService {
                 }
             });
         }
-        String username = CurrentUserUtil.getCurrentUsername();
-        User user = userService.findByUsername(username);
-        logUserService.saveLog(user, "Synchronisation des données du contrôle");
         System.out.println("✅ SYNC COMPLETED SUCCESSFULLY");
     }
 }
