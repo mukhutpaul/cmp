@@ -1,11 +1,13 @@
 package com.cm_policier.effectifs.controllers;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -46,7 +48,7 @@ public class MissionController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Mission> update(@PathVariable Long id,
-                                          @RequestBody Mission mission) {
+            @RequestBody Mission mission) {
         return ResponseEntity.ok(missionService.update(id, mission));
     }
 
@@ -57,7 +59,6 @@ public class MissionController {
         return ResponseEntity.ok().build();
     }
 
-    
     @PutMapping("/{id}/start")
     public ResponseEntity<Mission> start(@PathVariable Long id) {
         return ResponseEntity.ok(missionService.startMission(id));
@@ -66,5 +67,25 @@ public class MissionController {
     @PutMapping("/{id}/close")
     public ResponseEntity<Mission> close(@PathVariable Long id) {
         return ResponseEntity.ok(missionService.closeMission(id));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateMission(
+            @PathVariable Long id,
+            @RequestBody Mission mission) {
+
+        try {
+            Mission updated = missionService.update(id, mission);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Mission mise à jour avec succès",
+                    "data", updated));
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity.status(404).body(Map.of(
+                    "message", "Update failed",
+                    "error", e.getMessage()));
+        }
     }
 }

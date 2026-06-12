@@ -64,7 +64,16 @@ public class EquipeUniteController {
     // DELETE (soft delete)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.ok("Deleted");
+
+        try {
+
+            service.delete(id);
+
+            return ResponseEntity.ok("Deleted");
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

@@ -14,6 +14,7 @@ import com.cm_policier.effectifs.dto.ApiResponse;
 import com.cm_policier.effectifs.dto.MobileLoginRequest;
 import com.cm_policier.effectifs.dto.PcSyncLoginDTO;
 import com.cm_policier.effectifs.dto.SyncResponseDTO;
+import com.cm_policier.effectifs.dto.UpdateUserRequest;
 import com.cm_policier.effectifs.model.DetailUnite;
 import com.cm_policier.effectifs.model.Seance;
 import com.cm_policier.effectifs.model.Session;
@@ -112,7 +113,7 @@ public class AuthController {
     // =========================
     @PostMapping("/login-distant")
     public ResponseEntity<?> loginDistant(@RequestBody Map<String, String> request) {
-        
+
         try {
 
             System.out.println("LOGIN DISTANT START");
@@ -255,4 +256,28 @@ public class AuthController {
                     new ApiResponse<>(false, "Erreur récupération utilisateurs", e.getMessage()));
         }
     }
+
+    @PatchMapping("/users/{id}")
+    public ResponseEntity<?> updateUser(
+            @PathVariable Long id,
+            @RequestBody UpdateUserRequest request) {
+
+        try {
+            User updated = userService.updateUser(id, request);
+
+            // sécurité: ne jamais renvoyer le password
+            updated.setPassword(null);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "User updated successfully",
+                    "data", updated));
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity.status(404).body(Map.of(
+                    "message", "Update failed",
+                    "error", e.getMessage()));
+        }
+    }
+
 }

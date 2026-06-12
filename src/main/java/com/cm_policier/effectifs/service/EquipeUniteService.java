@@ -21,80 +21,82 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EquipeUniteService {
 
-    private final EquipeUniteRepository repository;
-    private final EquipeRepository equipeRepository;
-    private final UniteRepository uniteRepository;
-    private final LogUserService logUserService;
+        private final EquipeUniteRepository repository;
+        private final EquipeRepository equipeRepository;
+        private final UniteRepository uniteRepository;
+        private final LogUserService logUserService;
 
-    private final UserService userService;
+        private final UserService userService;
 
-    // CREATE
-    public EquipeUnite create(Long equipeId, Long uniteId) {
+        // CREATE
+        public EquipeUnite create(Long equipeId, Long uniteId) {
 
-        Equipe equipe = equipeRepository.findById(equipeId)
-                .orElseThrow(() -> new RuntimeException("Equipe introuvable"));
+                Equipe equipe = equipeRepository.findById(equipeId)
+                                .orElseThrow(() -> new RuntimeException("Equipe introuvable"));
 
-        Unite unite = uniteRepository.findById(uniteId)
-                .orElseThrow(() -> new RuntimeException("Unité introuvable"));
+                Unite unite = uniteRepository.findById(uniteId)
+                                .orElseThrow(() -> new RuntimeException("Unité introuvable"));
 
-        EquipeUnite eu = EquipeUnite.builder()
-                .equipe(equipe)
-                .unite(unite)
-                .isActive(true)
-                .build();
-        String username = CurrentUserUtil.getCurrentUsername();
-        User user = userService.findByUsername(username);
-        logUserService.saveLog(user, "Affectation unité:"+eu.getUnite()+" à l'équipe: "+eu.getEquipe().getUser().getUsername());
+                EquipeUnite eu = EquipeUnite.builder()
+                                .equipe(equipe)
+                                .unite(unite)
+                                .isActive(true)
+                                .build();
+                String username = CurrentUserUtil.getCurrentUsername();
+                User user = userService.findByUsername(username);
+                logUserService.saveLog(user, "Affectation unité:" + eu.getUnite() + " à l'équipe: "
+                                + eu.getEquipe().getUser().getUsername());
 
-        return repository.save(eu);
-    }
+                return repository.save(eu);
+        }
 
-    // GET ALL
-    public List<EquipeUnite> getAll() {
-        return repository.findAll();
-    }
+        // GET ALL
+        public List<EquipeUnite> getAll() {
+                return repository.findAll();
+        }
 
-    // GET BY ID
-    public EquipeUnite getById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Relation non trouvée"));
-    }
+        // GET BY ID
+        public EquipeUnite getById(Long id) {
+                return repository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Relation non trouvée"));
+        }
 
-    // UPDATE
-    public EquipeUnite update(Long id, Long equipeId, Long uniteId) {
+        // UPDATE
+        public EquipeUnite update(Long id, Long equipeId, Long uniteId) {
 
-        EquipeUnite existing = getById(id);
+                EquipeUnite existing = getById(id);
 
-        Equipe equipe = equipeRepository.findById(equipeId)
-                .orElseThrow(() -> new RuntimeException("Equipe introuvable"));
+                Equipe equipe = equipeRepository.findById(equipeId)
+                                .orElseThrow(() -> new RuntimeException("Equipe introuvable"));
 
-        Unite unite = uniteRepository.findById(uniteId)
-                .orElseThrow(() -> new RuntimeException("Unité introuvable"));
+                Unite unite = uniteRepository.findById(uniteId)
+                                .orElseThrow(() -> new RuntimeException("Unité introuvable"));
 
-        existing.setEquipe(equipe);
-        existing.setUnite(unite);
+                existing.setEquipe(equipe);
+                existing.setUnite(unite);
 
-        return repository.save(existing);
-    }
+                return repository.save(existing);
+        }
 
-    // DELETE (soft delete)
-    public void delete(Long id) {
-        EquipeUnite eu = getById(id);
-        eu.setIsActive(false);
-        repository.save(eu);
-    }
+        public void delete(Long id) {
 
-    public List<Unite> getUnitesByEquipe(Long equipeId) {
+                if (!repository.existsById(id)) {
+                        throw new RuntimeException("Cette affectation n'existe pas");
+                }
 
-    List<EquipeUnite> relations =
-            repository.findByEquipeId(equipeId);
+                repository.deleteById(id);
+        }
 
-    return relations.stream()
-            .map(EquipeUnite::getUnite)
-            .toList();
-}
+        public List<Unite> getUnitesByEquipe(Long equipeId) {
 
-  public List<EquipeUnite> findByEquipe(Long equipeId) {
-        return repository.findByEquipeId(equipeId);
-    }
+                List<EquipeUnite> relations = repository.findByEquipeId(equipeId);
+
+                return relations.stream()
+                                .map(EquipeUnite::getUnite)
+                                .toList();
+        }
+
+        public List<EquipeUnite> findByEquipe(Long equipeId) {
+                return repository.findByEquipeId(equipeId);
+        }
 }
