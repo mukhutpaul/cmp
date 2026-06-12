@@ -19,77 +19,77 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MissionUniteService {
 
-    private final MissionUniteRepository repository;
-    private final MissionRepository missionRepository;
-    private final UniteRepository uniteRepository;
+        private final MissionUniteRepository repository;
+        private final MissionRepository missionRepository;
+        private final UniteRepository uniteRepository;
 
-    
+        // CREATE
+        public MissionUnite create(Long missionId, Long uniteId) {
 
-    // CREATE
-    public MissionUnite create(Long missionId, Long uniteId) {
+                Mission mission = missionRepository.findById(missionId)
+                                .orElseThrow(() -> new RuntimeException("Mission introuvable"));
 
-        Mission mission = missionRepository.findById(missionId)
-                .orElseThrow(() -> new RuntimeException("Mission introuvable"));
+                Unite unite = uniteRepository.findById(uniteId)
+                                .orElseThrow(() -> new RuntimeException("Unité introuvable"));
 
-        Unite unite = uniteRepository.findById(uniteId)
-                .orElseThrow(() -> new RuntimeException("Unité introuvable"));
+                MissionUnite mu = MissionUnite.builder()
+                                .mission(mission)
+                                .unite(unite)
+                                .isActive(true)
+                                .build();
 
-        MissionUnite mu = MissionUnite.builder()
-                .mission(mission)
-                .unite(unite)
-                .isActive(true)
-                .build();
+                return repository.save(mu);
+        }
 
-        return repository.save(mu);
-    }
+        // GET ALL
+        public List<MissionUnite> getAll() {
+                return repository.findAll();
+        }
 
-    // GET ALL
-    public List<MissionUnite> getAll() {
-        return repository.findAll();
-    }
+        // GET BY ID
+        public MissionUnite getById(Long id) {
+                return repository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("MissionUnite introuvable"));
+        }
 
-    // GET BY ID
-    public MissionUnite getById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("MissionUnite introuvable"));
-    }
+        // UPDATE
+        public MissionUnite update(Long id, Long missionId, Long uniteId) {
 
-    // UPDATE
-    public MissionUnite update(Long id, Long missionId, Long uniteId) {
+                MissionUnite existing = getById(id);
 
-        MissionUnite existing = getById(id);
+                Mission mission = missionRepository.findById(missionId)
+                                .orElseThrow(() -> new RuntimeException("Mission introuvable"));
 
-        Mission mission = missionRepository.findById(missionId)
-                .orElseThrow(() -> new RuntimeException("Mission introuvable"));
+                Unite unite = uniteRepository.findById(uniteId)
+                                .orElseThrow(() -> new RuntimeException("Unité introuvable"));
 
-        Unite unite = uniteRepository.findById(uniteId)
-                .orElseThrow(() -> new RuntimeException("Unité introuvable"));
+                existing.setMission(mission);
+                existing.setUnite(unite);
 
-        existing.setMission(mission);
-        existing.setUnite(unite);
+                return repository.save(existing);
+        }
 
-        return repository.save(existing);
-    }
+        // DELETE (soft delete)
+        public void delete(Long id) {
 
-    // DELETE (soft delete)
-    public void delete(Long id) {
-        MissionUnite mu = getById(id);
-        mu.setIsActive(false);
-        repository.save(mu);
-    }
+                if (!repository.existsById(id)) {
+                        throw new RuntimeException("Cette affectation n'existe pas");
+                }
 
-    public List<Unite> getUnitesByMission(Long missionId) {
+                repository.deleteById(id);
+        }
 
-    List<MissionUnite> relations =
-            repository.findByMissionId(missionId);
+        public List<Unite> getUnitesByMission(Long missionId) {
 
-    return relations.stream()
-            .map(MissionUnite::getUnite)
-            .toList();
-}
+                List<MissionUnite> relations = repository.findByMissionId(missionId);
 
-  public List<MissionUnite> findByMission(Long missionId) {
-        return repository.findByMissionId(missionId);
-    }
-  
+                return relations.stream()
+                                .map(MissionUnite::getUnite)
+                                .toList();
+        }
+
+        public List<MissionUnite> findByMission(Long missionId) {
+                return repository.findByMissionId(missionId);
+        }
+
 }
