@@ -11,6 +11,7 @@ public class StaticResourceConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         registry.addResourceHandler("/documents/**")
-                .addResourceLocations("file:///C:/bdd/document/");
+                //.addResourceLocations("file:///C:/bdd/document/");
+                  .addResourceLocations("file:///bdd/document/");
     }
 }

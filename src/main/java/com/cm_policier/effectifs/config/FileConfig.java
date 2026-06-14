@@ -12,6 +12,7 @@ public class FileConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         registry.addResourceHandler("/photos/**")
-                .addResourceLocations("file:///C:/bdd/images_destination/");
+               // .addResourceLocations("file:///C:/bdd/images_destination/"); 
+                .addResourceLocations("file:///bdd/images_destination/");
     }
 }

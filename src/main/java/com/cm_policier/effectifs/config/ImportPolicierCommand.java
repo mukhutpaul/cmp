@@ -27,7 +27,8 @@ public class ImportPolicierCommand implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        String filePath = "C:/bdd/db_controle.xlsx";
+       // String filePath = "C:/bdd/db_controle.xlsx";
+        String filePath = "/bdd/db_controle.xlsx";
         File file = new File(filePath);
 
         if (!file.exists()) {
