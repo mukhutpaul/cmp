@@ -70,19 +70,7 @@ public class UserService {
     // GET ALL USERS
     // =========================
     public List<User> getAllUsers() {
-        List<User> users = userRepository.debugAll();
-
-        for (User u : users) {
-            System.out.println("RAW PASSWORD = " + u.getPassword());
-        }
-
-        for (User u : users) {
-            System.out.println("===== USER DEBUG =====");
-            System.out.println("ID: " + u.getId());
-            System.out.println("USERNAME: " + u.getUsername());
-            System.out.println("PASSWORD: " + u.getPassword());
-            System.out.println("EMAIL: " + u.getEmail());
-        }
+        List<User> users = userRepository.findAllByOrderByIdDesc();
 
         String username = CurrentUserUtil.getCurrentUsername();
         User user = findByUsername(username);

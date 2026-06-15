@@ -1,5 +1,6 @@
 package com.cm_policier.effectifs.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +13,7 @@ public interface EquipeRepository extends JpaRepository<Equipe, Long> {
     Optional<Equipe> findByUser(User user);
 
      Long countByMissionId(Long missionId);
+    List<Equipe> findAllByOrderByIdDesc();
   
     
     

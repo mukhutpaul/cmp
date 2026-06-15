@@ -28,32 +28,32 @@ public class MissionController {
     private final MissionService missionService;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN','MANAGER')")
     public ResponseEntity<Mission> create(@RequestBody Mission mission) {
         return ResponseEntity.ok(missionService.create(mission));
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
     public ResponseEntity<List<Mission>> getAll() {
         return ResponseEntity.ok(missionService.getAll());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
     public ResponseEntity<Mission> getById(@PathVariable Long id) {
         return ResponseEntity.ok(missionService.getById(id));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN','MANAGER')")
     public ResponseEntity<Mission> update(@PathVariable Long id,
             @RequestBody Mission mission) {
         return ResponseEntity.ok(missionService.update(id, mission));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN','MANAGER')")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         missionService.delete(id);
         return ResponseEntity.ok().build();

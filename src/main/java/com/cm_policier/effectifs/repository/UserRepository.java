@@ -21,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "SELECT * FROM users", nativeQuery = true)
     List<User> debugAll();
 
+    List<User> findAllByOrderByIdDesc();
+
 }

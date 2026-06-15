@@ -29,7 +29,7 @@ public class MissionService {
     }
 
     public List<Mission> getAll() {
-        return missionRepository.findAll();
+        return missionRepository.findAllByOrderByIdDesc();
     }
 
     public Mission getById(Long id) {

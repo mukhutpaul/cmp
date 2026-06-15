@@ -8,17 +8,19 @@ import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.EquipeRepository;
 import com.cm_policier.effectifs.util.CurrentUserUtil;
 
+import lombok.AllArgsConstructor;
+
 
 @Service
+@AllArgsConstructor
 public class EquipeService {
 
-    @Autowired
-    private EquipeRepository equipeRepository;
-    @Autowired
-    private LogUserService logUserService;
 
-    @Autowired
-    private UserService userService;
+    private final EquipeRepository equipeRepository;
+
+    private final LogUserService logUserService;
+
+    private final UserService userService;
 
     public Equipe create(Equipe equipe) {
         String username = CurrentUserUtil.getCurrentUsername();
@@ -29,7 +31,7 @@ public class EquipeService {
     }
 
     public List<Equipe> getAll() {
-        return equipeRepository.findAll();
+        return equipeRepository.findAllByOrderByIdDesc();
     }
 
     public Equipe getById(Long id) {
