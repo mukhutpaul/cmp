@@ -41,7 +41,7 @@ public class MissionService {
         Mission existing = getById(id);
 
         existing.setDateDebut(mission.getDateDebut());
-        existing.setDateFin(mission.getDateFin());
+        //existing.setDateFin(mission.getDateFin());
         existing.setZone(mission.getZone());
         existing.setNumero(mission.getNumero());
         existing.setChargeMission(mission.getChargeMission());
