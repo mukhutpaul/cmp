@@ -146,9 +146,8 @@ public class ControleController {
                     if (doc.getImageUrl() != null &&
                             !doc.getImageUrl().isBlank()) {
 
-                        Path path = Paths.get(
-                                "C:/bdd/document/",
-                                doc.getImageUrl());
+                       //Path path = Paths.get("C:/bdd/document/",doc.getImageUrl());
+                        Path path = Paths.get("/bdd/document/",doc.getImageUrl());
 
                         Files.deleteIfExists(path);
                     }

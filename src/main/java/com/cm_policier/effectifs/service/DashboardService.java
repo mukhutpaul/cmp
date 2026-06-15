@@ -8,8 +8,6 @@ import com.cm_policier.effectifs.repository.*;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,8 +22,7 @@ public class DashboardService {
     private final UserRepository userRepository;
     private final EquipeUniteRepository equipeUniteRepository;
 
-    @Autowired
-    private LogUserService logUserService;
+    private final LogUserService logUserService;
     
 
     public DashboardStatsDTO getStats(String profile, Long userId) {

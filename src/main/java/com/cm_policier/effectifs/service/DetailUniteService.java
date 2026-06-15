@@ -6,7 +6,6 @@ import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.DetailUniteRepository;
 import com.cm_policier.effectifs.util.CurrentUserUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,10 +17,10 @@ import java.util.List;
 public class DetailUniteService {
 
     private final DetailUniteRepository repository;
-     @Autowired
-    private LogUserService logUserService;
-    @Autowired
-    private UserService userService;
+  
+    private final LogUserService logUserService;
+  
+    private final UserService userService;
 
   
 

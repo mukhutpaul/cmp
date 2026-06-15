@@ -293,7 +293,8 @@ public class ControleService {
                 try {
 
                         // 🔥 création auto dossier
-                        File folder = new File("C:/bdd/document/");
+                        //File folder = new File("C:/bdd/document/");
+                        File folder = new File("bdd/document/");
 
                         if (!folder.exists()) {
                                 folder.mkdirs();
@@ -305,7 +306,8 @@ public class ControleService {
                                 String fileName = controle.getUid() + "_" + UUID.randomUUID() + "_"
                                                 + file.getOriginalFilename();
 
-                                Path path = Paths.get("C:/bdd/document/" + fileName);
+                               // Path path = Paths.get("C:/bdd/document/" + fileName);
+                                Path path = Paths.get("/bdd/document/" + fileName);
 
                                 Files.copy(
                                                 file.getInputStream(),

@@ -22,29 +22,28 @@ import com.cm_policier.effectifs.repository.SeanceRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
 import com.cm_policier.effectifs.util.CurrentUserUtil;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 public class ControleServiceLoader {
 
-        @Autowired
-        private PolicierRepository policierRepository;
+        
+        private final PolicierRepository policierRepository;
 
-        @Autowired
-        private ControleRepository controleRepository;
+        
+        private final ControleRepository controleRepository;
 
-        @Autowired
-        private DetailEquipeRepository detailEquipeRepository;
+        
+        private final DetailEquipeRepository detailEquipeRepository;
 
-        @Autowired
-        private UserRepository userRepository;
+        private final UserRepository userRepository;
 
-        @Autowired
-        private SeanceRepository seanceRepository;
+        private final SeanceRepository seanceRepository;
 
-        @Autowired
-        private LogUserService logUserService;
+        private final LogUserService logUserService;
 
-        @Autowired
-        private UserService userService;
+        private final UserService userService;
 
         public List<Controle> chargerControle(String unite, Long userId) {
 

@@ -21,16 +21,16 @@ import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.DocumentRepository;
 import com.cm_policier.effectifs.util.CurrentUserUtil;
 
+import lombok.AllArgsConstructor;
+
 
 @Service
+@AllArgsConstructor
 public class DocumentService {
 
-    @Autowired
-    private DocumentRepository repository;
-
-    @Autowired
-    private LogUserService logUserService;
-    @Autowired UserService userService;
+    private final DocumentRepository repository;
+    private final  LogUserService logUserService;
+    private final UserService userService;
 
     public Document create(Document document) {
         String username = CurrentUserUtil.getCurrentUsername();

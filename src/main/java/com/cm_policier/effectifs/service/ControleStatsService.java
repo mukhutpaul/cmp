@@ -6,7 +6,6 @@ import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.ControleRepository;
 import com.cm_policier.effectifs.util.CurrentUserUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
@@ -18,11 +17,10 @@ import java.util.stream.Collectors;
 public class ControleStatsService {
 
         private final ControleRepository controleRepository;
-        @Autowired
-        private LogUserService logUserService;
+        
+        private final LogUserService logUserService;
 
-        @Autowired
-        private UserService userService;
+        private final UserService userService;
 
        
 

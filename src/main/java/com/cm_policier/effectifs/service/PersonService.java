@@ -4,7 +4,6 @@ package com.cm_policier.effectifs.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cm_policier.effectifs.dto.PersonRequest;
@@ -12,12 +11,14 @@ import com.cm_policier.effectifs.model.Person;
 import com.cm_policier.effectifs.repository.PersonRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class PersonService {
 
-    @Autowired
-    private PersonRepository personRepository;
+    
+    private final PersonRepository personRepository;
 
     // =========================
     // CREATE
