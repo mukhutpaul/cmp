@@ -182,8 +182,9 @@ public class SyncLocalService {
 
                     String fileName = doc.getId() + ".jpg";
 
+                   // java.nio.file.Path path = java.nio.file.Paths.get("C:/bdd/document/" + fileName);
                     java.nio.file.Path path = java.nio.file.Paths.get(
-                            "C:/bdd/document/" + fileName);
+                            "/bdd/document/" + fileName);
 
                     java.nio.file.Files.createDirectories(path.getParent());
 
