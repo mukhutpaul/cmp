@@ -81,7 +81,8 @@ public class DocumentService {
 
     public String encodeFile(String fileName) {
         try {
-            Path path = Paths.get("C:/bdd/document/" + fileName);
+            //Path path = Paths.get("C:/bdd/document/" + fileName);
+            Path path = Paths.get("/bdd/document/" + fileName);
             byte[] bytes = Files.readAllBytes(path);
             return Base64.getEncoder().encodeToString(bytes);
         } catch (Exception e) {
@@ -93,7 +94,8 @@ public class DocumentService {
 
         byte[] bytes = Base64.getDecoder().decode(base64);
 
-        Path path = Paths.get("C:/bdd/document/" + fileName);
+        //Path path = Paths.get("C:/bdd/document/" + fileName);
+        Path path = Paths.get("/bdd/document/" + fileName);
 
         Files.createDirectories(path.getParent());
 
