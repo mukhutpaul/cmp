@@ -2,7 +2,6 @@ package com.cm_policier.effectifs.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,31 +16,27 @@ import com.cm_policier.effectifs.repository.ProfileRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
 import com.cm_policier.effectifs.util.CurrentUserUtil;
 
+import lombok.AllArgsConstructor;
+
 
 @Service
+@AllArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+  
+    private final UserRepository userRepository;
 
-    @Autowired
-    private DetailEquipeRepository detailEquipeRepository;
+    private final DetailEquipeRepository detailEquipeRepository;
 
-    @Autowired
-    private ProfileRepository profileRepository;
+    private final ProfileRepository profileRepository;
 
-    @Autowired
-    private DetailUniteRepository detailUniteRepository;
+    private final DetailUniteRepository detailUniteRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private LogUserService logUserService;
+    private final LogUserService logUserService;
 
     
-  
-
     // =========================
     // REGISTER
     // =========================

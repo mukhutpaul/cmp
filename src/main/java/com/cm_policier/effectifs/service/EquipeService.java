@@ -1,7 +1,6 @@
 package com.cm_policier.effectifs.service;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.cm_policier.effectifs.model.Equipe;
 import com.cm_policier.effectifs.model.User;

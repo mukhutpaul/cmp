@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.cm_policier.effectifs.dto.SyncBatchRequest;
 import com.cm_policier.effectifs.dto.SyncBatchResponse;
 import com.cm_policier.effectifs.model.Controle;
@@ -19,7 +18,6 @@ import com.cm_policier.effectifs.syncDto.ControleDto;
 import com.cm_policier.effectifs.syncDto.DocumentDto;
 import com.cm_policier.effectifs.syncDto.SeanceDto;
 import com.cm_policier.effectifs.syncDto.SessionDto;
-
 import java.nio.file.*;
 import java.time.Duration;
 import java.time.Instant;

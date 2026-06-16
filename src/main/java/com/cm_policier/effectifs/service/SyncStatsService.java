@@ -1,9 +1,7 @@
 package com.cm_policier.effectifs.service;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import com.cm_policier.effectifs.dto.SyncStatsDto;
 import com.cm_policier.effectifs.repository.ControleRepository;
 import com.cm_policier.effectifs.repository.DocumentRepository;

@@ -2,18 +2,18 @@ package com.cm_policier.effectifs.service;
 
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.cm_policier.effectifs.model.Profile;
 import com.cm_policier.effectifs.repository.ProfileRepository;
 
+import lombok.AllArgsConstructor;
+
 @Service
+@AllArgsConstructor
 public class ProfileService {
 
-    @Autowired
-    private ProfileRepository profileRepository;
+
+    private final ProfileRepository profileRepository;
 
     /**
      * ➕ CREATE

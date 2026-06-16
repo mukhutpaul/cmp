@@ -2,7 +2,6 @@ package com.cm_policier.effectifs.service;
 
 import com.cm_policier.effectifs.dto.StatMissionDto;
 import com.cm_policier.effectifs.model.Mission;
-import com.cm_policier.effectifs.model.MissionUnite;
 import com.cm_policier.effectifs.repository.ControleRepository;
 import com.cm_policier.effectifs.repository.EquipeRepository;
 import com.cm_policier.effectifs.repository.MissionRepository;

@@ -15,15 +15,16 @@ import com.cm_policier.effectifs.repository.PersonRepository;
 import com.cm_policier.effectifs.repository.UniteRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 
 @Service
+@AllArgsConstructor
 public class UniteService {
 
-    @Autowired
-    private UniteRepository uniteRepository;
+    
+    private final UniteRepository uniteRepository;
 
-    @Autowired
-    private PersonRepository personRepository;
+    private final PersonRepository personRepository;
 
     // =========================
     // CREATE

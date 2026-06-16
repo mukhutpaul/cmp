@@ -18,21 +18,24 @@ import com.cm_policier.effectifs.repository.SeanceRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
 import com.cm_policier.effectifs.util.CurrentUserUtil;
 
+import lombok.AllArgsConstructor;
+
 
 @Service
+@AllArgsConstructor
 public class SeanceService {
 
-    @Autowired
-    private SeanceRepository seanceRepository;
-    @Autowired
-    private UserRepository userRepository;
+    
+    private final SeanceRepository seanceRepository;
+ 
+    private final UserRepository userRepository;
 
-    @Autowired
+   
     private MissionRepository missionRepository;
-    @Autowired
-    private  LogUserService logUserService;
-    @Autowired
-    private UserService userService;
+  
+    private final LogUserService logUserService;
+    
+    private final UserService userService;
 
 
     public Seance create(SeanceRequest request) {

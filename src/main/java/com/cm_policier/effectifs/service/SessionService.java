@@ -13,14 +13,17 @@ import com.cm_policier.effectifs.model.Seance;
 import com.cm_policier.effectifs.model.Session;
 import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.SessionRepository;
-import com.cm_policier.effectifs.util.CurrentUserUtil;
+
+import lombok.AllArgsConstructor;
+
 
 
 @Service
+@AllArgsConstructor
 public class SessionService {
 
-    @Autowired
-    private SessionRepository sessionRepository;
+  
+    private final SessionRepository sessionRepository;
 
     //  @Autowired
     //  private  LogUserService logUserService;

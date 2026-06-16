@@ -36,11 +36,8 @@ public class UniteChargeService {
         private final MissionRepository missionRepository;
         private final EquipeRepository equipeRepository;
         private final UserRepository userRepository;
-
-        @Autowired
-        private LogUserService logUserService;
-        @Autowired
-        private UserService userService;
+        private final LogUserService logUserService;
+        private final UserService userService;
 
         public void chargerUnite(ChargerUniteRequest req) {
 
