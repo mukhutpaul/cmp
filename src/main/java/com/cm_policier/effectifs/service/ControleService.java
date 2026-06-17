@@ -3,6 +3,7 @@ package com.cm_policier.effectifs.service;
 import com.cm_policier.effectifs.config.buildPhotoUrl;
 import com.cm_policier.effectifs.dto.ControleResponseDto;
 import com.cm_policier.effectifs.dto.DocumentResponseDto;
+import com.cm_policier.effectifs.dto.FaceRecognitionResponse;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;
 import com.cm_policier.effectifs.model.Seance;
@@ -34,6 +35,7 @@ public class ControleService {
         private final ControleRepository repository;
         private final LogUserService logUserService;
         private final UserService userService;
+        private final FaceRecognitionService faceRecognitionService;
 
         /* ========================= CREATE ========================= */
         public Controle create(Controle controle) {
@@ -63,7 +65,7 @@ public class ControleService {
         }
 
         public List<ControleResponseDto> getAll() {
-             
+
                 return repository.findAllByOrderByUpdatedAtDesc()
                                 .stream()
                                 .map(controle -> {
@@ -293,7 +295,7 @@ public class ControleService {
                 try {
 
                         // 🔥 création auto dossier
-                        //File folder = new File("C:/bdd/document/");
+                        // File folder = new File("C:/bdd/document/");
                         File folder = new File("bdd/document/");
 
                         if (!folder.exists()) {
@@ -306,7 +308,7 @@ public class ControleService {
                                 String fileName = controle.getUid() + "_" + UUID.randomUUID() + "_"
                                                 + file.getOriginalFilename();
 
-                               // Path path = Paths.get("C:/bdd/document/" + fileName);
+                                // Path path = Paths.get("C:/bdd/document/" + fileName);
                                 Path path = Paths.get("/bdd/document/" + fileName);
 
                                 Files.copy(
@@ -383,5 +385,88 @@ public class ControleService {
 
                                 })
                                 .toList();
+        }
+
+        public ControleResponseDto getByFace(MultipartFile image) throws Exception {
+
+                // 1. appel API Python
+                FaceRecognitionResponse result = faceRecognitionService.recognize(image);
+
+                if (result == null || !Boolean.TRUE.equals(result.getSuccess())) {
+                        throw new RuntimeException("Visage non reconnu");
+                }
+
+                String filename = result.getFilename();
+
+                // 2. recherche en base via pkPhoto
+                Controle c = repository.findByPkPhoto(filename)
+                                .orElseThrow(() -> new RuntimeException(
+                                                "Controle introuvable pour photo: " + filename));
+
+                // 3. construction DTO (TON CODE inchangé)
+                ControleResponseDto dto = ControleResponseDto.builder()
+
+                                .id(c.getId())
+                                .uid(c.getUid())
+
+                                // RELATIONS
+                                .policier(c.getPolicier())
+                                .controleur(c.getControleur())
+                                .chefEquipe(c.getChefEquipe())
+                                .chargeMission(c.getChargeMission())
+                                .seance(c.getSeance())
+                                .equipe(c.getEquipe())
+                                .mission(c.getMission())
+                                .justification(c.getJustification())
+
+                                // INFORMATIONS
+                                .noms(c.getNoms())
+                                .present(c.getPresent())
+                                .justifie(c.getJustifie())
+                                .observation(c.getObservation())
+                                .isControle(c.getIsControle())
+
+                                .matricule(c.getMatricule())
+                                .unite(c.getUnite())
+                                .grade(c.getGrade())
+                                .sexe(c.getSexe())
+
+                                // BIOMETRIE
+                                .fingerprint(c.getFingerprint())
+                                .fingerprint4(c.getFingerprint4())
+
+                                // FLAGS
+                                .isCmd(c.getIsCmd())
+                                .isActif(c.getIsActif())
+                                .isSync(c.getIsSync())
+                                .versionSync(c.getVersionSync())
+
+                                // FILE
+                                .qrcode(c.getQrcode())
+                                .province(c.getProvince())
+                                .deviceId(c.getDeviceId())
+                                .photoUrl(buildPhotoUrl.buildPhotoUrls(c.getPkPhoto()))
+
+                                // TIMESTAMPS
+                                .syncedAt(c.getSyncedAt())
+                                .createdAt(c.getCreatedAt())
+                                .updatedAt(c.getUpdatedAt())
+
+                                .build();
+
+                // 4. override photoUrl (comme ton code)
+                if (c.getPkPhoto() != null && !c.getPkPhoto().isEmpty()) {
+                        dto.setPhotoUrl(c.getPkPhoto() + ".jpg");
+                }
+
+                // 5. LOGGING (inchangé)
+                String username = CurrentUserUtil.getCurrentUsername();
+                User user = userService.findByUsername(username);
+
+                logUserService.saveLog(
+                                user,
+                                "Reconnaissance faciale controle matricule: " + dto.getMatricule());
+
+                return dto;
         }
 }

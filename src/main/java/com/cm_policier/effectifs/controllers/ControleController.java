@@ -3,12 +3,10 @@ package com.cm_policier.effectifs.controllers;
 import com.cm_policier.effectifs.dto.ControleResponseDto;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;
-import com.cm_policier.effectifs.model.User;
 import com.cm_policier.effectifs.repository.DocumentRepository;
 import com.cm_policier.effectifs.service.ControleService;
 import com.cm_policier.effectifs.service.LogUserService;
 import com.cm_policier.effectifs.service.UserService;
-import com.cm_policier.effectifs.util.CurrentUserUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Files;
@@ -32,9 +30,6 @@ public class ControleController {
 
     private final ControleService service;
     private final DocumentRepository documentRepository;
-    private final UserService userService;
-
-    private LogUserService logUserService;
 
     /* ========================= CREATE ========================= */
     @PostMapping
@@ -191,5 +186,18 @@ public class ControleController {
             return ResponseEntity.internalServerError()
                     .body(e.getMessage());
         }
+    }
+
+    // =========================
+    // RECONNAISSANCE FACIALE
+    // =========================
+    @PostMapping("/recognize-face")
+    public ResponseEntity<ControleResponseDto> recognizeFace(
+            @RequestParam("image") MultipartFile image
+    ) throws Exception {
+
+        ControleResponseDto response =
+                service.getByFace(image);
+        return ResponseEntity.ok(response);
     }
 }
