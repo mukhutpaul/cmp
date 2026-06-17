@@ -16,20 +16,16 @@ import com.cm_policier.effectifs.repository.PolicierRepository;
 import com.cm_policier.effectifs.repository.SeanceRepository;
 import com.cm_policier.effectifs.repository.UserRepository;
 import com.cm_policier.effectifs.util.CurrentUserUtil;
-
 import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
 public class ControleServiceLoader {
 
-        
         private final PolicierRepository policierRepository;
 
-        
         private final ControleRepository controleRepository;
 
-        
         private final DetailEquipeRepository detailEquipeRepository;
 
         private final UserRepository userRepository;
@@ -99,7 +95,7 @@ public class ControleServiceLoader {
                         String missionCode = mission.getNumero().replace("-", "");
 
                         String uid = String.format(
-                                        "%s-%d-%d-%06d",
+                                        "%s-%s-%s-%06d",
                                         missionCode,
                                         chefEquipe.getUsername(),
                                         controleur.getUsername(),
@@ -144,9 +140,8 @@ public class ControleServiceLoader {
                         User user = userService.findByUsername(username);
                         logUserService.saveLog(user,
                                         "Chargement policiers de l'unité " + c.getUnite() + " au contrôle");
-                       
-                }
 
+                }
 
                 return controleRepository.saveAll(controles);
         }
