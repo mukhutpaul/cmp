@@ -5,10 +5,7 @@ import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;
 import com.cm_policier.effectifs.repository.DocumentRepository;
 import com.cm_policier.effectifs.service.ControleService;
-import com.cm_policier.effectifs.service.LogUserService;
-import com.cm_policier.effectifs.service.UserService;
 import lombok.RequiredArgsConstructor;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,7 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
