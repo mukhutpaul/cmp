@@ -104,10 +104,10 @@ public class ControleServiceLoader {
                         String missionCode = mission.getNumero().replace("-", "");
 
                         String uid = String.format(
-                                        "%s-CE%d-CTR%d-%06d",
+                                        "%s-%d-%d-%06d",
                                         missionCode,
-                                        chefEquipe.getId(),
-                                        controleur.getId(),
+                                        chefEquipe.getUsername(),
+                                        controleur.getUsername(),
                                         sequence++);
 
                         Controle c = Controle.builder()
