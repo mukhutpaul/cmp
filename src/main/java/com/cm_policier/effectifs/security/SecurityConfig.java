@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 "/api/pc/sync",
                                 "/api/auth/login-distant",
                                 "/api/auth/mobile/login",
+                                "/api/controles/recognize-face",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/api/sync/import",
