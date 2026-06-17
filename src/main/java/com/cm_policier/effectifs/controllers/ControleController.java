@@ -115,7 +115,7 @@ public class ControleController {
 
     @PatchMapping("/{id}/invalidate")
     public ResponseEntity<?> invalidateControle(@PathVariable UUID id) {
-       
+
         try {
             Controle controle = service.findById(id);
 
@@ -141,8 +141,8 @@ public class ControleController {
                     if (doc.getImageUrl() != null &&
                             !doc.getImageUrl().isBlank()) {
 
-                       //Path path = Paths.get("C:/bdd/document/",doc.getImageUrl());
-                        Path path = Paths.get("/bdd/document/",doc.getImageUrl());
+                        // Path path = Paths.get("C:/bdd/document/",doc.getImageUrl());
+                        Path path = Paths.get("/bdd/document/", doc.getImageUrl());
 
                         Files.deleteIfExists(path);
                     }
@@ -174,8 +174,6 @@ public class ControleController {
 
             service.create(controle);
 
-           
-
             return ResponseEntity.ok(
                     "Contrôle invalidé avec succès");
 
@@ -191,13 +189,12 @@ public class ControleController {
     // =========================
     // RECONNAISSANCE FACIALE
     // =========================
-    @PostMapping("/recognize-face")
+    @PostMapping(value = "/recognize-face", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ControleResponseDto> recognizeFace(
-            @RequestParam("image") MultipartFile image
-    ) throws Exception {
+            @RequestParam("image") MultipartFile image) throws Exception {
 
-        ControleResponseDto response =
-                service.getByFace(image);
+        ControleResponseDto response = service.getByFace(image);
+
         return ResponseEntity.ok(response);
     }
 }
