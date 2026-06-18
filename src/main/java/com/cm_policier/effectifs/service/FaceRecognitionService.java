@@ -44,7 +44,7 @@ public class FaceRecognitionService {
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
 
         ResponseEntity<FaceRecognitionResponse> response = restTemplate.exchange(
-                "http://localhost:8000/recognize",
+                "http://host.docker.internal:8000/recognize",
                 HttpMethod.POST,
                 request,
                 FaceRecognitionResponse.class);
