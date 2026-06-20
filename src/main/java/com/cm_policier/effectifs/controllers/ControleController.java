@@ -1,5 +1,4 @@
 package com.cm_policier.effectifs.controllers;
-
 import com.cm_policier.effectifs.dto.ControleResponseDto;
 import com.cm_policier.effectifs.model.Controle;
 import com.cm_policier.effectifs.model.Document;

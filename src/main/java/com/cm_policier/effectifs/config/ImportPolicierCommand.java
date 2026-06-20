@@ -1,21 +1,20 @@
 package com.cm_policier.effectifs.config;
 
+import com.cm_policier.effectifs.model.Policier;
+import com.cm_policier.effectifs.repository.PolicierRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.util.IOUtils;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
-import com.cm_policier.effectifs.model.Policier;
-import com.cm_policier.effectifs.repository.PolicierRepository;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Order(1)
@@ -24,10 +23,14 @@ public class ImportPolicierCommand implements CommandLineRunner {
 
     private final PolicierRepository policierRepository;
 
+    private static final DataFormatter FORMATTER = new DataFormatter();
+    private static final int BATCH_SIZE = 1000;
+
     @Override
     public void run(String... args) throws Exception {
 
-       // String filePath = "C:/bdd/db_controle.xlsx";
+        IOUtils.setByteArrayMaxOverride(500_000_000);
+
         String filePath = "/bdd/db_controle.xlsx";
         File file = new File(filePath);
 
@@ -36,122 +39,144 @@ public class ImportPolicierCommand implements CommandLineRunner {
             return;
         }
 
+        System.out.println("📄 Fichier trouvé : " + filePath);
+        System.out.println("📦 Taille : " + (file.length() / (1024 * 1024)) + " MB");
+
         int imported = 0;
         int errors = 0;
         int duplicates = 0;
+        int totalRows = 0; // ✅ IMPORTANT : déclaré ici (global méthode)
 
-        try (FileInputStream fis = new FileInputStream(file);
-             Workbook workbook = WorkbookFactory.create(fis)) {
+        List<Policier> batch = new ArrayList<>(BATCH_SIZE);
+
+        try (
+                FileInputStream fis = new FileInputStream(file);
+                Workbook workbook = WorkbookFactory.create(fis)
+        ) {
 
             Sheet sheet = workbook.getSheetAt(0);
 
-            // ================================
-            // 🔥 HEADER MAP (IMPORTANT FIX)
-            // ================================
+            if (sheet == null) {
+                System.out.println("❌ Aucune feuille trouvée.");
+                return;
+            }
+
             Map<String, Integer> headerMap = new HashMap<>();
             Row headerRow = sheet.getRow(0);
+
+            if (headerRow == null) {
+                System.out.println("❌ Ligne d'entête introuvable.");
+                return;
+            }
 
             for (int i = 0; i < headerRow.getLastCellNum(); i++) {
                 Cell cell = headerRow.getCell(i);
                 if (cell == null) continue;
 
-                String header = cell.getStringCellValue().trim().toUpperCase();
+                String header = FORMATTER.formatCellValue(cell)
+                        .trim()
+                        .toUpperCase();
+
                 headerMap.put(header, i);
             }
 
-            // ================================
-            // 🔁 DATA LOOP
-            // ================================
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            totalRows = sheet.getLastRowNum(); // ✅ assignation ici
+
+            if (totalRows <= 0) {
+                System.out.println("❌ Aucune donnée à importer.");
+                return;
+            }
+
+            System.out.println("📊 Nombre de lignes : " + totalRows);
+            System.out.println("🚀 Début import...");
+
+            for (int i = 1; i <= totalRows; i++) {
+
+                // 📈 progression
+                if (i % 1000 == 0 || i == totalRows) {
+
+                    double percent = (i * 100.0) / totalRows;
+
+                    System.out.printf(
+                            "📈 %.2f%% | Ligne %d/%d | Importés=%d | Doublons=%d | Erreurs=%d%n",
+                            percent,
+                            i,
+                            totalRows,
+                            imported,
+                            duplicates,
+                            errors
+                    );
+                }
 
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
 
                 try {
 
-                    String matricule = getString(row, headerMap, "MATRICULE");
-                    String pkPhoto = getString(row, headerMap, "PK_PHOTO");
+                    String matricule = getString(row, headerMap, "matricule");
+                    String pkPhoto = getString(row, headerMap, "policierId");
 
                     if (matricule == null || matricule.isBlank()) continue;
 
-                    // 🔥 doublon matricule
                     if (policierRepository.existsByMatricule(matricule)) {
-                        System.out.println("🔁 MATRICULE DUP: " + matricule + " ligne " + i);
                         duplicates++;
                         continue;
                     }
 
-                    // 🔥 doublon pk_photo
                     if (pkPhoto != null && policierRepository.existsByPkPhoto(pkPhoto)) {
-                        System.out.println("🔁 PK_PHOTO DUPLICATE DETECTED");
-                        System.out.println("   ligne : " + i);
-                        System.out.println("   pkPhoto : " + pkPhoto);
-                        System.out.println("   matricule : " + matricule);
-                        System.out.println("   nom : " + getString(row, headerMap, "LASTNAME"));
                         duplicates++;
                         continue;
                     }
 
                     Policier policier = Policier.builder()
                             .matricule(matricule)
-                            .lastname(getString(row, headerMap, "LASTNAME"))
-                            .postname(getString(row, headerMap, "POSTNAME"))
-                            .firstnames(getString(row, headerMap, "FIRSTNAMES"))
-                            .birthDate(getDate(row, headerMap, "BIRTH_DATE"))
-                            .gender(getString(row, headerMap, "GENDER"))
-                            .cityBirth(getString(row, headerMap, "CITY_BIRTH"))
-                            .lieu(getString(row, headerMap, "LIEU"))
-                            .countryBirth(getString(row, headerMap, "COUNTRY_BIRTH"))
-                            .dateAdded(getDate(row, headerMap, "DATE_ADDED"))
-                            .rank(getString(row, headerMap, "RANK"))
-                            .rankNominationActDate(getDate(row, headerMap, "RANK_NOMINATION_ACT_DATE"))
-                            .dateEntryInPolice(getDate(row, headerMap, "DATE_ENTRY_IN_POLICE"))
-                            .profession(getString(row, headerMap, "PROFESSION"))
-                            .professionStartDate(getDate(row, headerMap, "PROFESSION_START_DATE"))
-                            .mainUnit(getString(row, headerMap, "MAIN_UNIT"))
-                            .unit(getString(row, headerMap, "UNIT"))
-                            .spouseLastname(getString(row, headerMap, "SPOUSE_LASTNAME"))
-                            .spousePostname(getString(row, headerMap, "SPOUSE_POSTNAME"))
-                            .spouseFirstname(getString(row, headerMap, "SPOUSE_FIRSTNAME"))
-                            .spouseNationality(getString(row, headerMap, "SPOUSE_NATIONALITY"))
-                            .spouseProfession(getString(row, headerMap, "SPOUSE_PROFESSION"))
-                            .bloodtype(getString(row, headerMap, "BLOODTYPE"))
-                            .districtOrigin(getString(row, headerMap, "DISTRICT_ORIGIN"))
-                            .territoireOrigin(getString(row, headerMap, "TERRITOIRE_ORIGIN"))
-                            .villageOrigin(getString(row, headerMap, "VILLAGE_ORIGIN"))
-                            .addressStreet(getString(row, headerMap, "ADDRESS_STREET"))
-                            .addressCommune(getString(row, headerMap, "ADDRESS_COMMUNE"))
-                            .telephone(getString(row, headerMap, "TELEPHONE"))
-                            .emergencyLastname(getString(row, headerMap, "EMERGENCY_LASTNAME"))
-                            .emergencyPostname(getString(row, headerMap, "EMERGENCY_POSTNAME"))
-                            .emergencyFirstname(getString(row, headerMap, "EMERGENCY_FIRSTNAME"))
-                            .emergencyRelation(getString(row, headerMap, "EMERGENCY_RELATION"))
-                            .emergencyAddressStreet(getString(row, headerMap, "EMERGENCY_ADDRESS_STREET"))
-                            .emergencyAddressCommune(getString(row, headerMap, "EMERGENCY_ADDRESS_COMMUNE"))
-                            .emergencyTelephone(getString(row, headerMap, "EMERGENCY_TELEPHONE"))
-                            .position(getString(row, headerMap, "POSITION"))
+                            .lastname(getString(row, headerMap, "nom"))
+                            .postname(getString(row, headerMap, "postnom"))
+                            .firstnames(getString(row, headerMap, "prenom"))
+                            .birthDate(getDate(row, headerMap, "dateNaissance"))
+                            .gender(getString(row, headerMap, "genre"))
+                            .cityBirth(getString(row, headerMap, "lieuNaissance"))
+                            .dateAdded(getDate(row, headerMap, "dateAdded"))
+                            .rank(getString(row, headerMap, "grade"))
+                            .dateEntryInPolice(getDate(row, headerMap, "dateIncorporation"))
+                            .unit(getString(row, headerMap, "unite"))
+                            .bloodtype(getString(row, headerMap, "groupeSanguin"))
+                            .position(getString(row, headerMap, "position"))
                             .pkPhoto(pkPhoto)
                             .build();
 
-                    policierRepository.save(policier);
-                    imported++;
+                    batch.add(policier);
+
+                    if (batch.size() >= BATCH_SIZE) {
+                        policierRepository.saveAll(batch);
+                        imported += batch.size();
+                        batch.clear();
+                    }
 
                 } catch (Exception e) {
                     errors++;
                     System.out.println("❌ Erreur ligne " + i + " : " + e.getMessage());
                 }
             }
+
+            if (!batch.isEmpty()) {
+                policierRepository.saveAll(batch);
+                imported += batch.size();
+                batch.clear();
+            }
+
         }
 
-        System.out.println("\n===== IMPORT TERMINÉ =====");
-        System.out.println("✔ Importés : " + imported);
-        System.out.println("🔁 Doublons : " + duplicates);
-        System.out.println("❌ Erreurs : " + errors);
+        System.out.println("\n====================================");
+        System.out.println("🎉 IMPORT TERMINÉ");
+        System.out.println("====================================");
+        System.out.println("📊 Total lignes : " + totalRows);
+        System.out.println("✔ Importés      : " + imported);
+        System.out.println("🔁 Doublons      : " + duplicates);
+        System.out.println("❌ Erreurs       : " + errors);
+        System.out.println("====================================");
     }
 
-    // ================================
-    // 🔥 SAFE STRING READER
-    // ================================
     private String getString(Row row, Map<String, Integer> map, String column) {
 
         Integer index = map.get(column.toUpperCase());
@@ -160,9 +185,7 @@ public class ImportPolicierCommand implements CommandLineRunner {
         Cell cell = row.getCell(index, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
         if (cell == null) return null;
 
-        DataFormatter formatter = new DataFormatter();
-        String value = formatter.formatCellValue(cell);
-
+        String value = FORMATTER.formatCellValue(cell);
         if (value == null) return null;
 
         value = value.trim();
@@ -178,9 +201,6 @@ public class ImportPolicierCommand implements CommandLineRunner {
         return value;
     }
 
-    // ================================
-    // 🔥 SAFE DATE READER
-    // ================================
     private LocalDate getDate(Row row, Map<String, Integer> map, String column) {
 
         Integer index = map.get(column.toUpperCase());
@@ -191,8 +211,8 @@ public class ImportPolicierCommand implements CommandLineRunner {
 
         try {
 
-            if (cell.getCellType() == CellType.NUMERIC &&
-                    DateUtil.isCellDateFormatted(cell)) {
+            if (cell.getCellType() == CellType.NUMERIC
+                    && DateUtil.isCellDateFormatted(cell)) {
 
                 return cell.getDateCellValue()
                         .toInstant()
@@ -221,7 +241,4 @@ public class ImportPolicierCommand implements CommandLineRunner {
 
         return null;
     }
-
-
-    
 }
