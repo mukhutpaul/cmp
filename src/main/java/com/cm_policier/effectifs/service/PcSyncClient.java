@@ -17,7 +17,7 @@ public class PcSyncClient {
     private final ObjectMapper mapper;
 
 
-    private static final String BASE_URL = "http://10.204.175.164:8090";
+    private static final String BASE_URL = "http://192.168.0.78:8090";
 
     public SyncResponseDTO sync(PcSyncLoginDTO request) {
 
