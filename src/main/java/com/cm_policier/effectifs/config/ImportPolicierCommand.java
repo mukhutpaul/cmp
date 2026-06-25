@@ -31,7 +31,8 @@ public class ImportPolicierCommand implements CommandLineRunner {
 
         IOUtils.setByteArrayMaxOverride(500_000_000);
 
-        String filePath = "/bdd/db_controle.xlsx";
+        //String filePath = "/bdd/db_controle.xlsx";
+        String filePath = "c:/bdd/db_controle.xlsx";
         File file = new File(filePath);
 
         if (!file.exists()) {
