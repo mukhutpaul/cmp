@@ -58,6 +58,7 @@ public class PcLocalSyncService {
         if (data.getMission() != null) {
 
             Mission incoming = data.getMission();
+
             Mission mission;
 
             if (incoming.getId() != null) {

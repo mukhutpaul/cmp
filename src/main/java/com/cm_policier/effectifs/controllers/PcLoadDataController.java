@@ -100,7 +100,8 @@ public class PcLoadDataController {
                 }
             }
 
-            List<DetailUnite> detailUnites = detailUniteService.findUnitesByEquipe(equipe.getId());
+            //List<DetailUnite> detailUnites = detailUniteService.findUnitesByEquipe(equipe.getId());
+            List<DetailUnite> detailUnites = detailUniteService.findUnitesByEquipe(equipe.getUser().getId());
 
             if (detailUnites != null) {
                 for (DetailUnite du : detailUnites) {
