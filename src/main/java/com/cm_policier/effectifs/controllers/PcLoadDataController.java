@@ -88,20 +88,20 @@ public class PcLoadDataController {
                 }
             }
 
-            List<MissionUnite> missionUnites = (mission != null)
-                    ? missionUniteService.findByMission(mission.getId())
-                    : new ArrayList<>();
+            // List<MissionUnite> missionUnites = (mission != null)
+            //         ? missionUniteService.findByMission(mission.getId())
+            //         : new ArrayList<>();
 
-            if (missionUnites != null) {
-                for (MissionUnite mu : missionUnites) {
-                    if (mu.getUnite() != null) {
-                        uniteSet.add(mu.getUnite());
-                    }
-                }
-            }
+            // if (missionUnites != null) {
+            //     for (MissionUnite mu : missionUnites) {
+            //         if (mu.getUnite() != null) {
+            //             uniteSet.add(mu.getUnite());
+            //         }
+            //     }
+            // }
 
-            //List<DetailUnite> detailUnites = detailUniteService.findUnitesByEquipe(equipe.getId());
-            List<DetailUnite> detailUnites = detailUniteService.findUnitesByEquipe(equipe.getUser().getId());
+            List<DetailUnite> detailUnites = detailUniteService.findUnitesByEquipe(equipe.getId());
+            //List<DetailUnite> detailUnites = detailUniteService.findUnitesByEquipe(equipe.getUser().getId());
 
             if (detailUnites != null) {
                 for (DetailUnite du : detailUnites) {
@@ -127,7 +127,7 @@ public class PcLoadDataController {
             payload.setUnites(unites);
             payload.setDetailEquipes(detailEquipes);
             payload.setEquipeUnites(equipeUnites);
-            payload.setMissionUnites(missionUnites);
+            //payload.setMissionUnites(missionUnites);
             payload.setDetailUnites(detailUnites);
 
             // ================= SAVE LOCAL =================

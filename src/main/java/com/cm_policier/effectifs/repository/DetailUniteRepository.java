@@ -19,19 +19,19 @@ public interface DetailUniteRepository extends JpaRepository<DetailUnite, Long> 
 
     List<DetailUnite> findByUnite_Id(Long uniteId);
 
-    // @Query("""
-    //         SELECT DISTINCT du
-    //         FROM DetailUnite du
-    //         JOIN DetailEquipe de
-    //         ON de.user.id = du.user.id
-    //         WHERE de.equipe.id = :equipeId
-    //         """)
-    // List<DetailUnite> findByEquipe(@Param("equipeId") Long equipeId);
-
     @Query("""
-            SELECT du
+            SELECT DISTINCT du
             FROM DetailUnite du
-            WHERE du.user.id = :userId
+            JOIN DetailEquipe de
+            ON de.user.id = du.user.id
+            WHERE de.equipe.id = :equipeId
             """)
-    List<DetailUnite> findByEquipe(@Param("userId") Long userId);
+    List<DetailUnite> findByEquipe(@Param("equipeId") Long equipeId);
+
+    // @Query("""
+    //         SELECT du
+    //         FROM DetailUnite du
+    //         WHERE du.user.id = :userId
+    //         """)
+    // List<DetailUnite> findByEquipe(@Param("userId") Long userId);
 }
