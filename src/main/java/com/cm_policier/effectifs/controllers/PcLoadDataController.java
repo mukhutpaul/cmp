@@ -77,41 +77,60 @@ public class PcLoadDataController {
             }
 
             // ================= UNITES =================
-            Set<Unite> uniteSet = new HashSet<>();
+            // Set<Unite> uniteSet = new HashSet<>();
 
+            // List<EquipeUnite> equipeUnites =
+            // equipeUniteService.findByEquipe(equipe.getId());
+            // if (equipeUnites != null) {
+            // for (EquipeUnite eu : equipeUnites) {
+            // if (eu.getUnite() != null) {
+            // uniteSet.add(eu.getUnite());
+            // }
+            // }
+            // }
+
+            // ================= UNITES =================
             List<EquipeUnite> equipeUnites = equipeUniteService.findByEquipe(equipe.getId());
+
+            List<Unite> unites = new ArrayList<>();
+
             if (equipeUnites != null) {
+                Set<Unite> uniteSet = new HashSet<>();
+
                 for (EquipeUnite eu : equipeUnites) {
                     if (eu.getUnite() != null) {
                         uniteSet.add(eu.getUnite());
                     }
                 }
+
+                unites.addAll(uniteSet);
             }
 
-            // List<MissionUnite> missionUnites = (mission != null)
-            //         ? missionUniteService.findByMission(mission.getId())
-            //         : new ArrayList<>();
+            List<MissionUnite> missionUnites = (mission != null)
+                    ? missionUniteService.findByMission(mission.getId())
+                    : new ArrayList<>();
 
             // if (missionUnites != null) {
-            //     for (MissionUnite mu : missionUnites) {
-            //         if (mu.getUnite() != null) {
-            //             uniteSet.add(mu.getUnite());
-            //         }
-            //     }
+            // for (MissionUnite mu : missionUnites) {
+            // if (mu.getUnite() != null) {
+            // uniteSet.add(mu.getUnite());
+            // }
+            // }
             // }
 
             List<DetailUnite> detailUnites = detailUniteService.findUnitesByEquipe(equipe.getId());
-            //List<DetailUnite> detailUnites = detailUniteService.findUnitesByEquipe(equipe.getUser().getId());
+            // List<DetailUnite> detailUnites =
+            // detailUniteService.findUnitesByEquipe(equipe.getUser().getId());
 
-            if (detailUnites != null) {
-                for (DetailUnite du : detailUnites) {
-                    if (du.getUnite() != null) {
-                        uniteSet.add(du.getUnite());
-                    }
-                }
-            }
+            // if (detailUnites != null) {
+            // for (DetailUnite du : detailUnites) {
+            // if (du.getUnite() != null) {
+            // uniteSet.add(du.getUnite());
+            // }
+            // }
+            // }
 
-            List<Unite> unites = new ArrayList<>(uniteSet);
+            //List<Unite> unites = new ArrayList<>(uniteSet);
 
             // ================= DETAIL EQUIPE =================
             List<DetailEquipe> detailEquipes = detailEquipeService.findByEquipe(equipe.getId());
@@ -127,11 +146,11 @@ public class PcLoadDataController {
             payload.setUnites(unites);
             payload.setDetailEquipes(detailEquipes);
             payload.setEquipeUnites(equipeUnites);
-            //payload.setMissionUnites(missionUnites);
+            payload.setMissionUnites(missionUnites);
             payload.setDetailUnites(detailUnites);
 
             // ================= SAVE LOCAL =================
-            //syncService.saveSyncData(payload);
+            // syncService.saveSyncData(payload);
 
             return ResponseEntity.ok(
                     new ApiResponse<>(true,
